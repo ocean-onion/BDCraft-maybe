@@ -1,36 +1,97 @@
-# PaperPlugin Configuration
-# This is the main configuration file for the PaperPlugin
+# BDCraft Plugin Configuration
+# Complete configuration file for the BDCraft plugin system
 
-# Messages
-messages:
-  # Format for the greeting message when using /hello command
-  # Use {player} as a placeholder for the player name
-  greeting-format: "Hello, {player}! Welcome to your Paper plugin!"
-  
-  # Format for the welcome message when a player joins the server
-  # Use {player} as a placeholder for the player name
-  welcome-format: "Welcome to the server, {player}!"
-
-# Plugin settings
-settings:
-  # Debug mode: When true, additional information will be logged
+# General plugin settings
+plugin:
   debug: false
-  
-  # Whether to show welcome messages to players when they join
-  show-welcome-message: true
+  prefix: '&7[&aBDCraft&7]'
+  language: 'en'
+  data-storage: 'file' # 'file', 'mysql', 'sqlite'
 
-# Module configuration
-# Enable or disable individual modules
+# Module enabling/disabling
 modules:
-  # Core modules
+  # Core module management
+  logging: true
   economy: true
-  perms: true
+  permissions: true
   vital: true
-  
-  # Feature modules
-  auction: true
-  rebirth: true
-  tutorial: true
+  placeholder: true
 
+# Logging module configuration
+logging:
+  level: INFO  # DEBUG, INFO, WARNING, ERROR, CRITICAL
+  console-output: true
+  file-output: true
+  max-memory-logs: 1000
+  categories:
+    - economy
+    - permissions
+    - vital
+    - commands
+    - players
+  
+# Economy module configuration  
+economy:
+  # Credits (server currency) configuration
+  # Note: Emeralds are handled as physical items by the game
+  # Credits are earned exclusively by trading with collectors (no starting balance)
+  credits-enabled: true
+  transaction-log: true
+  max-transaction-history: 50
+  
+# Permissions module configuration
+permissions:
+  use-bukkit-perms: true
+  default-group: 'player'
+  permission-caching: true
+  cache-duration: 60
+  clear-on-join: true
+  
+# Vital module configuration
+vital:
+  # Home system limits based on ranks
+  max-homes:
+    # As per documentation
+    rank1: 1  # Newcomer
+    rank2: 2  # Farmer
+    rank3: 3  # Expert Farmer
+    rank4: 4  # Master Farmer
+    rank5: 5  # Agricultural Expert
+  
+  # Teleportation cooldowns in seconds
+  teleport:
+    cooldown: 30
+    expire: 30
+    back-enabled: true
+    back-cooldown: 60
+  
+  # Market warps based on market level
+  market-warps:
+    level1: false          # No public warp
+    level2-cooldown: 3600  # 1 hour cooldown
+    level3-cooldown: 1800  # 30 minute cooldown
+    level4-cooldown: 900   # 15 minute cooldown
+  
+  # Protection system
+  protection:
+    pvp-in-markets: false
+    log-interactions: true
+    rollback-enabled: true
+
+# Data storage configuration
+storage:
+  # MySQL configuration (if data-storage is 'mysql')
+  mysql:
+    host: 'localhost'
+    port: 3306
+    database: 'bdcraft'
+    username: 'user'
+    password: 'password'
+    prefix: 'bd_'
+    
+  # SQLite configuration (if data-storage is 'sqlite')
+  sqlite:
+    file: 'database.db'
+    
 # Version of this config file. Do not change this!
 config-version: 1

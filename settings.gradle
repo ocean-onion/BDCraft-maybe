@@ -1,0 +1,3 @@
+rootProject.name = 'bdcraft'
+
+// Using Gradle 8.7, which is compatible with our requirements

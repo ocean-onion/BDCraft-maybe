@@ -1,0 +1,144 @@
+# BDCraft Messages Configuration
+# This file contains all messages used in the plugin
+# You can customize these messages to fit your server's theme
+
+# General plugin messages
+general:
+  prefix: '&7[&aBDCraft&7] '
+  no-permission: '&cYou do not have permission to use this command.'
+  player-only: '&cThis command can only be used by players.'
+  player-not-found: '&cPlayer not found: {player}'
+  invalid-syntax: '&cInvalid command syntax. Usage: {usage}'
+  invalid-number: '&c{input} is not a valid number.'
+  config-reloaded: '&aConfiguration files have been reloaded.'
+  plugin-enabled: '&aBDCraft plugin has been enabled.'
+  plugin-disabled: '&cBDCraft plugin has been disabled.'
+  world-not-found: '&cWorld not found: {world}'
+  
+# Economy module messages
+economy:
+  balance-self: '&aYour balance: {amount} {currency}'
+  balance-other: '&a{player}''s balance: {amount} {currency}'
+  secondary-balance-self: '&aYour {currency} balance: {amount}'
+  secondary-balance-other: '&a{player}''s {currency} balance: {amount}'
+  
+  pay-sent: '&aYou have sent {amount} {currency} to {player}.'
+  pay-received: '&aYou have received {amount} {currency} from {player}.'
+  pay-error: '&cCould not complete transaction: {reason}'
+  pay-self: '&cYou cannot pay yourself.'
+  
+  not-enough-money: '&cYou do not have enough {currency}. Required: {amount}, Available: {balance}'
+  max-balance-exceeded: '&cTransaction would exceed the maximum balance limit.'
+  
+  balance-top-header: '&6Top {count} richest players:'
+  balance-top-entry: '&7{position}. &e{player}: &6{amount} {currency}'
+  balance-top-none: '&7No players found.'
+  
+  money-given: '&aAdded {amount} {currency} to {player}''s balance.'
+  money-taken: '&aRemoved {amount} {currency} from {player}''s balance.'
+  money-set: '&aSet {player}''s balance to {amount} {currency}.'
+  money-reset: '&aReset {player}''s balance to the default value.'
+  
+# Permissions module messages
+permissions:
+  group-added: '&aAdded player {player} to group {group}.'
+  group-removed: '&aRemoved player {player} from group {group}.'
+  group-set: '&aSet {player}''s primary group to {group}.'
+  group-list: '&aGroups for {player}: {groups}'
+  
+  no-group: '&cThe specified group does not exist.'
+  already-in-group: '&cPlayer is already in that group.'
+  not-in-group: '&cPlayer is not in that group.'
+  
+  permission-added: '&aAdded permission {permission} to {target}.'
+  permission-removed: '&aRemoved permission {permission} from {target}.'
+  
+# Vital module messages (teleportation and utilities)
+vital:
+  # Home messages
+  home-set: '&aHome "{home}" has been set to your current location.'
+  home-deleted: '&aHome "{home}" has been deleted.'
+  home-teleported: '&aTeleported to home "{home}".'
+  home-not-found: '&cHome "{home}" not found.'
+  home-list: '&aYour homes: {homes}'
+  home-limit-reached: '&cYou have reached your home limit ({limit}).'
+  
+  # Warp messages
+  warp-set: '&aWarp "{warp}" has been set to your current location.'
+  warp-deleted: '&aWarp "{warp}" has been deleted.'
+  warp-teleported: '&aTeleported to warp "{warp}".'
+  warp-not-found: '&cWarp "{warp}" not found.'
+  warp-list: '&aAvailable warps: {warps}'
+  
+  # Spawn messages
+  spawn-set: '&aSpawn has been set to your current location.'
+  spawn-teleported: '&aTeleported to spawn.'
+  
+  # Back messages
+  back-teleported: '&aTeleported to your previous location.'
+  back-no-location: '&cNo previous location found.'
+  
+  # TPA messages
+  tpa-request-sent: '&aYou have sent a teleport request to {player}.'
+  tpa-request-received: '&a{player} has requested to teleport to you. Use /tpaccept to accept or /tpdeny to deny.'
+  tpa-request-here-sent: '&aYou have requested {player} to teleport to you.'
+  tpa-request-here-received: '&a{player} has requested you to teleport to them. Use /tpaccept to accept or /tpdeny to deny.'
+  tpa-no-requests: '&cYou have no pending teleport requests.'
+  tpa-accepted: '&a{player} has accepted your teleport request.'
+  tpa-denied: '&c{player} has denied your teleport request.'
+  tpa-expired: '&cYour teleport request to {player} has expired.'
+  tpa-canceled: '&cYour teleport request has been canceled.'
+  
+  # Teleport countdown
+  teleport-started: '&aTeleporting in {time} seconds. Don''t move!'
+  teleport-canceled: '&cTeleport canceled due to movement.'
+  teleport-success: '&aTeleported!'
+  
+  # Utility messages
+  healed: '&aYou have been healed.'
+  fed: '&aYour hunger has been satisfied.'
+  fly-enabled: '&aFlight mode enabled.'
+  fly-disabled: '&cFlight mode disabled.'
+  speed-set: '&aMovement speed set to {speed}.'
+  speed-reset: '&aMovement speed reset to normal.'
+  
+  # Cooldown and delay messages
+  on-cooldown: '&cYou need to wait {time} before using this command again.'
+  teleport-delay: '&aTeleporting in {time} seconds. Don''t move!'
+  
+# Command descriptions
+command-descriptions:
+  # Economy commands
+  balance: 'Check your balance or another player''s balance'
+  pay: 'Send money to another player'
+  baltop: 'View the richest players on the server'
+  eco-give: 'Give money to a player'
+  eco-take: 'Take money from a player'
+  eco-set: 'Set a player''s money to a specific amount'
+  eco-reset: 'Reset a player''s money to the default amount'
+  
+  # Vital commands
+  home: 'Teleport to your home'
+  sethome: 'Set your home location'
+  delhome: 'Delete a home location'
+  homes: 'List your homes'
+  warp: 'Teleport to a warp location'
+  setwarp: 'Create a warp location'
+  delwarp: 'Delete a warp location'
+  warps: 'List available warps'
+  spawn: 'Teleport to the server spawn'
+  setspawn: 'Set the server spawn location'
+  back: 'Teleport to your previous location'
+  tpa: 'Request to teleport to a player'
+  tpahere: 'Request a player to teleport to you'
+  tpaccept: 'Accept a teleport request'
+  tpdeny: 'Deny a teleport request'
+  tpcancel: 'Cancel a pending teleport request'
+  heal: 'Heal yourself or another player'
+  feed: 'Satisfy your hunger or another player''s hunger'
+  fly: 'Toggle flight mode'
+  speed: 'Set your movement speed'
+  
+  # Admin commands
+  bdreload: 'Reload the BDCraft plugin'
+  bdversion: 'Display the BDCraft plugin version'

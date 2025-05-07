@@ -1,91 +1,98 @@
-# Permissions Module Configuration
-# This file contains settings for the BD permissions system
+# BDCraft Permissions Module Configuration
+# This file contains detailed settings for the permissions system
+
+# General settings
+settings:
+  use-bukkit-perms: true  # Whether to hook into Bukkit's permission system
+  default-group: 'member'  # The default group for new players
+  show-prefix-in-chat: true  # Whether to show group prefix in chat
+  show-prefix-in-tab: true  # Whether to show group prefix in tab list
 
 # Group definitions
 groups:
-  # Default group for all players
-  default:
-    # Group display settings
-    display:
-      prefix: "&7[Player] "
-      suffix: ""
-      color: "&7"
-    
-    # Permissions for this group
+  # Member group - default group
+  member:
+    prefix: '&7[Member]'
+    suffix: ''
+    color: '&7'
     permissions:
-      - "bd.player"
-      - "bd.economy.balance"
-      - "bd.economy.pay"
-      - "bd.economy.shop.use"
-  
+      - 'bdcraft.economy.balance'
+      - 'bdcraft.economy.pay'
+      - 'bdcraft.vital.home'
+      - 'bdcraft.vital.sethome'
+      - 'bdcraft.vital.delhome'
+      - 'bdcraft.vital.warp'
+      - 'bdcraft.vital.spawn'
+    inheritance: []
+    metadata:
+      max-homes: 1
+      home-cooldown: 60
+      warp-cooldown: 30
+      spawn-cooldown: 15
+      
   # VIP group
   vip:
-    # Group display settings
-    display:
-      prefix: "&a[VIP] "
-      suffix: ""
-      color: "&a"
-    
-    # Permissions for this group
+    prefix: '&a[VIP]'
+    suffix: ''
+    color: '&a'
     permissions:
-      - "bd.player"
-      - "bd.economy.balance"
-      - "bd.economy.pay"
-      - "bd.economy.shop.use"
-      - "bd.vip"
-      - "bd.vip.fly"
-      - "bd.vip.particles"
-  
-  # Staff group
-  staff:
-    # Group display settings
-    display:
-      prefix: "&c[Staff] "
-      suffix: ""
-      color: "&c"
-    
-    # Permissions for this group
-    permissions:
-      - "bd.player"
-      - "bd.economy.balance"
-      - "bd.economy.pay"
-      - "bd.economy.shop.use"
-      - "bd.staff"
-      - "bd.staff.fly"
-      - "bd.staff.teleport"
-      - "bd.staff.moderate"
-  
+      - 'bdcraft.economy.baltop'
+      - 'bdcraft.vital.speed'
+      - 'bdcraft.vital.heal'
+      - 'bdcraft.vital.feed'
+      - 'bdcraft.vital.back'
+    inheritance:
+      - 'member'
+    metadata:
+      max-homes: 3
+      home-cooldown: 30
+      warp-cooldown: 15
+      spawn-cooldown: 5
+      
   # Admin group
   admin:
-    # Group display settings
-    display:
-      prefix: "&4[Admin] "
-      suffix: ""
-      color: "&4"
-    
-    # Permissions for this group
+    prefix: '&c[Admin]'
+    suffix: ''
+    color: '&c'
     permissions:
-      - "*"
+      - 'bdcraft.admin'
+      - 'bdcraft.vital.setwarp'
+      - 'bdcraft.vital.delwarp'
+      - 'bdcraft.vital.setspawn'
+      - 'bdcraft.economy.give'
+      - 'bdcraft.economy.take'
+      - 'bdcraft.economy.reset'
+    inheritance:
+      - 'vip'
+    metadata:
+      max-homes: 5
+      home-cooldown: 0
+      warp-cooldown: 0
+      spawn-cooldown: 0
+      
+  # Owner group
+  owner:
+    prefix: '&4[Owner]'
+    suffix: ''
+    color: '&4'
+    permissions:
+      - '*'
+    inheritance:
+      - 'admin'
+    metadata:
+      max-homes: 10
+      home-cooldown: 0
+      warp-cooldown: 0
+      spawn-cooldown: 0
 
-# Group inheritance
-inheritance:
-  vip:
-    - "default"
-  staff:
-    - "vip"
-  admin:
-    - "staff"
-
-# Settings
-settings:
-  # Default group for new players
-  default-group: "default"
-  
-  # Whether to use Bukkit's built-in permission system
-  use-bukkit-permissions: true
-  
-  # Save player data interval (in minutes)
-  save-interval: 10
-
-# Version of this config file. Do not change this!
-config-version: 1
+# User assignments
+# These override group-based permissions for specific users
+users:
+  # Example user override
+  # '00000000-0000-0000-0000-000000000000':  # Player UUID
+  #   groups:
+  #     - 'admin'
+  #   permissions:
+  #     - 'bdcraft.custom.permission'
+  #   metadata:
+  #     max-homes: 10
