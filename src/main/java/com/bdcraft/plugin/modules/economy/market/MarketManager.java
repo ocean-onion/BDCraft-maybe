@@ -332,6 +332,37 @@ public class MarketManager {
     }
     
     /**
+     * Checks if a location is inside any market.
+     * @param location The location
+     * @return Whether the location is inside any market
+     */
+    public boolean isInMarket(Location location) {
+        for (PlayerMarket market : markets.values()) {
+            if (isInMarket(location, market)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * Checks if a player is in their own market at a location.
+     * @param player The player
+     * @param location The location
+     * @return Whether the player is in their own market
+     */
+    public boolean isPlayerInOwnMarket(Player player, Location location) {
+        PlayerMarket market = getMarketAtLocation(location);
+        if (market == null) {
+            return false;
+        }
+        
+        // Check if player is the owner or an associate
+        return market.getOwner().equals(player.getUniqueId()) || 
+               market.getAssociates().contains(player.getUniqueId());
+    }
+    
+    /**
      * Gets the market at the given location.
      * @param location The location
      * @return The market, or null if none
