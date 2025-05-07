@@ -1,125 +1,124 @@
 package com.bdcraft.plugin.modules.economy.villager;
 
-import org.bukkit.Location;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Villager;
-import org.bukkit.entity.Villager.Profession;
-import org.bukkit.entity.Villager.Type;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 /**
- * Represents a BD villager entity.
+ * Base class for BD Villagers.
  */
 public abstract class BDVillager {
     protected final Villager entity;
     protected final String type;
-    protected final Map<UUID, Integer> reputations = new HashMap<>();
+    protected final UUID uuid;
+    protected final Map<UUID, Integer> playerReputations;
     
     /**
-     * Creates a new BD villager.
+     * Creates a new BD Villager.
      * @param entity The villager entity
-     * @param type The BD villager type
+     * @param type The villager type
      */
     public BDVillager(Villager entity, String type) {
         this.entity = entity;
         this.type = type;
+        this.uuid = entity.getUniqueId();
+        this.playerReputations = new HashMap<>();
+        
+        // Mark this entity as a BD Villager
+        markAsBDVillager();
     }
     
     /**
-     * Gets the villager entity.
-     * @return The villager entity
+     * Marks this entity as a BD Villager in its persistent data.
      */
-    public Villager getEntity() {
-        return entity;
+    private void markAsBDVillager() {
+        PersistentDataContainer pdc = entity.getPersistentDataContainer();
+        NamespacedKey bdVillagerKey = new NamespacedKey("bdcraft", "bd_villager");
+        NamespacedKey bdVillagerTypeKey = new NamespacedKey("bdcraft", "bd_villager_type");
+        
+        pdc.set(bdVillagerKey, PersistentDataType.BYTE, (byte) 1);
+        pdc.set(bdVillagerTypeKey, PersistentDataType.STRING, type);
     }
     
     /**
-     * Gets the BD villager type.
-     * @return The BD villager type
+     * Gets the UUID of this villager.
+     * @return The UUID
+     */
+    public UUID getUUID() {
+        return uuid;
+    }
+    
+    /**
+     * Gets the type of this villager.
+     * @return The type
      */
     public String getType() {
         return type;
     }
     
     /**
-     * Gets the villager ID.
-     * @return The villager ID
+     * Gets the villager entity.
+     * @return The entity
      */
-    public UUID getId() {
-        return entity.getUniqueId();
-    }
-    
-    /**
-     * Gets the villager location.
-     * @return The villager location
-     */
-    public Location getLocation() {
-        return entity.getLocation();
+    public Villager getEntity() {
+        return entity;
     }
     
     /**
      * Gets a player's reputation with this villager.
-     * @param playerUuid The player UUID
-     * @return The player's reputation
+     * @param playerUuid The player's UUID
+     * @return The reputation value
      */
     public int getReputation(UUID playerUuid) {
-        return reputations.getOrDefault(playerUuid, 0);
+        return playerReputations.getOrDefault(playerUuid, 0);
     }
     
     /**
      * Changes a player's reputation with this villager.
-     * @param playerUuid The player UUID
-     * @param amount The amount to change
-     * @return The new reputation
+     * @param playerUuid The player's UUID
+     * @param amount The amount to change (positive or negative)
+     * @return The new reputation value
      */
     public int changeReputation(UUID playerUuid, int amount) {
-        int current = getReputation(playerUuid);
-        int newRep = Math.max(current + amount, -100);
-        reputations.put(playerUuid, newRep);
+        int currentRep = getReputation(playerUuid);
+        int newRep = currentRep + amount;
+        
+        playerReputations.put(playerUuid, newRep);
+        
         return newRep;
     }
     
     /**
-     * Sets a player's reputation with this villager.
-     * @param playerUuid The player UUID
-     * @param amount The new reputation amount
-     */
-    public void setReputation(UUID playerUuid, int amount) {
-        reputations.put(playerUuid, amount);
-    }
-    
-    /**
-     * Gets all player reputations with this villager.
-     * @return The map of player UUIDs to reputation values
-     */
-    public Map<UUID, Integer> getAllReputations() {
-        return new HashMap<>(reputations);
-    }
-    
-    /**
-     * Sets all player reputations with this villager.
-     * @param reputations The map of player UUIDs to reputation values
-     */
-    public void setAllReputations(Map<UUID, Integer> reputations) {
-        this.reputations.clear();
-        this.reputations.putAll(reputations);
-    }
-    
-    /**
-     * Gets the price modifier based on a player's reputation.
-     * @param playerUuid The player UUID
-     * @return The price modifier (1.0 = normal, < 1.0 = discount, > 1.0 = markup)
+     * Gets the price modifier for a player based on reputation.
+     * @param playerUuid The player's UUID
+     * @return The price modifier (1.0 = normal price)
      */
     public double getPriceModifier(UUID playerUuid) {
+        // Default implementation - override in subclasses
         int rep = getReputation(playerUuid);
-        if (rep <= 0) {
-            return 1.0;
+        
+        if (rep <= -50) {
+            return 1.5; // 50% higher prices
+        } else if (rep <= -20) {
+            return 1.2; // 20% higher prices
+        } else if (rep >= 50) {
+            return 0.85; // 15% discount
+        } else if (rep >= 20) {
+            return 0.95; // 5% discount
         }
         
-        // Every 10 reputation points gives a 1% discount, max 30%
-        double discount = Math.min(0.3, rep / 1000.0);
-        return 1.0 - discount;
+        return 1.0; // Normal price
+    }
+    
+    /**
+     * Removes this villager.
+     */
+    public void remove() {
+        entity.remove();
     }
 }
