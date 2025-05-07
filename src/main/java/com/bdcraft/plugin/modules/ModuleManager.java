@@ -2,7 +2,7 @@ package com.bdcraft.plugin.modules;
 
 import com.bdcraft.plugin.BDCraft;
 import com.bdcraft.plugin.modules.economy.BDEconomyModule;
-import com.bdcraft.plugin.modules.permissions.BDPermissionsModule;
+import com.bdcraft.plugin.modules.perms.BDPermsModule;
 import com.bdcraft.plugin.modules.vital.BDVitalModule;
 
 import java.util.HashMap;
@@ -44,7 +44,7 @@ public class ModuleManager {
         
         // Create module instances
         if (permsEnabled) {
-            registerModule(new BDPermissionsModule(plugin));
+            registerModule(new BDPermsModule(plugin, this));
         }
         
         if (economyEnabled) {
@@ -116,7 +116,7 @@ public class ModuleManager {
     /**
      * Enables modules in dependency order.
      */
-    private void enableModules() {
+    public void enableModules() {
         List<String> enabledModules = new LinkedList<>();
         
         // Keep trying to enable modules until no more can be enabled
@@ -167,7 +167,7 @@ public class ModuleManager {
     /**
      * Disables modules in reverse dependency order.
      */
-    private void disableModules() {
+    public void disableModules() {
         // Create a list of modules ordered by dependencies
         List<String> moduleOrder = new LinkedList<>();
         List<String> visited = new LinkedList<>();

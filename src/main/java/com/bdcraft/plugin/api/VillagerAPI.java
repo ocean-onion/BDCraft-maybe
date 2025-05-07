@@ -1,84 +1,114 @@
 package com.bdcraft.plugin.api;
 
 import org.bukkit.Location;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.entity.Villager;
+import org.bukkit.entity.Player;
+
+import java.util.UUID;
 
 /**
- * API for working with the custom villager system in BDCraft.
+ * API for interacting with the BDCraft villager system.
  */
 public interface VillagerAPI {
     /**
-     * Creates a dealer villager at the specified location.
-     * Dealer villagers sell BD seeds for emeralds.
-     * 
+     * Creates a BD Dealer villager at the specified location.
      * @param location The location to spawn the villager
-     * @return The created villager entity wrapper
+     * @param marketId The market ID, or null if it's a natural dealer
+     * @return The spawned villager
      */
-    Object createDealer(Location location);
+    Villager createDealer(Location location, String marketId);
     
     /**
-     * Creates a collector villager at the specified location.
-     * Collector villagers buy harvested BD crops for emeralds and BD currency.
-     * 
+     * Creates a BD Collector villager at the specified location.
      * @param location The location to spawn the villager
-     * @return The created villager entity wrapper
+     * @param marketId The market ID
+     * @return The spawned villager
      */
-    Object createCollector(Location location);
+    Villager createCollector(Location location, String marketId);
     
     /**
-     * Creates a seasonal trader at the specified location.
-     * Seasonal traders appear periodically with unique items.
-     * 
+     * Creates a Market Owner villager at the specified location.
      * @param location The location to spawn the villager
-     * @param season The season type (e.g., "SUMMER", "WINTER")
-     * @return The created villager entity wrapper
+     * @param marketId The market ID
+     * @return The spawned villager
      */
-    Object createSeasonalTrader(Location location, String season);
+    Villager createMarketOwner(Location location, String marketId);
     
     /**
-     * Creates a market owner at the specified location.
-     * Market owners manage player-created markets.
-     * 
+     * Creates a Seasonal BD Trader villager at the specified location.
      * @param location The location to spawn the villager
-     * @param marketId The ID of the market this villager is associated with
-     * @return The created villager entity wrapper
+     * @param marketId The market ID, or null if it's not in a market
+     * @return The spawned villager
      */
-    Object createMarketOwner(Location location, String marketId);
+    Villager createSeasonalTrader(Location location, String marketId);
     
     /**
-     * Adds a trade offer to a villager.
-     * 
-     * @param villager The villager entity wrapper
-     * @param inputItem The item the player must provide
-     * @param outputItem The item the player will receive
-     * @return True if the trade was added successfully
+     * Checks if a villager is a BD villager.
+     * @param villager The villager to check
+     * @return True if it's a BD villager
      */
-    boolean addTrade(Object villager, ItemStack inputItem, ItemStack outputItem);
+    boolean isBDVillager(Villager villager);
     
     /**
-     * Adds a trade offer to a villager with a secondary input item.
-     * 
-     * @param villager The villager entity wrapper
-     * @param inputItem1 The first item the player must provide
-     * @param inputItem2 The second item the player must provide (can be null)
-     * @param outputItem The item the player will receive
-     * @return True if the trade was added successfully
+     * Gets the type of BD villager.
+     * @param villager The villager to check
+     * @return The BD villager type, or null if it's not a BD villager
      */
-    boolean addTrade(Object villager, ItemStack inputItem1, ItemStack inputItem2, ItemStack outputItem);
+    String getBDVillagerType(Villager villager);
     
     /**
-     * Removes all trades from a villager.
-     * 
-     * @param villager The villager entity wrapper
-     * @return True if the trades were cleared successfully
+     * Gets a player's reputation with a specific villager.
+     * @param player The player
+     * @param villager The villager
+     * @return The reputation value
      */
-    boolean clearTrades(Object villager);
+    int getReputation(Player player, Villager villager);
     
     /**
-     * Gets the type of a custom villager.
-     * 
-     * @param villager The villager entity wrapper
-     * @return The villager type (e.g., "DEALER", "COLLECTOR")
+     * Sets a player's reputation with a specific villager.
+     * @param player The player
+     * @param villager The villager
+     * @param reputation The reputation value
      */
-    String getVillagerType(Object villager);
+    void setReputation(Player player, Villager villager, int reputation);
+    
+    /**
+     * Changes a player's reputation with a specific villager.
+     * @param player The player
+     * @param villager The villager
+     * @param change The amount to change the reputation by
+     * @return The new reputation value
+     */
+    int changeReputation(Player player, Villager villager, int change);
+    
+    /**
+     * Gets a player's average reputation in a market.
+     * @param player The player
+     * @param marketId The market ID
+     * @return The average reputation value
+     */
+    int getMarketReputation(Player player, String marketId);
+    
+    /**
+     * Registers a villager with a market.
+     * @param villager The villager
+     * @param marketId The market ID
+     * @param type The BD villager type
+     * @return True if the registration was successful
+     */
+    boolean registerVillager(Villager villager, String marketId, String type);
+    
+    /**
+     * Unregisters a villager from a market.
+     * @param villager The villager
+     * @return True if the unregistration was successful
+     */
+    boolean unregisterVillager(Villager villager);
+    
+    /**
+     * Gets the market ID for a BD villager.
+     * @param villager The villager
+     * @return The market ID, or null if not in a market
+     */
+    String getMarketId(Villager villager);
 }

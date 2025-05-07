@@ -1,88 +1,155 @@
 # BDCraft Economy Configuration
-# This file controls the economy system
 
-# Currency settings
-currency:
-  # Primary currency name (singular)
-  name: 'BD'
-  # Primary currency name (plural)
-  namePlural: 'BD'
-  # Currency symbol (used in formatted strings)
-  symbol: '₿'
-  # Starting balance for new players
-  startingBalance: 0.0
-  # Maximum balance a player can have
-  maxBalance: 1000000000.0
-  # Minimum transaction amount
-  minTransaction: 0.01
-  # Number of decimal places to use
-  decimalPlaces: 2
+# Currency Settings
+currency-name: "Coins"
+currency-name-plural: "Coins"
+currency-symbol: "$"
+decimal-format: "#,##0.00"
+starting-balance: 0
+max-balance: 1000000000
 
-# Seed settings
-seeds:
-  # Seed tier prices (in emeralds)
-  tier1Price: 8
-  tier2Price: 16
-  tier3Price: 32
-  
-  # Seed growth times (in minutes)
-  tier1GrowthTime: 20
-  tier2GrowthTime: 40
-  tier3GrowthTime: 60
+# Item Prices (Emeralds)
+prices:
+  regular-seed:
+    cost: 3
+    amount: 5
+  green-seed:
+    cost: 9
+    amount: 1
+  purple-seed:
+    cost: 25
+    amount: 1
+  bd-harvester: 16
+  ultimate-harvester: 32
 
-# Crop settings
-crops:
-  # Crop values (in BD currency)
-  tier1Value: 1.0
-  tier2Value: 2.5
-  tier3Value: 5.0
-  
-  # Chance of getting a seed back when harvesting (0.0-1.0)
-  seedDropChance: 0.1
-  
-  # Bonus crops per fortune level (0.0-1.0)
-  fortuneBonus: 0.3
+# Trade Values
+trade-values:
+  regular-crop:
+    emeralds: 2
+    currency: 50
+    amount: 10
+  green-crop:
+    emeralds: 10
+    currency: 150
+    amount: 5
+  purple-crop:
+    emeralds: 20
+    currency: 400
+    amount: 3
+  bulk-trades:
+    enabled: true
+    regular-diamond:
+      crops: 50
+      diamonds: 1
 
-# Villager settings
-villagers:
-  # Dealer settings
-  dealer:
-    # Chance of a natural villager being a dealer (0.0-1.0)
-    spawnChance: 0.1
-    # Minimum number of trades
-    minTrades: 3
-    # Maximum number of trades
-    maxTrades: 6
-    # Time in minutes before trades reset
-    restockTime: 40
-  
-  # Collector settings
-  collector:
-    # Chance of a natural villager being a collector (0.0-1.0)
-    spawnChance: 0.05
-    # Minimum number of trades
-    minTrades: 4
-    # Maximum number of trades
-    maxTrades: 8
-    # Time in minutes before trades reset
-    restockTime: 40
-  
-  # Seasonal trader settings
-  seasonal:
-    # How often seasonal traders appear (in days)
-    frequency: 7
-    # How long seasonal traders stay (in hours)
-    duration: 24
-    
-# Market settings
-market:
-  # Cost to create a market (in BD currency)
-  creationCost: 1000.0
-  # Maximum number of markets a player can own
-  maxPerPlayer: 3
-  # Maximum size of a market (in blocks)
-  maxSize: 50
-  # Daily maintenance cost (in BD currency)
-  maintenanceCost: 10.0
-  # Tax rate on market transactions (0.0-1.0)
-  taxRate: 0.05
+# Rank System
+rank-enabled: true
+rank-names:
+  1: "Newcomer"
+  2: "Farmer"
+  3: "Expert Farmer"
+  4: "Master Farmer"
+  5: "Agricultural Expert"
+
+# Rank Costs
+rank-costs:
+  farmer: 5000
+  expert-farmer: 15000
+  master-farmer: 30000
+  agricultural-expert: 60000
+
+# Rank Benefits
+rank-benefits:
+  newcomer:
+    crop-value-bonus: 0.0
+    reputation-bonus: 0.0
+  farmer:
+    crop-value-bonus: 0.1
+    reputation-bonus: 0.5
+  expert-farmer:
+    crop-value-bonus: 0.25
+    reputation-bonus: 1.0
+    double-seed-chance: 0.05
+  master-farmer:
+    crop-value-bonus: 0.4
+    reputation-bonus: 1.5
+    double-seed-chance: 0.1
+  agricultural-expert:
+    crop-value-bonus: 0.6
+    reputation-bonus: 2.0
+    double-seed-chance: 0.15
+
+# Rebirth Settings
+rebirth:
+  enabled: true
+  currency-requirement: 100000
+  trades-requirement: 500
+  crop-value-multiplier: 0.1
+  max-rebirth-level: 10
+  deity-abilities:
+    golden-touch: true
+    harvester-blessing: true
+    divine-favor: true
+    seasonal-insight: true
+    abundance-aura: true
+
+# Auction House Settings
+auction-house:
+  enabled: true
+  listing-fee-percent: 5
+  listing-duration-days: 3
+  max-listings-per-player: 10
+  min-price: 1
+  max-price: 10000
+  allowed-items:
+    seeds: true
+    tools: true
+    special: true
+  rank-benefits:
+    enabled: true
+    farmer:
+      fee-reduction: 0.5
+      max-listings: 15
+    expert-farmer:
+      fee-reduction: 1.0
+      max-listings: 20
+    master-farmer:
+      fee-reduction: 1.5
+      max-listings: 25
+    agricultural-expert:
+      fee-reduction: 2.0
+      max-listings: 30
+      featured-listings: true
+
+# Seasonal Events
+seasonal-events:
+  enabled: true
+  seasons:
+    spring:
+      days: 0-5000
+      special-items:
+        - "fast_growing_seeds"
+        - "spring_booster"
+      trade-modifiers:
+        green-seed-discount: 0.1
+    summer:
+      days: 5001-10000
+      special-items:
+        - "heat_resistant_seeds"
+        - "special_harvester"
+      trade-modifiers:
+        regular-crop-bonus: 0.15
+    fall:
+      days: 10001-15000
+      special-items:
+        - "purple_seed_special"
+        - "fall_fertilizer"
+      trade-modifiers:
+        purple-seed-discount: 0.2
+    winter:
+      days: 15001-20000
+      special-items:
+        - "frost_seeds"
+        - "winter_bundle"
+      trade-modifiers:
+        all-seed-discount: 0.15

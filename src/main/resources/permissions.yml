@@ -1,100 +1,99 @@
 # BDCraft Permissions Configuration
-# This file controls the permissions system
 
-# Group settings
+# Mode: 'simple' uses built-in permissions, 'external' relies on other permission plugins
+mode: "simple"
+
+# Groups
 groups:
-  # Default group (applied to all players)
-  default:
-    # Default permissions
+  player:
+    default: true
     permissions:
-      - 'bdcraft.help'
-      - 'bdcraft.home'
-      - 'bdcraft.home.set'
-      - 'bdcraft.home.list'
-      - 'bdcraft.currency'
-    # Chat formatting
-    prefix: '&7'
-    suffix: ''
-    # Group metadata
-    meta:
-      # Maximum number of homes
-      max-homes: 1
-      # Maximum market stalls
-      max-market-stalls: 0
-      # Home teleport cooldown (in seconds)
-      home-cooldown: 300
-  
-  # VIP group
+      - bdcraft.use
+      - bdcraft.village.locate
+      - bdcraft.rank.view
+      - bdcraft.rank.up
+      - bdcraft.balance
+      - bdcraft.auction.use
   vip:
-    # Parent group (inherits permissions)
-    parent: 'default'
-    # Additional permissions
     permissions:
-      - 'bdcraft.market'
-      - 'bdcraft.market.create'
-      - 'bdcraft.market.join'
-    # Chat formatting
-    prefix: '&a[VIP] '
-    suffix: ''
-    # Group metadata
-    meta:
-      # Maximum number of homes
-      max-homes: 3
-      # Maximum market stalls
-      max-market-stalls: 1
-      # Home teleport cooldown (in seconds)
-      home-cooldown: 120
-  
-  # Elite group
-  elite:
-    # Parent group (inherits permissions)
-    parent: 'vip'
-    # Additional permissions
-    permissions:
-      - 'bdcraft.market.admin'
-      - 'bdcraft.market.special'
-    # Chat formatting
-    prefix: '&b[Elite] '
-    suffix: ''
-    # Group metadata
-    meta:
-      # Maximum number of homes
-      max-homes: 5
-      # Maximum market stalls
-      max-market-stalls: 3
-      # Home teleport cooldown (in seconds)
-      home-cooldown: 60
-  
-  # Admin group
+      - bdcraft.use
+      - bdcraft.village.locate
+      - bdcraft.rank.view
+      - bdcraft.rank.up
+      - bdcraft.balance
+      - bdcraft.auction.use
+      - bdcraft.auction.sell
+      - bdcraft.vip.discounts
+      - bdcraft.vip.extra.harvester
   admin:
-    # Parent group (inherits permissions)
-    parent: 'elite'
-    # Additional permissions
     permissions:
-      - 'bdcraft.admin'
-      - 'bdcraft.admin.reload'
-      - 'bdcraft.admin.status'
-      - 'bdcraft.admin.villager'
-    # Chat formatting
-    prefix: '&c[Admin] '
-    suffix: ''
-    # Group metadata
-    meta:
-      # Maximum number of homes
-      max-homes: 10
-      # Maximum market stalls
-      max-market-stalls: 5
-      # Home teleport cooldown (in seconds)
-      home-cooldown: 0
+      - bdcraft.admin
+      - bdcraft.admin.village
+      - bdcraft.admin.villager
+      - bdcraft.admin.economy
+      - bdcraft.admin.items
+      - bdcraft.admin.rank
+      - bdcraft.admin.rebirth
+      - bdcraft.admin.reload
+      - bdcraft.admin.debug
+      - bdcraft.admin.market
 
-# Chat settings
-chat:
-  # General chat format
-  format: '{prefix}{player}{suffix}&r: {message}'
-  # Range-based chat (set to 0 for global)
-  range: 0
-  # Mentions
-  mentions:
-    enabled: true
-    highlight: '&e@{player}&r'
-    sound: 'ENTITY_EXPERIENCE_ORB_PICKUP'
+# Integration with external permission systems
+vault-integration:
+  enabled: true
+  register-as-provider: false
+
+luckperms-integration:
+  enabled: true
+  sync-ranks: true
+  rank-groups:
+    1: "bd_newcomer"
+    2: "bd_farmer"
+    3: "bd_expert_farmer"
+    4: "bd_master_farmer"
+    5: "bd_agricultural_expert"
+
+# Market system permissions
+market-permissions:
+  base:
+    - "bdcraft.market.create"
+    - "bdcraft.market.check"
+    - "bdcraft.market.info"
+  founder:
+    - "bdcraft.market.manage"
+    - "bdcraft.market.associate"
+    - "bdcraft.market.upgrade"
+  associate:
+    - "bdcraft.market.build"
+    - "bdcraft.market.harvest"
+    - "bdcraft.market.collector"
+  admin:
+    - "bdcraft.market.admin.create"
+    - "bdcraft.market.admin.remove"
+    - "bdcraft.market.admin.associate"
+    - "bdcraft.market.admin.upgrade"
+
+# Rank permissions (automatically granted based on player rank)
+rank-permissions:
+  newcomer:
+    - "bdcraft.rank.newcomer"
+    - "bdcraft.crops.basic"
+  farmer:
+    - "bdcraft.rank.farmer"
+    - "bdcraft.crops.tier1"
+    - "bdcraft.market.basic"
+  expert-farmer:
+    - "bdcraft.rank.expert"
+    - "bdcraft.crops.tier2"
+    - "bdcraft.market.expanded"
+    - "bdcraft.special.seeds"
+  master-farmer:
+    - "bdcraft.rank.master"
+    - "bdcraft.crops.tier3"
+    - "bdcraft.market.advanced"
+    - "bdcraft.special.tools"
+  agricultural-expert:
+    - "bdcraft.rank.expert"
+    - "bdcraft.crops.all"
+    - "bdcraft.market.master"
+    - "bdcraft.special.all"

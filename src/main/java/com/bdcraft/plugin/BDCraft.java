@@ -64,7 +64,7 @@ public class BDCraft extends JavaPlugin {
      */
     private void registerCoreModules() {
         // Register Economy Module
-        BDEconomyModule economyModule = new BDEconomyModule(this, moduleManager);
+        BDEconomyModule economyModule = new BDEconomyModule(this);
         moduleManager.registerModule(economyModule);
         
         // Register Permissions Module
