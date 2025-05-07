@@ -3,6 +3,7 @@ package com.bdcraft.plugin;
 import com.bdcraft.plugin.api.EconomyAPI;
 import com.bdcraft.plugin.api.PermissionAPI;
 import com.bdcraft.plugin.api.VillagerAPI;
+import com.bdcraft.plugin.commands.admin.GiveItemCommand;
 import com.bdcraft.plugin.config.ConfigManager;
 import com.bdcraft.plugin.modules.ModuleManager;
 import com.bdcraft.plugin.modules.economy.BDEconomyModule;
@@ -53,12 +54,15 @@ public class BDCraft extends JavaPlugin {
         moduleManager = new ModuleManager(this);
         
         // Register modules
-        moduleManager.registerModule(new BDPermsModule(this));
+        moduleManager.registerModule(new BDPermsModule(this, moduleManager));
         moduleManager.registerModule(new BDEconomyModule(this));
-        moduleManager.registerModule(new BDVitalModule(this));
+        moduleManager.registerModule(new BDVitalModule(this, moduleManager));
         
         // Enable modules
         moduleManager.enableModules();
+        
+        // Register commands
+        registerCommands();
         
         logger.info("BDCraft enabled successfully!");
     }
@@ -142,5 +146,15 @@ public class BDCraft extends JavaPlugin {
      */
     public void setVillagerAPI(VillagerAPI villagerAPI) {
         this.villagerAPI = villagerAPI;
+    }
+    
+    /**
+     * Registers commands for the plugin.
+     */
+    private void registerCommands() {
+        // Register admin commands
+        new GiveItemCommand(this);
+        
+        logger.info("Commands registered successfully!");
     }
 }

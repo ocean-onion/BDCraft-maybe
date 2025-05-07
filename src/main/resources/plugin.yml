@@ -101,6 +101,13 @@ commands:
     description: Show coordinates of last death
     usage: /bddeathinfo
     permission: bdvital.deathinfo
+    
+  # Admin Commands
+  bdgive:
+    description: Gives BD items to players
+    usage: /bdgive item <player> <item_id> [amount] [value]
+    aliases: [bdg]
+    permission: bdcraft.admin.give
 
 permissions:
   # Admin Permissions

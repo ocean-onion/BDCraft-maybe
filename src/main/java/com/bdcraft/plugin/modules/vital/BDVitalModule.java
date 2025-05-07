@@ -7,7 +7,7 @@ import com.bdcraft.plugin.modules.BDModule;
 import com.bdcraft.plugin.modules.ModuleManager;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
@@ -22,7 +22,7 @@ public class BDVitalModule implements BDModule {
     private final BDCraft plugin;
     private final ModuleManager moduleManager;
     private final Logger logger;
-    private FileConfiguration config;
+    private ConfigurationSection config;
     
     /**
      * Creates a new vital module.
@@ -149,7 +149,7 @@ public class BDVitalModule implements BDModule {
                     @Override
                     public boolean execute(CommandSender sender, String[] args) {
                         // Reload the plugin configuration
-                        plugin.getConfigManager().reloadConfig();
+                        plugin.getConfigManager().reloadConfigs();
                         
                         // Reload modules
                         plugin.getModuleManager().reloadModules();
@@ -229,7 +229,7 @@ public class BDVitalModule implements BDModule {
                 }
                 
                 // Reload the plugin configuration
-                plugin.getConfigManager().reloadConfig();
+                plugin.getConfigManager().reloadConfigs();
                 
                 // Reload modules
                 plugin.getModuleManager().reloadModules();

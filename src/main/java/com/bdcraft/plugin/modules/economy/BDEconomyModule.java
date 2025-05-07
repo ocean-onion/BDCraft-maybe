@@ -7,13 +7,17 @@ import com.bdcraft.plugin.commands.CommandBase;
 import com.bdcraft.plugin.commands.SubCommand;
 import com.bdcraft.plugin.modules.BDModule;
 import com.bdcraft.plugin.modules.economy.items.BDItemManager;
+import com.bdcraft.plugin.modules.economy.items.BDRecipeManager;
+import com.bdcraft.plugin.modules.economy.listeners.TokenPlacementListener;
 import com.bdcraft.plugin.modules.economy.market.MarketManager;
 import com.bdcraft.plugin.modules.economy.villager.BDVillagerManager;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.event.HandlerList;
+import org.bukkit.plugin.PluginManager;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -30,7 +34,7 @@ public class BDEconomyModule implements BDModule, EconomyAPI {
 
     private final BDCraft plugin;
     private final Logger logger;
-    private FileConfiguration config;
+    private ConfigurationSection config;
     private Map<UUID, Double> balances;
     private String currencyName;
     private String currencySymbol;
@@ -39,6 +43,7 @@ public class BDEconomyModule implements BDModule, EconomyAPI {
     // Economy sub-systems
     private BDVillagerManager villagerManager;
     private BDItemManager itemManager;
+    private BDRecipeManager recipeManager;
     private MarketManager marketManager;
     
     /**
@@ -75,7 +80,7 @@ public class BDEconomyModule implements BDModule, EconomyAPI {
         registerCommands();
         
         // Register event listeners
-        // registerListeners();
+        registerListeners();
         
         logger.info("Economy Module enabled!");
     }
@@ -83,6 +88,14 @@ public class BDEconomyModule implements BDModule, EconomyAPI {
     @Override
     public void onDisable() {
         logger.info("Disabling Economy Module...");
+        
+        // Unregister recipes
+        if (recipeManager != null) {
+            recipeManager.unregisterRecipes();
+        }
+        
+        // Unregister event listeners
+        HandlerList.unregisterAll(plugin);
         
         // Save data
         // saveData();
@@ -132,6 +145,9 @@ public class BDEconomyModule implements BDModule, EconomyAPI {
         
         // Initialize item manager
         itemManager = new BDItemManager(plugin);
+        
+        // Initialize recipe manager (depends on item manager)
+        recipeManager = new BDRecipeManager(plugin, itemManager);
         
         // Initialize market manager
         marketManager = new MarketManager(plugin);
@@ -420,5 +436,25 @@ public class BDEconomyModule implements BDModule, EconomyAPI {
      */
     public MarketManager getMarketManager() {
         return marketManager;
+    }
+    
+    /**
+     * Gets the recipe manager.
+     * @return The recipe manager
+     */
+    public BDRecipeManager getRecipeManager() {
+        return recipeManager;
+    }
+    
+    /**
+     * Registers event listeners for this module.
+     */
+    private void registerListeners() {
+        PluginManager pm = plugin.getServer().getPluginManager();
+        
+        // Register the token placement listener
+        pm.registerEvents(new TokenPlacementListener(plugin, this), plugin);
+        
+        logger.info("Economy event listeners registered");
     }
 }

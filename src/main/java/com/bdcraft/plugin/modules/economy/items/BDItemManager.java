@@ -105,6 +105,35 @@ public class BDItemManager {
                     "&7Right-click crops to accelerate growth",
                     "&7and increase yields."
                 ));
+                
+        registerItemTemplate("bd_stick", Material.STICK, 
+                "&6BD Stick", 
+                Arrays.asList(
+                    "&7A special stick that can be used",
+                    "&7to craft BD Market Tokens and",
+                    "&7BD House Tokens.",
+                    "&7Also provides a temporary farming buff."
+                ));
+                
+        // BD Market Token (used to create player markets)
+        registerItemTemplate("market_token", Material.EMERALD, 
+                "&2BD Market Token", 
+                Arrays.asList(
+                    "&7Place this token in the center of a 3x3",
+                    "&7stone platform to create a BD Market.",
+                    "&7Creates a 49x49 block market area.",
+                    "&7Spawns a Market Owner and BD Dealer."
+                ));
+                
+        // BD House Token (used to add collector houses to markets)
+        registerItemTemplate("house_token", Material.DIAMOND, 
+                "&bBD House Token", 
+                Arrays.asList(
+                    "&7Place this token in your market to",
+                    "&7create a Collector House.",
+                    "&7Spawns a BD Collector who will buy crops.",
+                    "&7Multiple collectors can exist in one market."
+                ));
     }
     
     /**

@@ -9,7 +9,7 @@ import com.bdcraft.plugin.modules.ModuleManager;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.FileConfiguration;
+
 import org.bukkit.entity.Player;
 
 import java.util.*;
@@ -22,7 +22,7 @@ public class BDPermsModule implements BDModule {
     private final BDCraft plugin;
     private final ModuleManager moduleManager;
     private final Logger logger;
-    private FileConfiguration config;
+    private ConfigurationSection config;
     private Map<UUID, String> playerGroups;
     private Map<String, PermissionGroup> groups;
     
