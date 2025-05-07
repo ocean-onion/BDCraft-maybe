@@ -1,0 +1,62 @@
+# Vital Module Configuration
+# This file contains settings for the BD vital system
+
+# Home settings
+homes:
+  # Maximum homes per permission level
+  max-homes:
+    default: 3
+    tier1: 5
+    tier2: 10
+    tier3: 15
+  
+  # Cooldown between teleports (in seconds)
+  cooldowns:
+    # Time between teleports to homes
+    home-teleport: 30
+    
+    # Time before you can teleport after taking damage
+    combat-tag: 60
+
+# Warp settings
+warps:
+  # Cooldown between teleports (in seconds)
+  cooldowns:
+    # Time between teleports to warps
+    warp-teleport: 15
+    
+    # Time before you can teleport after taking damage
+    combat-tag: 60
+  
+  # Warp categories (for organizing warps in GUIs)
+  categories:
+    - spawn
+    - shops
+    - resources
+    - events
+    - pvp
+
+# Spawn settings
+spawn:
+  # Teleport new players to spawn on first join
+  teleport-on-first-join: true
+  
+  # Teleport players to spawn on death
+  teleport-on-death: false
+  
+  # Cooldown between teleports to spawn (in seconds)
+  cooldown: 15
+
+# Back command settings
+back:
+  # Whether to track player death locations
+  track-death-locations: true
+  
+  # Whether to track player teleport locations
+  track-teleport-locations: true
+  
+  # Cooldown between /back commands (in seconds)
+  cooldown: 60
+
+# Version of this config file. Do not change this!
+config-version: 1
