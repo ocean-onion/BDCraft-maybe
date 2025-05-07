@@ -1,62 +1,58 @@
-# Vital Module Configuration
-# This file contains settings for the BD vital system
+# BDCraft Vital Module Configuration
+# This file controls the essential utilities module
+
+# Teleportation settings
+teleportation:
+  # Warmup time in seconds (0 to disable)
+  warmup: 3
+  # Cooldown time in seconds (0 to disable)
+  cooldown: 30
+  # Cancel teleport if player moves during warmup
+  cancelOnMove: true
+  # Cancel teleport if player takes damage during warmup
+  cancelOnDamage: true
+  # Maximum teleport distance (-1 for unlimited)
+  maxDistance: -1
 
 # Home settings
 homes:
-  # Maximum homes per permission level
-  max-homes:
-    default: 3
-    tier1: 5
-    tier2: 10
-    tier3: 15
-  
-  # Cooldown between teleports (in seconds)
-  cooldowns:
-    # Time between teleports to homes
-    home-teleport: 30
-    
-    # Time before you can teleport after taking damage
-    combat-tag: 60
+  # Default maximum homes per player
+  defaultMax: 1
+  # Home command cooldown in seconds
+  cooldown: 300
+  # Cost to set a home (in BD currency, 0 to disable)
+  setCost: 0
+  # Cost to teleport to a home (in BD currency, 0 to disable)
+  tpCost: 0
+  # Allow setting homes in other worlds
+  crossWorld: true
+  # Block players from setting homes in certain regions
+  blockedRegions:
+    - 'spawn'
+    - 'pvp_arena'
 
-# Warp settings
-warps:
-  # Cooldown between teleports (in seconds)
-  cooldowns:
-    # Time between teleports to warps
-    warp-teleport: 15
-    
-    # Time before you can teleport after taking damage
-    combat-tag: 60
-  
-  # Warp categories (for organizing warps in GUIs)
-  categories:
-    - spawn
-    - shops
-    - resources
-    - events
-    - pvp
+# Messaging settings
+messaging:
+  # Maximum message length
+  maxLength: 100
+  # Cooldown between messages in seconds
+  cooldown: 2
+  # Allow cross-world messaging
+  crossWorld: true
+  # Log all private messages
+  logMessages: true
+  # Format for sent messages
+  sentFormat: '&7[&eYou &7-> &e{player}&7] &f{message}'
+  # Format for received messages
+  receivedFormat: '&7[&e{player} &7-> &eYou&7] &f{message}'
 
-# Spawn settings
-spawn:
-  # Teleport new players to spawn on first join
-  teleport-on-first-join: true
-  
-  # Teleport players to spawn on death
-  teleport-on-death: false
-  
-  # Cooldown between teleports to spawn (in seconds)
-  cooldown: 15
-
-# Back command settings
-back:
-  # Whether to track player death locations
-  track-death-locations: true
-  
-  # Whether to track player teleport locations
-  track-teleport-locations: true
-  
-  # Cooldown between /back commands (in seconds)
-  cooldown: 60
-
-# Version of this config file. Do not change this!
-config-version: 1
+# Utility settings
+utility:
+  # Allow auto-respawn
+  autoRespawn: false
+  # Allow players to see their coordinates
+  showCoordinates: true
+  # Allow custom death messages
+  customDeathMessages: true
+  # Show server health stats to admins
+  showServerStats: true

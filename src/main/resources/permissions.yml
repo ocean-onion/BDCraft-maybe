@@ -1,91 +1,100 @@
-# Permissions Module Configuration
-# This file contains settings for the BD permissions system
+# BDCraft Permissions Configuration
+# This file controls the permissions system
 
-# Group definitions
+# Group settings
 groups:
-  # Default group for all players
+  # Default group (applied to all players)
   default:
-    # Group display settings
-    display:
-      prefix: "&7[Player] "
-      suffix: ""
-      color: "&7"
-    
-    # Permissions for this group
+    # Default permissions
     permissions:
-      - "bd.player"
-      - "bd.economy.balance"
-      - "bd.economy.pay"
-      - "bd.economy.shop.use"
+      - 'bdcraft.help'
+      - 'bdcraft.home'
+      - 'bdcraft.home.set'
+      - 'bdcraft.home.list'
+      - 'bdcraft.currency'
+    # Chat formatting
+    prefix: '&7'
+    suffix: ''
+    # Group metadata
+    meta:
+      # Maximum number of homes
+      max-homes: 1
+      # Maximum market stalls
+      max-market-stalls: 0
+      # Home teleport cooldown (in seconds)
+      home-cooldown: 300
   
   # VIP group
   vip:
-    # Group display settings
-    display:
-      prefix: "&a[VIP] "
-      suffix: ""
-      color: "&a"
-    
-    # Permissions for this group
+    # Parent group (inherits permissions)
+    parent: 'default'
+    # Additional permissions
     permissions:
-      - "bd.player"
-      - "bd.economy.balance"
-      - "bd.economy.pay"
-      - "bd.economy.shop.use"
-      - "bd.vip"
-      - "bd.vip.fly"
-      - "bd.vip.particles"
+      - 'bdcraft.market'
+      - 'bdcraft.market.create'
+      - 'bdcraft.market.join'
+    # Chat formatting
+    prefix: '&a[VIP] '
+    suffix: ''
+    # Group metadata
+    meta:
+      # Maximum number of homes
+      max-homes: 3
+      # Maximum market stalls
+      max-market-stalls: 1
+      # Home teleport cooldown (in seconds)
+      home-cooldown: 120
   
-  # Staff group
-  staff:
-    # Group display settings
-    display:
-      prefix: "&c[Staff] "
-      suffix: ""
-      color: "&c"
-    
-    # Permissions for this group
+  # Elite group
+  elite:
+    # Parent group (inherits permissions)
+    parent: 'vip'
+    # Additional permissions
     permissions:
-      - "bd.player"
-      - "bd.economy.balance"
-      - "bd.economy.pay"
-      - "bd.economy.shop.use"
-      - "bd.staff"
-      - "bd.staff.fly"
-      - "bd.staff.teleport"
-      - "bd.staff.moderate"
+      - 'bdcraft.market.admin'
+      - 'bdcraft.market.special'
+    # Chat formatting
+    prefix: '&b[Elite] '
+    suffix: ''
+    # Group metadata
+    meta:
+      # Maximum number of homes
+      max-homes: 5
+      # Maximum market stalls
+      max-market-stalls: 3
+      # Home teleport cooldown (in seconds)
+      home-cooldown: 60
   
   # Admin group
   admin:
-    # Group display settings
-    display:
-      prefix: "&4[Admin] "
-      suffix: ""
-      color: "&4"
-    
-    # Permissions for this group
+    # Parent group (inherits permissions)
+    parent: 'elite'
+    # Additional permissions
     permissions:
-      - "*"
+      - 'bdcraft.admin'
+      - 'bdcraft.admin.reload'
+      - 'bdcraft.admin.status'
+      - 'bdcraft.admin.villager'
+    # Chat formatting
+    prefix: '&c[Admin] '
+    suffix: ''
+    # Group metadata
+    meta:
+      # Maximum number of homes
+      max-homes: 10
+      # Maximum market stalls
+      max-market-stalls: 5
+      # Home teleport cooldown (in seconds)
+      home-cooldown: 0
 
-# Group inheritance
-inheritance:
-  vip:
-    - "default"
-  staff:
-    - "vip"
-  admin:
-    - "staff"
-
-# Settings
-settings:
-  # Default group for new players
-  default-group: "default"
-  
-  # Whether to use Bukkit's built-in permission system
-  use-bukkit-permissions: true
-  
-  # Save player data interval (in minutes)
-  save-interval: 10
-
-# Version of this config file. Do not change this!
-config-version: 1
+# Chat settings
+chat:
+  # General chat format
+  format: '{prefix}{player}{suffix}&r: {message}'
+  # Range-based chat (set to 0 for global)
+  range: 0
+  # Mentions
+  mentions:
+    enabled: true
+    highlight: '&e@{player}&r'
+    sound: 'ENTITY_EXPERIENCE_ORB_PICKUP'

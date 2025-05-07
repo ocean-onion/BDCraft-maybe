@@ -1,36 +1,44 @@
-# PaperPlugin Configuration
-# This is the main configuration file for the PaperPlugin
-
-# Messages
-messages:
-  # Format for the greeting message when using /hello command
-  # Use {player} as a placeholder for the player name
-  greeting-format: "Hello, {player}! Welcome to your Paper plugin!"
-  
-  # Format for the welcome message when a player joins the server
-  # Use {player} as a placeholder for the player name
-  welcome-format: "Welcome to the server, {player}!"
+# BDCraft Main Configuration
+# This file controls general plugin settings
 
 # Plugin settings
-settings:
-  # Debug mode: When true, additional information will be logged
+plugin:
+  # Debug mode (enables additional logging)
   debug: false
-  
-  # Whether to show welcome messages to players when they join
-  show-welcome-message: true
+  # Language file to use
+  language: 'en'
 
-# Module configuration
-# Enable or disable individual modules
+# Module settings
 modules:
-  # Core modules
+  # Enable/disable modules
   economy: true
   perms: true
   vital: true
-  
-  # Feature modules
-  auction: true
-  rebirth: true
-  tutorial: true
 
-# Version of this config file. Do not change this!
-config-version: 1
+# Database settings
+database:
+  # Database type (sqlite, mysql)
+  type: 'sqlite'
+  
+  # MySQL settings (only used if type is mysql)
+  mysql:
+    host: 'localhost'
+    port: 3306
+    database: 'bdcraft'
+    username: 'root'
+    password: 'password'
+    useSSL: false
+    
+  # Connection pool settings
+  pool:
+    maxPoolSize: 10
+    minIdle: 5
+    maxLifetime: 1800000
+    connectionTimeout: 5000
+
+# Cache settings
+cache:
+  # Time in seconds before cached data expires
+  expiry: 300
+  # Maximum number of items to keep in memory caches
+  maxSize: 1000

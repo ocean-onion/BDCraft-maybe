@@ -1,70 +1,88 @@
-# Economy Module Configuration
-# This file contains settings for the BD economy system
+# BDCraft Economy Configuration
+# This file controls the economy system
 
 # Currency settings
 currency:
-  # Currency name (singular)
-  name: "BD"
-  
-  # Currency name (plural)
-  name-plural: "BDs"
-  
-  # Format for displaying currency amounts
-  # Available placeholders: {amount}, {currency}
-  format: "{amount} {currency}"
+  # Primary currency name (singular)
+  name: 'BD'
+  # Primary currency name (plural)
+  namePlural: 'BD'
+  # Currency symbol (used in formatted strings)
+  symbol: '₿'
+  # Starting balance for new players
+  startingBalance: 0.0
+  # Maximum balance a player can have
+  maxBalance: 1000000000.0
+  # Minimum transaction amount
+  minTransaction: 0.01
+  # Number of decimal places to use
+  decimalPlaces: 2
 
-# BD crop settings
+# Seed settings
+seeds:
+  # Seed tier prices (in emeralds)
+  tier1Price: 8
+  tier2Price: 16
+  tier3Price: 32
+  
+  # Seed growth times (in minutes)
+  tier1GrowthTime: 20
+  tier2GrowthTime: 40
+  tier3GrowthTime: 60
+
+# Crop settings
 crops:
-  # Tier 1 crops
-  tier1:
-    name: "Basic BD Crop"
-    value: 5.0
-    growth-time: 5 # minutes
-    
-  # Tier 2 crops
-  tier2:
-    name: "Advanced BD Crop"
-    value: 15.0
-    growth-time: 10 # minutes
-    
-  # Tier 3 crops
-  tier3:
-    name: "Premium BD Crop"
-    value: 50.0
-    growth-time: 20 # minutes
+  # Crop values (in BD currency)
+  tier1Value: 1.0
+  tier2Value: 2.5
+  tier3Value: 5.0
+  
+  # Chance of getting a seed back when harvesting (0.0-1.0)
+  seedDropChance: 0.1
+  
+  # Bonus crops per fortune level (0.0-1.0)
+  fortuneBonus: 0.3
 
 # Villager settings
 villagers:
-  # Dealer villagers (sell seeds)
-  dealers:
-    spawn-chance: 0.3 # 30% chance in natural villages
-    
-  # Collector villagers (buy crops)
-  collectors:
-    spawn-chance: 0.2 # 20% chance in natural villages
-    
+  # Dealer settings
+  dealer:
+    # Chance of a natural villager being a dealer (0.0-1.0)
+    spawnChance: 0.1
+    # Minimum number of trades
+    minTrades: 3
+    # Maximum number of trades
+    maxTrades: 6
+    # Time in minutes before trades reset
+    restockTime: 40
+  
+  # Collector settings
+  collector:
+    # Chance of a natural villager being a collector (0.0-1.0)
+    spawnChance: 0.05
+    # Minimum number of trades
+    minTrades: 4
+    # Maximum number of trades
+    maxTrades: 8
+    # Time in minutes before trades reset
+    restockTime: 40
+  
   # Seasonal trader settings
-  seasonal-traders:
-    spawn-interval: 7 # days
-    stay-duration: 1 # days
-    announcement-radius: 100 # blocks
-
+  seasonal:
+    # How often seasonal traders appear (in days)
+    frequency: 7
+    # How long seasonal traders stay (in hours)
+    duration: 24
+    
 # Market settings
-markets:
+market:
   # Cost to create a market (in BD currency)
-  creation-cost: 1000.0
-  
+  creationCost: 1000.0
   # Maximum number of markets a player can own
-  max-markets-per-player: 2
-  
-  # Market stall rental settings
-  stalls:
-    default-rental-price: 100.0
-    rental-duration: 7 # days
-    max-stalls-per-market: 10
-
-# Starting balance for new players
-starting-balance: 100.0
-
-# Version of this config file. Do not change this!
-config-version: 1
+  maxPerPlayer: 3
+  # Maximum size of a market (in blocks)
+  maxSize: 50
+  # Daily maintenance cost (in BD currency)
+  maintenanceCost: 10.0
+  # Tax rate on market transactions (0.0-1.0)
+  taxRate: 0.05

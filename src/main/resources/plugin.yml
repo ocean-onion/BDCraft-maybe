@@ -1,19 +1,88 @@
-name: PaperPlugin
+name: BDCraft
 version: '${version}'
-main: com.example.paperplugin.PaperPlugin
+main: com.bdcraft.plugin.BDCraft
 api-version: '1.20'
-description: '${description}'
-authors: [YourName]
-website: https://example.com
+authors: [BDCraft Team]
+description: 'A comprehensive Minecraft server management plugin with farming-based economy, villager trading, and player progression systems'
+website: https://bdcraft.org
 
 commands:
-  hello:
-    description: Displays a friendly greeting to the player
-    usage: /<command>
-    permission: paperplugin.command.hello
-    aliases: [hi, greet]
+  bdcraft:
+    description: Main command for BDCraft plugin
+    usage: /bdcraft <subcommand> [args]
+    aliases: [bd]
+    permission: bdcraft.admin
+  
+  bdhelp:
+    description: Shows help information for BDCraft commands
+    usage: /bdhelp [command]
+    aliases: [bdh]
+    permission: bdcraft.help
+  
+  bdreload:
+    description: Reloads the BDCraft plugin and configurations
+    usage: /bdreload
+    aliases: [bdr]
+    permission: bdcraft.admin.reload
+  
+  bdstatus:
+    description: Shows status information about the BDCraft plugin
+    usage: /bdstatus
+    aliases: [bds]
+    permission: bdcraft.admin.status
+  
+  bdhome:
+    description: Teleports you to your home location
+    usage: /bdhome [set|remove|list] [name]
+    aliases: [bdhm]
+    permission: bdcraft.home
+  
+  bdmarket:
+    description: Market management commands
+    usage: /bdmarket <create|remove|info|list> [args]
+    aliases: [bdm]
+    permission: bdcraft.market
+  
+  bdrank:
+    description: Displays and manages player ranks
+    usage: /bdrank [player] [set|info|list] [rank]
+    aliases: [bdrk]
+    permission: bdcraft.rank
+  
+  bdcurrency:
+    description: Currency management commands
+    usage: /bdcurrency <balance|pay|top> [args]
+    aliases: [bdc]
+    permission: bdcraft.currency
+  
+  bdvillager:
+    description: Manages custom villagers
+    usage: /bdvillager <create|remove|list> [type] [name]
+    aliases: [bdv]
+    permission: bdcraft.admin.villager
 
 permissions:
-  paperplugin.command.hello:
-    description: Allows the use of the hello command
+  bdcraft.*:
+    description: Gives access to all BDCraft commands
+    default: op
+    children:
+      bdcraft.admin: true
+      bdcraft.user: true
+  
+  bdcraft.admin:
+    description: Gives access to administrative commands
+    default: op
+    children:
+      bdcraft.admin.reload: true
+      bdcraft.admin.status: true
+      bdcraft.admin.villager: true
+  
+  bdcraft.user:
+    description: Gives access to basic user commands
     default: true
+    children:
+      bdcraft.help: true
+      bdcraft.home: true
+      bdcraft.market: true
+      bdcraft.currency: true
+      bdcraft.rank: true

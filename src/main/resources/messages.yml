@@ -1,0 +1,77 @@
+# BDCraft Messages Configuration
+# This file contains all plugin messages
+
+# General messages
+general:
+  prefix: '&7[&6BDCraft&7] '
+  no-permission: '&cYou don''t have permission to do that.'
+  player-only: '&cThis command can only be used by players.'
+  invalid-player: '&cPlayer &4{player} &cnot found.'
+  invalid-number: '&c{input} is not a valid number.'
+  plugin-reload: '&aPlugin reloaded successfully!'
+  config-error: '&cError in configuration file. Check console for details.'
+
+# Economy messages
+economy:
+  balance: '&aYour balance: {symbol}{amount}'
+  balance-other: '&a{player}''s balance: {symbol}{amount}'
+  not-enough-money: '&cYou don''t have enough money. Required: {symbol}{amount}'
+  transaction-success: '&a{amount} {currency} has been {action} your account.'
+  payment-sent: '&aYou sent {symbol}{amount} to {player}.'
+  payment-received: '&aYou received {symbol}{amount} from {player}.'
+  crop-harvested: '&aYou harvested {amount}x {crop}.'
+  crop-sold: '&aYou sold {amount}x {crop} for {symbol}{value}.'
+  
+# Villager messages
+villager:
+  villager-created: '&aCreated a {type} villager at your location.'
+  villager-removed: '&aRemoved villager.'
+  trade-added: '&aAdded trade to villager.'
+  trades-cleared: '&aCleared all trades from villager.'
+  invalid-villager: '&cThat is not a valid BDCraft villager.'
+  invalid-type: '&cInvalid villager type. Available types: DEALER, COLLECTOR, SEASONAL, MARKET'
+
+# Market messages
+market:
+  market-created: '&aCreated a new market: {name}'
+  market-removed: '&aRemoved market: {name}'
+  market-joined: '&aYou joined the market: {name}'
+  market-left: '&aYou left the market: {name}'
+  market-info: '&aMarket: {name}, Owner: {owner}, Members: {members}'
+  market-list: '&aMarkets: {markets}'
+  invalid-market: '&cMarket {name} does not exist.'
+  market-exists: '&cA market with that name already exists.'
+  market-full: '&cThat market is full.'
+  not-market-owner: '&cYou do not own this market.'
+  
+# Home messages
+home:
+  home-set: '&aHome {name} set to your current location.'
+  home-removed: '&aHome {name} removed.'
+  home-teleport: '&aTeleported to home {name}.'
+  home-list: '&aHomes: {homes}'
+  invalid-home: '&cHome {name} does not exist.'
+  home-exists: '&cA home with that name already exists.'
+  max-homes: '&cYou have reached your maximum number of homes: {max}'
+  teleport-cooldown: '&cYou need to wait {time} before teleporting again.'
+  teleport-warmup: '&aTeleporting in {time} seconds. Don''t move!'
+  teleport-cancelled: '&cTeleport cancelled.'
+
+# Rank messages
+rank:
+  rank-info: '&aRank: {rank}, Progress: {progress}%'
+  rank-up: '&aCongratulations! You ranked up to {rank}!'
+  rank-set: '&aSet {player}''s rank to {rank}.'
+  rank-list: '&aRanks: {ranks}'
+  invalid-rank: '&cRank {rank} does not exist.'
+  max-rank: '&cYou are already at the maximum rank.'
+  rebirth-success: '&aYou have been reborn! New rank: {rank}'
+
+# Error messages
+error:
+  command-error: '&cAn error occurred while executing that command.'
+  database-error: '&cA database error occurred. Please contact an administrator.'
+  internal-error: '&cAn internal error occurred. Please contact an administrator.'
+  invalid-args: '&cInvalid arguments. Usage: {usage}'
+  invalid-item: '&cThat item is not valid for this action.'
+  not-implemented: '&cThis feature is not yet implemented.'
