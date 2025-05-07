@@ -416,10 +416,15 @@ public class BDVillagerManager implements VillagerAPI {
     
     @Override
     public boolean registerVillager(Villager villager, String marketId, String type) {
-        if (villager.getPersistentDataContainer().has(bdVillagerKey, PersistentDataType.BYTE)) {
-            return false; // Already a BD villager
+        if (villager == null) {
+            return false;
         }
         
+        // Set custom name
+        villager.setCustomName("BD " + type);
+        villager.setCustomNameVisible(true);
+        
+        // Set persistent data
         PersistentDataContainer pdc = villager.getPersistentDataContainer();
         pdc.set(bdVillagerKey, PersistentDataType.BYTE, (byte) 1);
         pdc.set(bdVillagerTypeKey, PersistentDataType.STRING, type);
@@ -428,7 +433,7 @@ public class BDVillagerManager implements VillagerAPI {
             pdc.set(bdMarketIdKey, PersistentDataType.STRING, marketId);
         }
         
-        // Add appropriate trades based on type
+        // Add trades
         addTradesForType(villager, type);
         
         return true;
@@ -440,14 +445,18 @@ public class BDVillagerManager implements VillagerAPI {
             return false;
         }
         
+        // Remove BD metadata
         PersistentDataContainer pdc = villager.getPersistentDataContainer();
         pdc.remove(bdVillagerKey);
         pdc.remove(bdVillagerTypeKey);
         pdc.remove(bdMarketIdKey);
         
-        // Reset name
+        // Remove custom name
         villager.setCustomName(null);
         villager.setCustomNameVisible(false);
+        
+        // Clear trades
+        villager.setRecipes(new ArrayList<>());
         
         return true;
     }
@@ -458,7 +467,8 @@ public class BDVillagerManager implements VillagerAPI {
             return null;
         }
         
-        return villager.getPersistentDataContainer().has(bdMarketIdKey, PersistentDataType.STRING) ?
-               villager.getPersistentDataContainer().get(bdMarketIdKey, PersistentDataType.STRING) : null;
+        PersistentDataContainer pdc = villager.getPersistentDataContainer();
+        return pdc.has(bdMarketIdKey, PersistentDataType.STRING) ?
+                pdc.get(bdMarketIdKey, PersistentDataType.STRING) : null;
     }
 }

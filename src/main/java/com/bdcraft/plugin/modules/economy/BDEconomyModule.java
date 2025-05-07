@@ -146,6 +146,9 @@ public class BDEconomyModule implements BDModule, EconomyAPI {
         // Initialize item manager
         itemManager = new BDItemManager(plugin);
         
+        // Set item manager in villager manager
+        villagerManager.setItemManager(itemManager);
+        
         // Initialize recipe manager (depends on item manager)
         recipeManager = new BDRecipeManager(plugin, itemManager);
         

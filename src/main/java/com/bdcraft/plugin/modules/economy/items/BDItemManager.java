@@ -53,79 +53,96 @@ public class BDItemManager {
      * Loads item templates from configuration.
      */
     private void loadItemTemplates() {
-        // Market token
-        registerItemTemplate("market_token", Material.EMERALD, 
-                "&aMarket Token", 
+        // BD Seeds (Regular, Green, Purple)
+        registerItemTemplate("bd_seed", Material.WHEAT_SEEDS, 
+                "&6BD Seed", 
                 Arrays.asList(
-                    "&7Creates a BD Market when placed in",
-                    "&7a properly configured 3x3 area."
+                    "&7Special seeds for growing BD crops.",
+                    "&7Plant like normal wheat seeds.",
+                    "&7Produces BD Crops when harvested."
                 ));
         
-        // House token
-        registerItemTemplate("house_token", Material.DIAMOND, 
-                "&bHouse Token", 
+        registerItemTemplate("green_bd_seed", Material.BEETROOT_SEEDS, 
+                "&aGreen BD Seed", 
                 Arrays.asList(
-                    "&7Places a BD Collector House when",
-                    "&7used in a BD Market area."
+                    "&7Premium seeds that grow 30% faster.",
+                    "&7Plant like normal seeds.",
+                    "&7Produces Green BD Crops when harvested.",
+                    "&7Requires Farmer rank or higher."
                 ));
         
-        // Special seeds
-        registerItemTemplate("tier1_seed", Material.WHEAT_SEEDS, 
-                "&2Tier 1 Special Seeds", 
+        registerItemTemplate("purple_bd_seed", Material.PUMPKIN_SEEDS, 
+                "&5Purple BD Seed", 
                 Arrays.asList(
-                    "&7High-quality seeds that produce",
-                    "&7better crops than normal seeds."
-                ));
-                
-        registerItemTemplate("tier2_seed", Material.PUMPKIN_SEEDS, 
-                "&aTier 2 Special Seeds", 
-                Arrays.asList(
-                    "&7Premium seeds that produce",
-                    "&7exceptional crops."
-                ));
-                
-        registerItemTemplate("tier3_seed", Material.MELON_SEEDS, 
-                "&bTier 3 Special Seeds", 
-                Arrays.asList(
-                    "&7Extraordinary seeds that produce",
-                    "&7the highest quality crops."
+                    "&7Rare seeds that produce valuable crops.",
+                    "&7Plant like normal seeds.",
+                    "&7Produces Purple BD Crops when harvested.",
+                    "&7Requires Master Farmer rank or higher."
                 ));
         
-        // Special tools
-        registerItemTemplate("harvester_tool", Material.GOLDEN_HOE, 
-                "&eAutomatic Harvester", 
+        // BD Crops (Regular, Green, Purple)
+        registerItemTemplate("bd_crop", Material.FERN, 
+                "&6BD Crop", 
                 Arrays.asList(
-                    "&7Right-click crops to automatically",
-                    "&7harvest and replant in a 3x3 area."
+                    "&7Standard BD crop harvested from BD Seeds.",
+                    "&7Sell to BD Collectors for emeralds.",
+                    "&710 crops = 2 emeralds + 50 server currency"
                 ));
-                
-        registerItemTemplate("fertilizer", Material.BONE_MEAL, 
-                "&dEnhanced Fertilizer", 
+        
+        registerItemTemplate("green_bd_crop", Material.LARGE_FERN, 
+                "&aGreen BD Crop", 
                 Arrays.asList(
-                    "&7Right-click crops to accelerate growth",
-                    "&7and increase yields."
+                    "&7Premium BD crop, worth 5x more than regular.",
+                    "&7Sell to BD Collectors for emeralds.",
+                    "&75 crops = 10 emeralds + 150 server currency"
                 ));
-                
-        registerItemTemplate("bd_stick", Material.STICK, 
+        
+        registerItemTemplate("purple_bd_crop", Material.LARGE_FERN, 
+                "&5Purple BD Crop", 
+                Arrays.asList(
+                    "&7Rare high-value BD crop, worth 10x more than regular.",
+                    "&7Sell to BD Collectors for emeralds.",
+                    "&73 crops = 20 emeralds + 400 server currency"
+                ));
+        
+        // BD Tools
+        registerItemTemplate("bd_stick", Material.BREEZE_ROD, 
                 "&6BD Stick", 
                 Arrays.asList(
-                    "&7A special stick that can be used",
+                    "&7A special enchanted breeze rod that can be used",
                     "&7to craft BD Market Tokens and",
                     "&7BD House Tokens.",
-                    "&7Also provides a temporary farming buff."
+                    "&7Has 5 uses before breaking."
                 ));
-                
-        // BD Market Token (used to create player markets)
+        
+        registerItemTemplate("bd_harvester", Material.GOLDEN_HOE, 
+                "&eBD Harvester", 
+                Arrays.asList(
+                    "&7Special tool for harvesting BD crops.",
+                    "&7Increases yield by 25%.",
+                    "&7Has 20 uses before breaking.",
+                    "&7Requires Expert Farmer rank or higher."
+                ));
+        
+        registerItemTemplate("ultimate_bd_harvester", Material.DIAMOND_HOE, 
+                "&bUltimate BD Harvester", 
+                Arrays.asList(
+                    "&7Premium tool for harvesting BD crops.",
+                    "&7Increases yield by 50%.",
+                    "&7Has 60 uses before breaking.",
+                    "&7Requires Agricultural Expert rank or higher."
+                ));
+        
+        // BD Tokens
         registerItemTemplate("market_token", Material.EMERALD, 
                 "&2BD Market Token", 
                 Arrays.asList(
                     "&7Place this token in the center of a 3x3",
-                    "&7stone platform to create a BD Market.",
+                    "&7platform to create a BD Market.",
                     "&7Creates a 49x49 block market area.",
                     "&7Spawns a Market Owner and BD Dealer."
                 ));
                 
-        // BD House Token (used to add collector houses to markets)
         registerItemTemplate("house_token", Material.DIAMOND, 
                 "&bBD House Token", 
                 Arrays.asList(
@@ -292,6 +309,102 @@ public class BDItemManager {
      */
     public boolean giveItem(Player player, String id, int amount) {
         return giveItem(player, id, amount, 0);
+    }
+    
+    // Specialized BD item creation methods
+    
+    /**
+     * Creates regular BD seeds.
+     * @param amount The amount
+     * @return The BD seeds
+     */
+    public ItemStack createBDSeed(int amount) {
+        return createItem("bd_seed", amount);
+    }
+    
+    /**
+     * Creates green BD seeds.
+     * @param amount The amount
+     * @return The green BD seeds
+     */
+    public ItemStack createGreenBDSeed(int amount) {
+        return createItem("green_bd_seed", amount);
+    }
+    
+    /**
+     * Creates purple BD seeds.
+     * @param amount The amount
+     * @return The purple BD seeds
+     */
+    public ItemStack createPurpleBDSeed(int amount) {
+        return createItem("purple_bd_seed", amount);
+    }
+    
+    /**
+     * Creates regular BD crops.
+     * @param amount The amount
+     * @return The BD crops
+     */
+    public ItemStack createBDCrop(int amount) {
+        return createItem("bd_crop", amount);
+    }
+    
+    /**
+     * Creates green BD crops.
+     * @param amount The amount
+     * @return The green BD crops
+     */
+    public ItemStack createGreenBDCrop(int amount) {
+        return createItem("green_bd_crop", amount);
+    }
+    
+    /**
+     * Creates purple BD crops.
+     * @param amount The amount
+     * @return The purple BD crops
+     */
+    public ItemStack createPurpleBDCrop(int amount) {
+        return createItem("purple_bd_crop", amount);
+    }
+    
+    /**
+     * Creates a BD stick.
+     * @return The BD stick
+     */
+    public ItemStack createBDStick() {
+        return createItem("bd_stick", 1, 5); // 5 uses
+    }
+    
+    /**
+     * Creates a BD harvester.
+     * @return The BD harvester
+     */
+    public ItemStack createBDHarvester() {
+        return createItem("bd_harvester", 1, 20); // 20 uses
+    }
+    
+    /**
+     * Creates an ultimate BD harvester.
+     * @return The ultimate BD harvester
+     */
+    public ItemStack createUltimateBDHarvester() {
+        return createItem("ultimate_bd_harvester", 1, 60); // 60 uses
+    }
+    
+    /**
+     * Creates a market token.
+     * @return The market token
+     */
+    public ItemStack createMarketToken() {
+        return createItem("market_token", 1);
+    }
+    
+    /**
+     * Creates a house token.
+     * @return The house token
+     */
+    public ItemStack createHouseToken() {
+        return createItem("house_token", 1);
     }
     
     /**
