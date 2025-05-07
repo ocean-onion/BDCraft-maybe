@@ -8,84 +8,80 @@ import com.bdcraft.plugin.modules.ModuleManager;
 import com.bdcraft.plugin.modules.economy.BDEconomyModule;
 import com.bdcraft.plugin.modules.perms.BDPermsModule;
 import com.bdcraft.plugin.modules.vital.BDVitalModule;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.Bukkit;
 
+import org.bukkit.plugin.PluginDescriptionFile;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.java.JavaPluginLoader;
+
+import java.io.File;
 import java.util.logging.Logger;
 
 /**
- * Main BDCraft plugin class that orchestrates module loading and communication.
+ * Main plugin class for BDCraft.
  */
 public class BDCraft extends JavaPlugin {
-    private static BDCraft instance;
-    private ModuleManager moduleManager;
+    private Logger logger;
     private ConfigManager configManager;
+    private ModuleManager moduleManager;
+    
+    // APIs
     private EconomyAPI economyAPI;
-    private VillagerAPI villagerAPI;
     private PermissionAPI permissionAPI;
+    private VillagerAPI villagerAPI;
+    
+    /**
+     * Default constructor for the plugin.
+     */
+    public BDCraft() {
+        super();
+    }
+    
+    /**
+     * Test constructor for mocking the plugin.
+     */
+    protected BDCraft(JavaPluginLoader loader, PluginDescriptionFile description, File dataFolder, File file) {
+        super(loader, description, dataFolder, file);
+    }
     
     @Override
     public void onEnable() {
-        instance = this;
-        Logger logger = getLogger();
+        logger = getLogger();
+        logger.info("Enabling BDCraft...");
         
-        logger.info("Initializing BDCraft plugin for Paper 1.21");
-        
-        // Initialize configuration
-        logger.info("Loading configuration...");
+        // Initialize managers
         configManager = new ConfigManager(this);
-        configManager.loadConfig();
-        
-        // Initialize module manager and register modules
-        logger.info("Initializing module system...");
         moduleManager = new ModuleManager(this);
         
-        // Register core modules
-        registerCoreModules();
+        // Register modules
+        moduleManager.registerModule(new BDPermsModule(this));
+        moduleManager.registerModule(new BDEconomyModule(this));
+        moduleManager.registerModule(new BDVitalModule(this));
         
-        // Enable modules in the correct order based on dependencies
+        // Enable modules
         moduleManager.enableModules();
         
-        logger.info("BDCraft plugin has been successfully enabled!");
+        logger.info("BDCraft enabled successfully!");
     }
     
     @Override
     public void onDisable() {
-        // Disable modules in reverse dependency order
+        logger.info("Disabling BDCraft...");
+        
+        // Disable modules
         if (moduleManager != null) {
             moduleManager.disableModules();
         }
         
-        getLogger().info("BDCraft plugin has been disabled.");
-    }
-    
-    /**
-     * Registers the three core modules that comprise the basic functionality of BDCraft.
-     */
-    private void registerCoreModules() {
-        // Register Economy Module
-        BDEconomyModule economyModule = new BDEconomyModule(this);
-        moduleManager.registerModule(economyModule);
+        // Save configuration
+        if (configManager != null) {
+            configManager.saveConfigs();
+        }
         
-        // Register Permissions Module
-        BDPermsModule permsModule = new BDPermsModule(this, moduleManager);
-        moduleManager.registerModule(permsModule);
-        
-        // Register Vital Module
-        BDVitalModule vitalModule = new BDVitalModule(this, moduleManager);
-        moduleManager.registerModule(vitalModule);
+        logger.info("BDCraft disabled!");
     }
     
     /**
-     * Gets a static instance of the plugin
-     * @return The plugin instance
-     */
-    public static BDCraft getInstance() {
-        return instance;
-    }
-    
-    /**
-     * Gets the module manager
+     * Gets the module manager.
      * @return The module manager
      */
     public ModuleManager getModuleManager() {
@@ -93,7 +89,7 @@ public class BDCraft extends JavaPlugin {
     }
     
     /**
-     * Gets the configuration manager
+     * Gets the configuration manager.
      * @return The configuration manager
      */
     public ConfigManager getConfigManager() {
@@ -101,53 +97,50 @@ public class BDCraft extends JavaPlugin {
     }
     
     /**
-     * Gets the Economy API
-     * @return The Economy API
+     * Gets the economy API.
+     * @return The economy API
      */
     public EconomyAPI getEconomyAPI() {
-        // This will be initialized by the economy module during enabling
         return economyAPI;
     }
     
     /**
-     * Sets the Economy API (called by the Economy Module)
-     * @param economyAPI The Economy API implementation
+     * Sets the economy API.
+     * @param economyAPI The economy API
      */
     public void setEconomyAPI(EconomyAPI economyAPI) {
         this.economyAPI = economyAPI;
     }
     
     /**
-     * Gets the Villager API
-     * @return The Villager API
-     */
-    public VillagerAPI getVillagerAPI() {
-        // This will be initialized by the economy module during enabling
-        return villagerAPI;
-    }
-    
-    /**
-     * Sets the Villager API (called by the Economy Module)
-     * @param villagerAPI The Villager API implementation
-     */
-    public void setVillagerAPI(VillagerAPI villagerAPI) {
-        this.villagerAPI = villagerAPI;
-    }
-    
-    /**
-     * Gets the Permission API
-     * @return The Permission API
+     * Gets the permission API.
+     * @return The permission API
      */
     public PermissionAPI getPermissionAPI() {
-        // This will be initialized by the perms module during enabling
         return permissionAPI;
     }
     
     /**
-     * Sets the Permission API (called by the Perms Module)
-     * @param permissionAPI The Permission API implementation
+     * Sets the permission API.
+     * @param permissionAPI The permission API
      */
     public void setPermissionAPI(PermissionAPI permissionAPI) {
         this.permissionAPI = permissionAPI;
+    }
+    
+    /**
+     * Gets the villager API.
+     * @return The villager API
+     */
+    public VillagerAPI getVillagerAPI() {
+        return villagerAPI;
+    }
+    
+    /**
+     * Sets the villager API.
+     * @param villagerAPI The villager API
+     */
+    public void setVillagerAPI(VillagerAPI villagerAPI) {
+        this.villagerAPI = villagerAPI;
     }
 }

@@ -5,117 +5,104 @@ import org.bukkit.entity.Player;
 import java.util.List;
 
 /**
- * API for interacting with the BDCraft permission system.
+ * API for permission operations.
  */
 public interface PermissionAPI {
     /**
-     * Checks if a player has a specific permission.
-     * 
+     * Checks if a player has a permission.
      * @param player The player
-     * @param permission The permission to check
-     * @return True if the player has the permission
+     * @param permission The permission
+     * @return Whether the player has the permission
      */
     boolean hasPermission(Player player, String permission);
     
     /**
-     * Gets the permission group a player belongs to.
-     * 
+     * Gets a player's group.
      * @param player The player
-     * @return The group name
+     * @return The player's group
      */
     String getGroup(Player player);
     
     /**
-     * Sets a player's permission group.
-     * 
+     * Sets a player's group.
      * @param player The player
-     * @param group The group name
-     * @return True if the operation was successful
+     * @param group The group
+     * @return Whether the operation was successful
      */
     boolean setGroup(Player player, String group);
     
     /**
      * Checks if a group exists.
-     * 
-     * @param group The group name
-     * @return True if the group exists
+     * @param group The group
+     * @return Whether the group exists
      */
     boolean groupExists(String group);
     
     /**
-     * Creates a new permission group.
-     * 
+     * Creates a new group.
      * @param group The group name
      * @param parentGroup The parent group (can be null)
-     * @return True if the group was created successfully
+     * @return Whether the operation was successful
      */
     boolean createGroup(String group, String parentGroup);
     
     /**
      * Adds a permission to a group.
-     * 
-     * @param group The group name
-     * @param permission The permission to add
-     * @return True if the permission was added successfully
+     * @param group The group
+     * @param permission The permission
+     * @return Whether the operation was successful
      */
     boolean addGroupPermission(String group, String permission);
     
     /**
      * Removes a permission from a group.
-     * 
-     * @param group The group name
-     * @param permission The permission to remove
-     * @return True if the permission was removed successfully
+     * @param group The group
+     * @param permission The permission
+     * @return Whether the operation was successful
      */
     boolean removeGroupPermission(String group, String permission);
     
     /**
-     * Gets all permissions for a group.
-     * 
-     * @param group The group name
-     * @return A list of permissions
+     * Gets a group's permissions.
+     * @param group The group
+     * @return The group's permissions
      */
     List<String> getGroupPermissions(String group);
     
     /**
-     * Gets all permissions for a player, including inherited permissions.
-     * 
+     * Gets a player's permissions.
      * @param player The player
-     * @return A list of permissions
+     * @return The player's permissions
      */
     List<String> getPlayerPermissions(Player player);
     
     /**
-     * Gets the prefix for a group.
-     * 
-     * @param group The group name
-     * @return The group prefix
+     * Gets a group's prefix.
+     * @param group The group
+     * @return The group's prefix
      */
     String getGroupPrefix(String group);
     
     /**
-     * Sets the prefix for a group.
-     * 
-     * @param group The group name
-     * @param prefix The group prefix
-     * @return True if the prefix was set successfully
+     * Sets a group's prefix.
+     * @param group The group
+     * @param prefix The prefix
+     * @return Whether the operation was successful
      */
     boolean setGroupPrefix(String group, String prefix);
     
     /**
-     * Gets the suffix for a group.
-     * 
-     * @param group The group name
-     * @return The group suffix
+     * Gets a group's suffix.
+     * @param group The group
+     * @return The group's suffix
      */
     String getGroupSuffix(String group);
     
     /**
-     * Sets the suffix for a group.
-     * 
-     * @param group The group name
-     * @param suffix The group suffix
-     * @return True if the suffix was set successfully
+     * Sets a group's suffix.
+     * @param group The group
+     * @param suffix The suffix
+     * @return Whether the operation was successful
      */
     boolean setGroupSuffix(String group, String suffix);
 }

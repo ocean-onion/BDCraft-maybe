@@ -1,9 +1,15 @@
 package com.bdcraft.plugin.modules.economy;
 
 import com.bdcraft.plugin.BDCraft;
+import com.bdcraft.plugin.api.EconomyAPI;
+import com.bdcraft.plugin.api.VillagerAPI;
 import com.bdcraft.plugin.commands.CommandBase;
 import com.bdcraft.plugin.commands.SubCommand;
 import com.bdcraft.plugin.modules.BDModule;
+import com.bdcraft.plugin.modules.economy.items.BDItemManager;
+import com.bdcraft.plugin.modules.economy.market.MarketManager;
+import com.bdcraft.plugin.modules.economy.villager.BDVillagerManager;
+
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -20,7 +26,7 @@ import java.util.logging.Logger;
 /**
  * Module that provides economy functionality.
  */
-public class BDEconomyModule implements BDModule {
+public class BDEconomyModule implements BDModule, EconomyAPI {
 
     private final BDCraft plugin;
     private final Logger logger;
@@ -29,6 +35,11 @@ public class BDEconomyModule implements BDModule {
     private String currencyName;
     private String currencySymbol;
     private int decimalPlaces;
+    
+    // Economy sub-systems
+    private BDVillagerManager villagerManager;
+    private BDItemManager itemManager;
+    private MarketManager marketManager;
     
     /**
      * Creates a new economy module.
@@ -49,6 +60,16 @@ public class BDEconomyModule implements BDModule {
         
         // Load economy settings
         loadEconomySettings();
+        
+        // Initialize sub-systems
+        initializeSubSystems();
+        
+        // Initialize dependencies
+        marketManager.initialize(villagerManager, itemManager);
+        
+        // Register API interfaces
+        plugin.setEconomyAPI(this);
+        plugin.setVillagerAPI(villagerManager);
         
         // Register commands
         registerCommands();
@@ -100,6 +121,20 @@ public class BDEconomyModule implements BDModule {
         currencyName = config.getString("currency.name", "BD");
         currencySymbol = config.getString("currency.symbol", "₿");
         decimalPlaces = config.getInt("currency.decimalPlaces", 2);
+    }
+    
+    /**
+     * Initializes the sub-systems of the economy module.
+     */
+    private void initializeSubSystems() {
+        // Initialize villager manager
+        villagerManager = new BDVillagerManager(plugin);
+        
+        // Initialize item manager
+        itemManager = new BDItemManager(plugin);
+        
+        // Initialize market manager
+        marketManager = new MarketManager(plugin);
     }
     
     /**
@@ -296,20 +331,14 @@ public class BDEconomyModule implements BDModule {
         };
     }
     
-    /**
-     * Gets a player's balance.
-     * @param uuid The player's UUID
-     * @return The player's balance
-     */
+    // EconomyAPI Implementation
+    
+    @Override
     public double getBalance(UUID uuid) {
         return balances.getOrDefault(uuid, config.getDouble("currency.startingBalance", 0.0));
     }
     
-    /**
-     * Sets a player's balance.
-     * @param uuid The player's UUID
-     * @param amount The new balance
-     */
+    @Override
     public void setBalance(UUID uuid, double amount) {
         double maxBalance = config.getDouble("currency.maxBalance", 1000000000.0);
         amount = Math.min(amount, maxBalance);
@@ -317,12 +346,7 @@ public class BDEconomyModule implements BDModule {
         balances.put(uuid, amount);
     }
     
-    /**
-     * Adds money to a player's balance.
-     * @param uuid The player's UUID
-     * @param amount The amount to add
-     * @return Whether the deposit was successful
-     */
+    @Override
     public boolean depositMoney(UUID uuid, double amount) {
         if (amount < 0) {
             return false;
@@ -333,12 +357,7 @@ public class BDEconomyModule implements BDModule {
         return true;
     }
     
-    /**
-     * Removes money from a player's balance.
-     * @param uuid The player's UUID
-     * @param amount The amount to remove
-     * @return Whether the withdrawal was successful
-     */
+    @Override
     public boolean withdrawMoney(UUID uuid, double amount) {
         if (amount < 0) {
             return false;
@@ -353,13 +372,53 @@ public class BDEconomyModule implements BDModule {
         return true;
     }
     
-    /**
-     * Formats an amount of currency.
-     * @param amount The amount
-     * @return The formatted currency string
-     */
+    @Override
+    public boolean hasEnough(UUID uuid, double amount) {
+        return getBalance(uuid) >= amount;
+    }
+    
+    @Override
     public String formatCurrency(double amount) {
         String format = "%." + decimalPlaces + "f";
         return currencySymbol + String.format(format, amount);
+    }
+    
+    @Override
+    public String getCurrencyName() {
+        return currencyName;
+    }
+    
+    @Override
+    public String getCurrencyNamePlural() {
+        return currencyName + "s";
+    }
+    
+    @Override
+    public String getCurrencySymbol() {
+        return currencySymbol;
+    }
+    
+    /**
+     * Gets the villager manager.
+     * @return The villager manager
+     */
+    public BDVillagerManager getVillagerManager() {
+        return villagerManager;
+    }
+    
+    /**
+     * Gets the item manager.
+     * @return The item manager
+     */
+    public BDItemManager getItemManager() {
+        return itemManager;
+    }
+    
+    /**
+     * Gets the market manager.
+     * @return The market manager
+     */
+    public MarketManager getMarketManager() {
+        return marketManager;
     }
 }

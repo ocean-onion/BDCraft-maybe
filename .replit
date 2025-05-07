@@ -5,7 +5,7 @@ channel = "stable-24_05"
 packages = ["unzip", "zip", "jdk", "openjdk17", "gradle"]
 
 [workflows]
-runButton = "Project"
+runButton = "build_plugin"
 
 [[workflows.workflow]]
 name = "Project"

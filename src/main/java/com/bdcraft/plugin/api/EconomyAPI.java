@@ -1,67 +1,71 @@
 package com.bdcraft.plugin.api;
 
-import org.bukkit.entity.Player;
+import java.util.UUID;
 
 /**
- * API for interacting with the BDCraft economy system.
+ * API for economy operations.
  */
 public interface EconomyAPI {
     /**
-     * Gets a player's BD currency balance.
-     * @param player The player
+     * Gets a player's balance.
+     * @param uuid The player's UUID
      * @return The player's balance
      */
-    double getBalance(Player player);
+    double getBalance(UUID uuid);
     
     /**
-     * Checks if a player has at least the specified amount of BD currency.
-     * @param player The player
+     * Sets a player's balance.
+     * @param uuid The player's UUID
+     * @param amount The new balance
+     */
+    void setBalance(UUID uuid, double amount);
+    
+    /**
+     * Adds money to a player's balance.
+     * @param uuid The player's UUID
+     * @param amount The amount to add
+     * @return Whether the deposit was successful
+     */
+    boolean depositMoney(UUID uuid, double amount);
+    
+    /**
+     * Removes money from a player's balance.
+     * @param uuid The player's UUID
+     * @param amount The amount to remove
+     * @return Whether the withdrawal was successful
+     */
+    boolean withdrawMoney(UUID uuid, double amount);
+    
+    /**
+     * Checks if a player has enough money.
+     * @param uuid The player's UUID
      * @param amount The amount to check
-     * @return True if the player has at least the specified amount
+     * @return Whether the player has enough money
      */
-    boolean has(Player player, double amount);
+    boolean hasEnough(UUID uuid, double amount);
     
     /**
-     * Deposits BD currency to a player's account.
-     * @param player The player
-     * @param amount The amount to deposit
-     * @return True if the transaction was successful
+     * Formats an amount of currency.
+     * @param amount The amount
+     * @return The formatted currency string
      */
-    boolean depositCurrency(Player player, double amount);
+    String formatCurrency(double amount);
     
     /**
-     * Withdraws BD currency from a player's account.
-     * @param player The player
-     * @param amount The amount to withdraw
-     * @return True if the transaction was successful
-     */
-    boolean withdrawCurrency(Player player, double amount);
-    
-    /**
-     * Transfers BD currency from one player to another.
-     * @param from The player to transfer from
-     * @param to The player to transfer to
-     * @param amount The amount to transfer
-     * @return True if the transaction was successful
-     */
-    boolean transferCurrency(Player from, Player to, double amount);
-    
-    /**
-     * Gets the formatted currency name (singular).
-     * @return The formatted currency name
+     * Gets the currency name.
+     * @return The currency name
      */
     String getCurrencyName();
     
     /**
-     * Gets the formatted currency name (plural).
-     * @return The formatted currency name
+     * Gets the currency name (plural form).
+     * @return The currency name (plural)
      */
     String getCurrencyNamePlural();
     
     /**
-     * Formats a currency amount as a string.
-     * @param amount The amount to format
-     * @return The formatted amount
+     * Gets the currency symbol.
+     * @return The currency symbol
      */
-    String formatCurrency(double amount);
+    String getCurrencySymbol();
 }

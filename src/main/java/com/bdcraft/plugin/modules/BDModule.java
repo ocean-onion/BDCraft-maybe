@@ -3,10 +3,9 @@ package com.bdcraft.plugin.modules;
 import java.util.List;
 
 /**
- * Interface for all BDCraft plugin modules.
+ * Interface for BDCraft modules.
  */
 public interface BDModule {
-    
     /**
      * Called when the module is enabled.
      */
@@ -18,7 +17,7 @@ public interface BDModule {
     void onDisable();
     
     /**
-     * Called when the module is reloaded.
+     * Called when the plugin is reloaded.
      */
     void onReload();
     
@@ -29,8 +28,8 @@ public interface BDModule {
     String getName();
     
     /**
-     * Gets the names of modules that this module depends on.
-     * @return A list of module names
+     * Gets the module's dependencies.
+     * @return The module dependencies
      */
     List<String> getDependencies();
 }
