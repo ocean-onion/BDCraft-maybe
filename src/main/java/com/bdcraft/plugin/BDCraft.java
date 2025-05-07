@@ -2,12 +2,14 @@ package com.bdcraft.plugin;
 
 import com.bdcraft.plugin.api.EconomyAPI;
 import com.bdcraft.plugin.api.PermissionAPI;
+import com.bdcraft.plugin.api.ProgressionAPI;
 import com.bdcraft.plugin.api.VillagerAPI;
 import com.bdcraft.plugin.commands.admin.GiveItemCommand;
 import com.bdcraft.plugin.config.ConfigManager;
 import com.bdcraft.plugin.modules.ModuleManager;
 import com.bdcraft.plugin.modules.economy.BDEconomyModule;
 import com.bdcraft.plugin.modules.perms.BDPermsModule;
+import com.bdcraft.plugin.modules.progression.BDProgressionModule;
 import com.bdcraft.plugin.modules.vital.BDVitalModule;
 
 import org.bukkit.plugin.PluginDescriptionFile;
@@ -29,6 +31,7 @@ public class BDCraft extends JavaPlugin {
     private EconomyAPI economyAPI;
     private PermissionAPI permissionAPI;
     private VillagerAPI villagerAPI;
+    private ProgressionAPI progressionAPI;
     
     /**
      * Default constructor for the plugin.
@@ -56,6 +59,7 @@ public class BDCraft extends JavaPlugin {
         // Register modules
         moduleManager.registerModule(new BDPermsModule(this, moduleManager));
         moduleManager.registerModule(new BDEconomyModule(this));
+        moduleManager.registerModule(new BDProgressionModule(this));
         moduleManager.registerModule(new BDVitalModule(this, moduleManager));
         
         // Enable modules
@@ -149,6 +153,22 @@ public class BDCraft extends JavaPlugin {
     }
     
     /**
+     * Gets the progression API.
+     * @return The progression API
+     */
+    public ProgressionAPI getProgressionAPI() {
+        return progressionAPI;
+    }
+    
+    /**
+     * Sets the progression API.
+     * @param progressionAPI The progression API
+     */
+    public void setProgressionAPI(ProgressionAPI progressionAPI) {
+        this.progressionAPI = progressionAPI;
+    }
+    
+    /**
      * Registers commands for the plugin.
      */
     private void registerCommands() {
@@ -156,5 +176,21 @@ public class BDCraft extends JavaPlugin {
         new GiveItemCommand(this);
         
         logger.info("Commands registered successfully!");
+    }
+    
+    /**
+     * Gets the economy module.
+     * @return The economy module
+     */
+    public BDEconomyModule getEconomyModule() {
+        return (BDEconomyModule) moduleManager.getModule(BDEconomyModule.class);
+    }
+    
+    /**
+     * Gets the progression module.
+     * @return The progression module
+     */
+    public BDProgressionModule getProgressionModule() {
+        return (BDProgressionModule) moduleManager.getModule(BDProgressionModule.class);
     }
 }

@@ -220,4 +220,18 @@ public class ModuleManager {
     public List<String> getEnabledModules() {
         return new ArrayList<>(enabledModules);
     }
+    
+    /**
+     * Gets a module by class.
+     * @param moduleClass The module class
+     * @return The module, or null if it doesn't exist
+     */
+    public BDModule getModule(Class<? extends BDModule> moduleClass) {
+        for (BDModule module : modules.values()) {
+            if (moduleClass.isInstance(module)) {
+                return module;
+            }
+        }
+        return null;
+    }
 }

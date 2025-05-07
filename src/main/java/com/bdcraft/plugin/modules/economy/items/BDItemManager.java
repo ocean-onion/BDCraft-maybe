@@ -31,6 +31,7 @@ public class BDItemManager {
     private final NamespacedKey bdItemValueKey;
     
     private final Map<String, BDItemTemplate> itemTemplates;
+    private final BDItemFactory itemFactory;
     
     /**
      * Creates a new BD item manager.
@@ -44,6 +45,7 @@ public class BDItemManager {
         this.bdItemValueKey = new NamespacedKey(plugin, "bd_item_value");
         
         this.itemTemplates = new HashMap<>();
+        this.itemFactory = new BDItemFactory(plugin);
         
         // Load item templates
         loadItemTemplates();
@@ -106,10 +108,10 @@ public class BDItemManager {
                 ));
         
         // BD Tools
-        registerItemTemplate("bd_stick", Material.BREEZE_ROD, 
+        registerItemTemplate("bd_stick", Material.BLAZE_ROD, 
                 "&6BD Stick", 
                 Arrays.asList(
-                    "&7A special enchanted breeze rod that can be used",
+                    "&7A special enchanted blaze rod that can be used",
                     "&7to craft BD Market Tokens and",
                     "&7BD House Tokens.",
                     "&7Has 5 uses before breaking."
@@ -405,6 +407,14 @@ public class BDItemManager {
      */
     public ItemStack createHouseToken() {
         return createItem("house_token", 1);
+    }
+    
+    /**
+     * Gets the item factory for creating specialized BD items.
+     * @return The item factory
+     */
+    public BDItemFactory getItemFactory() {
+        return itemFactory;
     }
     
     /**
