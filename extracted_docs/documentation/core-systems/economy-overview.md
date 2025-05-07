@@ -99,7 +99,7 @@ Player markets are the foundation of the BD economy system, providing the only w
 To establish a market, players must:
 1. Craft a BD Market Token
 2. Build a proper structure with walls, roof, bed, and a door
-3. Complete the market activation process by placing the token in an item frame above the door
+3. Place the token in an item frame above the door
 
 Markets must be at least 30 blocks apart, and players can only own one market until reaching higher ranks.
 
