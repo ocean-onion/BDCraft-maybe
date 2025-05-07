@@ -1,0 +1,36 @@
+# PaperPlugin Configuration
+# This is the main configuration file for the PaperPlugin
+
+# Messages
+messages:
+  # Format for the greeting message when using /hello command
+  # Use {player} as a placeholder for the player name
+  greeting-format: "Hello, {player}! Welcome to your Paper plugin!"
+  
+  # Format for the welcome message when a player joins the server
+  # Use {player} as a placeholder for the player name
+  welcome-format: "Welcome to the server, {player}!"
+
+# Plugin settings
+settings:
+  # Debug mode: When true, additional information will be logged
+  debug: false
+  
+  # Whether to show welcome messages to players when they join
+  show-welcome-message: true
+
+# Module configuration
+# Enable or disable individual modules
+modules:
+  # Core modules
+  economy: true
+  perms: true
+  vital: true
+  
+  # Feature modules
+  auction: true
+  rebirth: true
+  tutorial: true
+
+# Version of this config file. Do not change this!
+config-version: 1

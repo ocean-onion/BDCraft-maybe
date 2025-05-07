@@ -1,0 +1,70 @@
+# Economy Module Configuration
+# This file contains settings for the BD economy system
+
+# Currency settings
+currency:
+  # Currency name (singular)
+  name: "BD"
+  
+  # Currency name (plural)
+  name-plural: "BDs"
+  
+  # Format for displaying currency amounts
+  # Available placeholders: {amount}, {currency}
+  format: "{amount} {currency}"
+
+# BD crop settings
+crops:
+  # Tier 1 crops
+  tier1:
+    name: "Basic BD Crop"
+    value: 5.0
+    growth-time: 5 # minutes
+    
+  # Tier 2 crops
+  tier2:
+    name: "Advanced BD Crop"
+    value: 15.0
+    growth-time: 10 # minutes
+    
+  # Tier 3 crops
+  tier3:
+    name: "Premium BD Crop"
+    value: 50.0
+    growth-time: 20 # minutes
+
+# Villager settings
+villagers:
+  # Dealer villagers (sell seeds)
+  dealers:
+    spawn-chance: 0.3 # 30% chance in natural villages
+    
+  # Collector villagers (buy crops)
+  collectors:
+    spawn-chance: 0.2 # 20% chance in natural villages
+    
+  # Seasonal trader settings
+  seasonal-traders:
+    spawn-interval: 7 # days
+    stay-duration: 1 # days
+    announcement-radius: 100 # blocks
+
+# Market settings
+markets:
+  # Cost to create a market (in BD currency)
+  creation-cost: 1000.0
+  
+  # Maximum number of markets a player can own
+  max-markets-per-player: 2
+  
+  # Market stall rental settings
+  stalls:
+    default-rental-price: 100.0
+    rental-duration: 7 # days
+    max-stalls-per-market: 10
+
+# Starting balance for new players
+starting-balance: 100.0
+
+# Version of this config file. Do not change this!
+config-version: 1

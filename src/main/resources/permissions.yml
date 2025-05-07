@@ -1,0 +1,91 @@
+# Permissions Module Configuration
+# This file contains settings for the BD permissions system
+
+# Group definitions
+groups:
+  # Default group for all players
+  default:
+    # Group display settings
+    display:
+      prefix: "&7[Player] "
+      suffix: ""
+      color: "&7"
+    
+    # Permissions for this group
+    permissions:
+      - "bd.player"
+      - "bd.economy.balance"
+      - "bd.economy.pay"
+      - "bd.economy.shop.use"
+  
+  # VIP group
+  vip:
+    # Group display settings
+    display:
+      prefix: "&a[VIP] "
+      suffix: ""
+      color: "&a"
+    
+    # Permissions for this group
+    permissions:
+      - "bd.player"
+      - "bd.economy.balance"
+      - "bd.economy.pay"
+      - "bd.economy.shop.use"
+      - "bd.vip"
+      - "bd.vip.fly"
+      - "bd.vip.particles"
+  
+  # Staff group
+  staff:
+    # Group display settings
+    display:
+      prefix: "&c[Staff] "
+      suffix: ""
+      color: "&c"
+    
+    # Permissions for this group
+    permissions:
+      - "bd.player"
+      - "bd.economy.balance"
+      - "bd.economy.pay"
+      - "bd.economy.shop.use"
+      - "bd.staff"
+      - "bd.staff.fly"
+      - "bd.staff.teleport"
+      - "bd.staff.moderate"
+  
+  # Admin group
+  admin:
+    # Group display settings
+    display:
+      prefix: "&4[Admin] "
+      suffix: ""
+      color: "&4"
+    
+    # Permissions for this group
+    permissions:
+      - "*"
+
+# Group inheritance
+inheritance:
+  vip:
+    - "default"
+  staff:
+    - "vip"
+  admin:
+    - "staff"
+
+# Settings
+settings:
+  # Default group for new players
+  default-group: "default"
+  
+  # Whether to use Bukkit's built-in permission system
+  use-bukkit-permissions: true
+  
+  # Save player data interval (in minutes)
+  save-interval: 10
+
+# Version of this config file. Do not change this!
+config-version: 1

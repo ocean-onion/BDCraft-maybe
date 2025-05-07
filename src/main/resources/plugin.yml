@@ -1,0 +1,19 @@
+name: PaperPlugin
+version: '${version}'
+main: com.example.paperplugin.PaperPlugin
+api-version: '1.20'
+description: '${description}'
+authors: [YourName]
+website: https://example.com
+
+commands:
+  hello:
+    description: Displays a friendly greeting to the player
+    usage: /<command>
+    permission: paperplugin.command.hello
+    aliases: [hi, greet]
+
+permissions:
+  paperplugin.command.hello:
+    description: Allows the use of the hello command
+    default: true
