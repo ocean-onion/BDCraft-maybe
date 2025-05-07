@@ -1,9 +1,9 @@
 name: BDCraft
 version: '${version}'
 main: com.bdcraft.plugin.BDCraft
-api-version: '1.20'
+api-version: '1.21'
 authors: [BDCraft Team]
-description: 'A comprehensive Minecraft server management plugin with farming-based economy, villager trading, and player progression systems'
+description: 'A comprehensive Minecraft server management plugin with farming-based economy, player markets with villager trading, and progression systems'
 website: https://bdcraft.org
 
 commands:
@@ -19,70 +19,177 @@ commands:
     aliases: [bdh]
     permission: bdcraft.help
   
-  bdreload:
-    description: Reloads the BDCraft plugin and configurations
-    usage: /bdreload
-    aliases: [bdr]
-    permission: bdcraft.admin.reload
+  bdadmin:
+    description: Administrative commands for BDCraft
+    usage: /bdadmin <subcommand> [args]
+    aliases: [bda]
+    permission: bdcraft.admin
   
-  bdstatus:
-    description: Shows status information about the BDCraft plugin
-    usage: /bdstatus
-    aliases: [bds]
-    permission: bdcraft.admin.status
-  
-  bdhome:
-    description: Teleports you to your home location
-    usage: /bdhome [set|remove|list] [name]
-    aliases: [bdhm]
-    permission: bdcraft.home
-  
-  bdmarket:
-    description: Market management commands
-    usage: /bdmarket <create|remove|info|list> [args]
-    aliases: [bdm]
-    permission: bdcraft.market
-  
-  bdrank:
-    description: Displays and manages player ranks
-    usage: /bdrank [player] [set|info|list] [rank]
-    aliases: [bdrk]
-    permission: bdcraft.rank
-  
+  # Economy Commands
   bdcurrency:
     description: Currency management commands
     usage: /bdcurrency <balance|pay|top> [args]
     aliases: [bdc]
     permission: bdcraft.currency
-  
-  bdvillager:
-    description: Manages custom villagers
-    usage: /bdvillager <create|remove|list> [type] [name]
-    aliases: [bdv]
-    permission: bdcraft.admin.villager
+    
+  # Market Commands
+  bdmarket:
+    description: Market management commands
+    usage: /bdmarket <create|info|list|warp> [args]
+    aliases: [bdm]
+    permission: bdcraft.market
+    
+  # Rank Commands
+  bdrank:
+    description: Displays and manages player ranks
+    usage: /bdrank [player] [set|info|list] [rank]
+    aliases: [bdrk]
+    permission: bdcraft.rank
+    
+  # Vital Module Commands
+  bdtp:
+    description: Request to teleport to a player
+    usage: /bdtp <player>
+    permission: bdvital.tp
+    
+  bdtpa:
+    description: Accept a teleport request
+    usage: /bdtpa
+    permission: bdvital.tpa
+    
+  bdtpd:
+    description: Deny a teleport request
+    usage: /bdtpd
+    permission: bdvital.tpa
+    
+  bdtpr:
+    description: Request a player to teleport to you
+    usage: /bdtpr <player>
+    permission: bdvital.tpr
+    
+  bdback:
+    description: Return to previous location or death point
+    usage: /bdback
+    permission: bdvital.back
+    
+  bdspawn:
+    description: Teleport to server spawn
+    usage: /bdspawn
+    permission: bdvital.spawn
+    
+  bdhome:
+    description: Home system commands
+    usage: /bdhome [set|del|list] [name]
+    permission: bdvital.home
+    
+  bdmsg:
+    description: Send a private message
+    usage: /bdmsg <player> <message>
+    permission: bdvital.msg
+    
+  bdr:
+    description: Reply to last private message
+    usage: /bdr <message>
+    permission: bdvital.msg
+    
+  bdmail:
+    description: Mail system commands
+    usage: /bdmail <send|read|clear> [player] [message]
+    permission: bdvital.mail
+    
+  bddeathinfo:
+    description: Show coordinates of last death
+    usage: /bddeathinfo
+    permission: bdvital.deathinfo
 
 permissions:
-  bdcraft.*:
-    description: Gives access to all BDCraft commands
-    default: op
-    children:
-      bdcraft.admin: true
-      bdcraft.user: true
-  
+  # Admin Permissions
   bdcraft.admin:
     description: Gives access to administrative commands
     default: op
     children:
       bdcraft.admin.reload: true
       bdcraft.admin.status: true
+      bdcraft.admin.economy: true
+      bdcraft.admin.items: true
+      bdcraft.admin.rank: true
+      bdcraft.admin.rebirth: true
+      bdcraft.admin.market: true
       bdcraft.admin.villager: true
-  
-  bdcraft.user:
-    description: Gives access to basic user commands
+      bdcraft.admin.debug: true
+      
+  # Economy Permissions
+  bdcraft.currency:
+    description: Allows currency commands
     default: true
-    children:
-      bdcraft.help: true
-      bdcraft.home: true
-      bdcraft.market: true
-      bdcraft.currency: true
-      bdcraft.rank: true
+    
+  # Market Permissions
+  bdcraft.market.create:
+    description: Allows creating markets
+    default: true
+    
+  bdcraft.market.check:
+    description: Allows checking market boundaries
+    default: true
+    
+  bdcraft.market.info:
+    description: Allows viewing market info
+    default: true
+    
+  # Rank Permissions
+  bdcraft.rank.view:
+    description: Allows viewing ranks
+    default: true
+    
+  bdcraft.rank.up:
+    description: Allows ranking up
+    default: true
+    
+  # Vital Module Permissions
+  bdvital.tp:
+    description: Allows teleporting to players
+    default: true
+    
+  bdvital.tpa:
+    description: Allows accepting/denying teleport requests
+    default: true
+    
+  bdvital.tpr:
+    description: Allows requesting players to teleport to you
+    default: true
+    
+  bdvital.back:
+    description: Allows returning to previous location
+    default: true
+    
+  bdvital.spawn:
+    description: Allows teleporting to spawn
+    default: true
+    
+  bdvital.home:
+    description: Allows using homes
+    default: true
+    
+  bdvital.sethome:
+    description: Allows setting homes
+    default: true
+    
+  bdvital.msg:
+    description: Allows private messaging
+    default: true
+    
+  bdvital.mail:
+    description: Allows using mail
+    default: true
+    
+  bdvital.market.warp:
+    description: Allows using market warps
+    default: true
+    
+  bdvital.market.setwarp:
+    description: Allows setting market warps
+    default: false
+    
+  bdvital.deathinfo:
+    description: Allows seeing death coordinates
+    default: true

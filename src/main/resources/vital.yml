@@ -1,58 +1,39 @@
-# BDCraft Vital Module Configuration
-# This file controls the essential utilities module
+bdvital:
+  teleportation:
+    delay: 3                   # Seconds before teleport occurs
+    cooldown: 60               # Seconds between teleport commands
+    request-expiry: 30         # Seconds before request expires
+    spawn-location:
+      world: "world"          # World name for the spawn location
+      x: 0                     # X coordinate
+      y: 100                   # Y coordinate
+      z: 0                     # Z coordinate
+  
+  homes:
+    max-per-rank:              # Maximum homes per rank
+      1: 1
+      2: 2
+      3: 3
+      4: 4
+      5: 5
+    cooldown: 120              # Seconds between home teleports
+  
+  messaging:
+    disabled-worlds: []        # Worlds where messaging is disabled
+    mail-expiry: 7             # Days before mail expires
+  
+  market-warps:
+    enabled: true              # Enable market warp system
+    cooldowns:                 # Cooldowns per market level (minutes)
+      2: 60
+      3: 30
+      4: 15
+  
+  protection:
+    log-blocks: true           # Log block changes in protected areas
+    log-retention: 30          # Days to keep logs
+    disable-pvp-in-markets: true # Disable PvP in markets
 
-# Teleportation settings
-teleportation:
-  # Warmup time in seconds (0 to disable)
-  warmup: 3
-  # Cooldown time in seconds (0 to disable)
-  cooldown: 30
-  # Cancel teleport if player moves during warmup
-  cancelOnMove: true
-  # Cancel teleport if player takes damage during warmup
-  cancelOnDamage: true
-  # Maximum teleport distance (-1 for unlimited)
-  maxDistance: -1
-
-# Home settings
-homes:
-  # Default maximum homes per player
-  defaultMax: 1
-  # Home command cooldown in seconds
-  cooldown: 300
-  # Cost to set a home (in BD currency, 0 to disable)
-  setCost: 0
-  # Cost to teleport to a home (in BD currency, 0 to disable)
-  tpCost: 0
-  # Allow setting homes in other worlds
-  crossWorld: true
-  # Block players from setting homes in certain regions
-  blockedRegions:
-    - 'spawn'
-    - 'pvp_arena'
-
-# Messaging settings
-messaging:
-  # Maximum message length
-  maxLength: 100
-  # Cooldown between messages in seconds
-  cooldown: 2
-  # Allow cross-world messaging
-  crossWorld: true
-  # Log all private messages
-  logMessages: true
-  # Format for sent messages
-  sentFormat: '&7[&eYou &7-> &e{player}&7] &f{message}'
-  # Format for received messages
-  receivedFormat: '&7[&e{player} &7-> &eYou&7] &f{message}'
-
-# Utility settings
-utility:
-  # Allow auto-respawn
-  autoRespawn: false
-  # Allow players to see their coordinates
-  showCoordinates: true
-  # Allow custom death messages
-  customDeathMessages: true
-  # Show server health stats to admins
-  showServerStats: true
+  death:
+    back-cooldown: 300         # Seconds between death back commands
+    save-inventory: false      # Save inventory on death (admin recovery)
