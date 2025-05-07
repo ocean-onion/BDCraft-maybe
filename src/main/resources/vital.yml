@@ -1,141 +1,62 @@
-# BDCraft Vital Module Configuration
-# This file contains settings for teleportation and essential utilities
+# Vital Module Configuration
+# This file contains settings for the BD vital system
 
 # Home settings
 homes:
+  # Maximum homes per permission level
   max-homes:
-    default: 1
-    vip: 3
-    admin: 5
-    owner: 10
-  cooldown:
-    default: 60  # seconds
-    vip: 30
-    admin: 0
-    owner: 0
-  delay:
-    default: 3  # seconds
-    vip: 2
-    admin: 0
-    owner: 0
-  cost:
-    enabled: false
-    amount: 5  # primary currency
+    default: 3
+    tier1: 5
+    tier2: 10
+    tier3: 15
+  
+  # Cooldown between teleports (in seconds)
+  cooldowns:
+    # Time between teleports to homes
+    home-teleport: 30
     
+    # Time before you can teleport after taking damage
+    combat-tag: 60
+
 # Warp settings
 warps:
-  cooldown:
-    default: 30  # seconds
-    vip: 15
-    admin: 0
-    owner: 0
-  delay:
-    default: 3  # seconds
-    vip: 2
-    admin: 0
-    owner: 0
-  cost:
-    enabled: false
-    amount: 10  # primary currency
-  spawn-is-warp: true  # Whether /spawn is considered a warp for cooldown purposes
+  # Cooldown between teleports (in seconds)
+  cooldowns:
+    # Time between teleports to warps
+    warp-teleport: 15
+    
+    # Time before you can teleport after taking damage
+    combat-tag: 60
   
+  # Warp categories (for organizing warps in GUIs)
+  categories:
+    - spawn
+    - shops
+    - resources
+    - events
+    - pvp
+
 # Spawn settings
 spawn:
-  cooldown:
-    default: 15  # seconds
-    vip: 5
-    admin: 0
-    owner: 0
-  delay:
-    default: 2  # seconds
-    vip: 1
-    admin: 0
-    owner: 0
-  cost:
-    enabled: false
-    amount: 0  # primary currency
-  set-on-first-join: true  # Whether to set spawn on first server join
-  teleport-on-join: false  # Whether to teleport to spawn on join
+  # Teleport new players to spawn on first join
+  teleport-on-first-join: true
+  
+  # Teleport players to spawn on death
+  teleport-on-death: false
+  
+  # Cooldown between teleports to spawn (in seconds)
+  cooldown: 15
 
 # Back command settings
 back:
-  enabled: true
-  cooldown:
-    default: 300  # seconds (5 minutes)
-    vip: 120      # seconds (2 minutes)
-    admin: 0
-    owner: 0
-  delay:
-    default: 5  # seconds
-    vip: 3
-    admin: 0
-    owner: 0
-  cost:
-    enabled: true
-    amount: 20  # primary currency
-  record-death-locations: true  # Whether to allow /back on death
-  record-teleport-locations: true  # Whether to allow /back after any teleport
+  # Whether to track player death locations
+  track-death-locations: true
+  
+  # Whether to track player teleport locations
+  track-teleport-locations: true
+  
+  # Cooldown between /back commands (in seconds)
+  cooldown: 60
 
-# Teleport request settings
-tpa:
-  enabled: true
-  request-timeout: 60  # seconds
-  cooldown:
-    default: 60  # seconds
-    vip: 30
-    admin: 0
-    owner: 0
-  delay:
-    default: 3  # seconds
-    vip: 2
-    admin: 0
-    owner: 0
-  cost:
-    enabled: false
-    amount: 15  # primary currency
-
-# Utility command settings
-utilities:
-  heal:
-    enabled: true
-    cooldown:
-      default: 300  # seconds (5 minutes)
-      vip: 150
-      admin: 0
-      owner: 0
-    cost:
-      enabled: true
-      amount: 25  # primary currency
-      
-  feed:
-    enabled: true
-    cooldown:
-      default: 300  # seconds (5 minutes)
-      vip: 150
-      admin: 0
-      owner: 0
-    cost:
-      enabled: true
-      amount: 15  # primary currency
-      
-  fly:
-    enabled: true
-    allowed-groups:
-      - vip
-      - admin
-      - owner
-    disabled-worlds:
-      - world_nether
-      - world_the_end
-      
-  speed:
-    enabled: true
-    allowed-groups:
-      - vip
-      - admin
-      - owner
-    max-speed:
-      default: 1
-      vip: 2
-      admin: 5
-      owner: 10
+# Version of this config file. Do not change this!
+config-version: 1

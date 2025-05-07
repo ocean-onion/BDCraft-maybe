@@ -2,13 +2,13 @@ plugins {
     id("java")
     id("java-library")
     id("maven-publish")
-    id("com.github.johnrengelman.shadow") version "8.1.1" // Compatible with Gradle 8.7
-    id("xyz.jpenilla.run-paper") version "2.1.0" // For testing in the server
+    id("com.github.johnrengelman.shadow") version "8.1.1" // Updated for Gradle 8.14 compatibility
+    id("xyz.jpenilla.run-paper") version "2.2.0" // For testing in the server
 }
 
-group = "com.bdcraft"
+group = "com.example"
 version = "1.0-SNAPSHOT"
-description = "BDCraft - Complete Minecraft Plugin System"
+description = "BD Paper Plugin - Modular Minecraft Plugin System"
 
 repositories {
     mavenCentral()
@@ -20,10 +20,6 @@ repositories {
 dependencies {
     // Paper API for 1.21
     compileOnly("io.papermc.paper:paper-api:1.21-R0.1-SNAPSHOT")
-    
-    // Adventure API
-    compileOnly("net.kyori:adventure-api:4.15.0")
-    compileOnly("net.kyori:adventure-text-minimessage:4.15.0")
     
     // Database dependencies
     implementation("com.zaxxer:HikariCP:5.0.1")
@@ -42,16 +38,16 @@ dependencies {
 }
 
 java {
-    // Paper 1.21 requires Java 21
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
+    // Accept Java 17 or higher
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 tasks {
     // Set character encoding
     compileJava {
         options.encoding = Charsets.UTF_8.name()
-        options.release.set(21)
+        options.release.set(17)
     }
     
     javadoc {
@@ -64,7 +60,7 @@ tasks {
             "name" to project.name,
             "version" to project.version,
             "description" to project.description,
-            "apiVersion" to "1.21"
+            "apiVersion" to "1.20"
         )
         inputs.properties(props)
         filesMatching("plugin.yml") {

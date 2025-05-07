@@ -1,6 +1,6 @@
 import org.gradle.util.GradleVersion
 
-rootProject.name = "bdcraft"
+rootProject.name = "paper-plugin"
 
 // Set project Gradle version
 gradle.rootProject {

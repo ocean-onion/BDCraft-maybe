@@ -1,186 +1,19 @@
-name: BDCraft
+name: PaperPlugin
 version: '${version}'
-main: com.bdcraft.BDCraftPlugin
-api-version: '1.21'
-description: 'Comprehensive economy and utilities plugin with modular architecture'
-authors: [BDCraft Team]
-website: https://bdcraft.org
+main: com.example.paperplugin.PaperPlugin
+api-version: '1.20'
+description: '${description}'
+authors: [YourName]
+website: https://example.com
 
 commands:
-  # Admin commands
-  bdadmin:
-    description: BDCraft admin command for managing the plugin
-    usage: /<command> <subcommand> [arguments]
-    permission: bdcraft.admin
-    aliases: [bda]
-  
-  # Economy commands - Based on documented economy-overview.md
-  bdbal:
-    description: Check your emerald and server currency balance
-    usage: /<command> [player]
-    permission: bdcraft.balance
-    aliases: [bdbalance]
-  bdpay:
-    description: Transfer currency to another player
-    usage: /<command> <player> <amount>
-    permission: bdcraft.pay
-  bdtop:
-    description: View the richest players on the server
-    usage: /<command> [page]
-    permission: bdcraft.top
-  
-  # Vital commands - Based on documented bdvital-module.md
-  bdtp:
-    description: Request to teleport to a player
-    usage: /<command> <player>
-    permission: bdvital.tp
-  bdtpa:
-    description: Accept a teleport request
+  hello:
+    description: Displays a friendly greeting to the player
     usage: /<command>
-    permission: bdvital.tpa
-  bdtpd:
-    description: Deny a teleport request
-    usage: /<command>
-    permission: bdvital.tpd
-  bdtpr:
-    description: Request a player to teleport to you
-    usage: /<command> <player>
-    permission: bdvital.tpr
-  bdback:
-    description: Return to previous location
-    usage: /<command>
-    permission: bdvital.back
-  bdspawn:
-    description: Teleport to server spawn
-    usage: /<command>
-    permission: bdvital.spawn
-  bdhome:
-    description: Teleport to/manage your homes
-    usage: /<command> [set|del|list] [name]
-    permission: bdvital.home
-  bdmsg:
-    description: Send a private message
-    usage: /<command> <player> <message>
-    permission: bdvital.msg
-  bdr:
-    description: Reply to last private message
-    usage: /<command> <message>
-    permission: bdvital.msg
-  bdmail:
-    description: Send/read offline mail
-    usage: /<command> [send|read|clear] [player] [message]
-    permission: bdvital.mail
-  bdmarket:
-    description: Market management commands
-    usage: /<command> [warp|set|remove|list] [name]
-    permission: bdvital.market.warp
-  
-  # Rank system commands
-  bdrank:
-    description: View your current rank and progress
-    usage: /<command> [view|up]
-    permission: bdcraft.rank.view
-  
-  # Rebirth system commands
-  bdrebirth:
-    description: View and use the rebirth system
-    usage: /<command> [view|check|use]
-    permission: bdcraft.rebirth.view
+    permission: paperplugin.command.hello
+    aliases: [hi, greet]
 
 permissions:
-  # Admin permissions
-  bdcraft.admin:
-    description: Access to BDCraft admin commands
-    default: op
-    children:
-      bdcraft.admin.village: true
-      bdcraft.admin.villager: true
-      bdcraft.admin.economy: true
-      bdcraft.admin.items: true
-      bdcraft.admin.rank: true
-      bdcraft.admin.rebirth: true
-      bdcraft.admin.reload: true
-      bdcraft.admin.debug: true
-      bdcraft.admin.market: true
-  
-  # Player permissions
-  bdcraft.use:
-    description: Basic plugin usage
-    default: true
-  bdcraft.market.locate:
-    description: Use market locator commands
-    default: true
-  bdcraft.rank.view:
-    description: View ranks and rank progress
-    default: true
-  bdcraft.rank.up:
-    description: Purchase rank upgrades
-    default: true
-  bdcraft.balance:
-    description: Check currency balance
-    default: true
-  bdcraft.pay:
-    description: Send currency to other players
-    default: true
-  bdcraft.top:
-    description: View leaderboards
-    default: true
-  bdcraft.auction.use:
-    description: Access the auction house
-    default: true
-  bdcraft.auction.sell:
-    description: Sell items on the auction house
-    default: true
-  bdcraft.auction.cancel:
-    description: Cancel auction listings
-    default: true
-  bdcraft.reputation:
-    description: Check trader reputation
-    default: true
-  bdcraft.rebirth.view:
-    description: View rebirth information
-    default: true
-  bdcraft.rebirth.check:
-    description: Check rebirth eligibility
-    default: true
-  bdcraft.rebirth.use:
-    description: Perform rebirth
-    default: true
-  
-  # BDVital module permissions
-  bdvital.tp:
-    description: Request to teleport to a player
-    default: true
-  bdvital.tpa:
-    description: Accept a teleport request
-    default: true
-  bdvital.tpd:
-    description: Deny a teleport request
-    default: true
-  bdvital.tpr:
-    description: Request a player to teleport to you
-    default: true
-  bdvital.back:
-    description: Return to previous location
-    default: true
-  bdvital.spawn:
-    description: Teleport to server spawn
-    default: true
-  bdvital.home:
-    description: Use home commands
-    default: true
-  bdvital.sethome:
-    description: Set homes
-    default: true
-  bdvital.msg:
-    description: Use messaging system
-    default: true
-  bdvital.mail:
-    description: Use mail system
-    default: true
-  bdvital.market.warp:
-    description: Use market warps
-    default: true
-  bdvital.market.setwarp:
-    description: Set market warps
+  paperplugin.command.hello:
+    description: Allows the use of the hello command
     default: true
