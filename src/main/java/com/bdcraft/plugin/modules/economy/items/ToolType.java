@@ -1,7 +1,7 @@
-package com.bdcraft.plugin.modules.economy.items.tools;
+package com.bdcraft.plugin.modules.economy.items;
 
 /**
- * Enum for BD tool types.
+ * Enum for special BD tool types.
  */
 public enum ToolType {
     /**
@@ -27,15 +27,5 @@ public enum ToolType {
     /**
      * BD Axe tool.
      */
-    BDAXE,
-    
-    /**
-     * Harvester tool.
-     */
-    HARVESTER,
-    
-    /**
-     * Ultimate harvester tool.
-     */
-    ULTIMATE_HARVESTER
+    BDAXE
 }

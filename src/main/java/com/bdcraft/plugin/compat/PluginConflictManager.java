@@ -1,42 +1,71 @@
 package com.bdcraft.plugin.compat;
 
 import com.bdcraft.plugin.BDCraft;
+import com.bdcraft.plugin.modules.ModuleManager;
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.server.PluginEnableEvent;
+import org.bukkit.event.server.ServerCommandEvent;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 /**
- * Manages plugin conflicts by monitoring for competing functionality
- * and blocking specific commands or features from other plugins that 
- * would interfere with BDCraft's self-contained systems.
+ * Manages plugin conflicts by specifically targeting competing features
+ * rather than entire plugins. This allows BDCraft to selectively disable
+ * just the conflicting features from other plugins while allowing
+ * non-conflicting features to continue working.
  */
 public class PluginConflictManager implements Listener {
     private final BDCraft plugin;
     private final Logger logger;
+    private final ModuleManager moduleManager;
     
     // Plugin conflict configurations
-    private final Map<String, PluginConflict> conflictingPlugins = new HashMap<>();
-    private final List<String> blockedCommands = new ArrayList<>();
+    private final Map<String, PluginFeatureHandler> pluginHandlers = new HashMap<>();
+    private final Map<FeatureType, List<CommandBlocker>> commandBlockers = new HashMap<>();
+    private final Map<FeatureType, List<ListenerBlocker>> listenerBlockers = new HashMap<>();
+    private final Map<FeatureType, Set<String>> disabledPluginFeatures = new HashMap<>();
     
-    // Feature conflict settings
-    private boolean blockEconomyPlugins = true;
-    private boolean blockPermissionPlugins = true;
-    private boolean blockHomePlugins = true;
-    private boolean blockTeleportPlugins = true;
-    private boolean notifyAdmins = true;
+    // Blocked command patterns with their replacement suggestions
+    private final Map<Pattern, String> blockedCommandPatterns = new HashMap<>();
+    
+    // Reflection helpers
+    private static final String[] PLUGIN_CLASS_PATTERNS = {
+        "net.essentialsx.api",
+        "com.earth2me.essentials",
+        "net.ess3",
+        "org.maxgamer.quickshop",
+        "com.griefcraft.lwc",
+        "me.ryanhamshire.GriefPrevention",
+        "net.luckperms",
+        "ru.tehkode.permissions",
+        "com.sk89q.worldguard",
+        "com.palmergames.bukkit.towny",
+        "me.clip.placeholderapi",
+        "com.gmail.filoghost.holographicdisplays",
+        "com.jaoafa.mymaid4",
+        "net.coreprotect",
+        "me.lucko.luckperms"
+    };
     
     /**
      * Creates a new plugin conflict manager.
@@ -45,18 +74,29 @@ public class PluginConflictManager implements Listener {
     public PluginConflictManager(BDCraft plugin) {
         this.plugin = plugin;
         this.logger = plugin.getLogger();
+        this.moduleManager = plugin.getModuleManager();
+        
+        // Initialize feature conflict maps
+        for (FeatureType type : FeatureType.values()) {
+            commandBlockers.put(type, new ArrayList<>());
+            listenerBlockers.put(type, new ArrayList<>());
+            disabledPluginFeatures.put(type, new HashSet<>());
+        }
         
         // Load configurations
         loadConfig();
         
-        // Load known conflicts
-        setupKnownConflicts();
+        // Register feature conflicts with detailed handlers
+        registerFeatureConflicts();
         
         // Register event listener
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
         
         // Check for existing conflicts on startup
         checkExistingPlugins();
+        
+        logger.info("Initialized BDCraft Plugin Conflict Manager - " + 
+                pluginHandlers.size() + " potential plugin conflicts registered");
     }
     
     /**
@@ -65,89 +105,318 @@ public class PluginConflictManager implements Listener {
     private void loadConfig() {
         FileConfiguration config = plugin.getConfig();
         
-        // Load conflict handling settings
-        ConfigurationSection conflictSection = config.getConfigurationSection("conflict-management");
-        if (conflictSection != null) {
-            this.blockEconomyPlugins = conflictSection.getBoolean("block-economy-plugins", true);
-            this.blockPermissionPlugins = conflictSection.getBoolean("block-permission-plugins", true);
-            this.blockHomePlugins = conflictSection.getBoolean("block-home-plugins", true);
-            this.blockTeleportPlugins = conflictSection.getBoolean("block-teleport-plugins", true);
-            this.notifyAdmins = conflictSection.getBoolean("notify-admins", true);
-        }
-        
-        // Load blocked commands
-        this.blockedCommands.clear();
-        List<String> commandList = config.getStringList("blocked-commands");
-        if (commandList != null) {
-            this.blockedCommands.addAll(commandList);
+        // Create default configuration if it doesn't exist
+        if (!config.contains("conflict-management")) {
+            config.set("conflict-management.enabled", true);
+            config.set("conflict-management.economy-features", true);
+            config.set("conflict-management.market-features", true);
+            config.set("conflict-management.permission-features", true);
+            config.set("conflict-management.teleport-features", true);
+            config.set("conflict-management.home-features", true);
+            config.set("conflict-management.messaging-features", true);
+            config.set("conflict-management.progression-features", true);
+            config.set("conflict-management.notify-admins", true);
+            config.set("conflict-management.allow-plugin-disable", false);
+            config.set("conflict-management.redirect-commands", true);
+            plugin.saveConfig();
         }
     }
     
     /**
-     * Sets up known plugin conflicts based on common server plugins.
+     * Registers all known feature conflicts with specific handlers.
      */
-    private void setupKnownConflicts() {
-        // Economy Plugins
-        if (blockEconomyPlugins) {
-            addConflict("Vault", FeatureType.ECONOMY, ConflictAction.FEATURE_DISABLE, 
-                    "BDCraft provides its own economy system", 
-                    new String[]{"vault.economy"});
-            
-            addConflict("EssentialsX", FeatureType.ECONOMY, ConflictAction.FEATURE_DISABLE, 
-                    "BDCraft provides its own economy system", 
-                    new String[]{"essentials.eco", "essentials.economy"});
-            
-            addConflict("CMI", FeatureType.ECONOMY, ConflictAction.FEATURE_DISABLE, 
-                    "BDCraft provides its own economy system", 
-                    new String[]{"cmi.eco"});
-        }
+    private void registerFeatureConflicts() {
+        // === Economy Features ===
+        registerEconomyConflicts();
         
-        // Permission Plugins
-        if (blockPermissionPlugins) {
-            addConflict("LuckPerms", FeatureType.PERMISSIONS, ConflictAction.FEATURE_DISABLE, 
-                    "BDCraft provides its own permission system (BDPerms)", 
-                    new String[]{"luckperms", "lp"});
-            
-            addConflict("PermissionsEx", FeatureType.PERMISSIONS, ConflictAction.FEATURE_DISABLE, 
-                    "BDCraft provides its own permission system (BDPerms)", 
-                    new String[]{"pex", "permissions"});
-        }
+        // === Market Features ===
+        registerMarketConflicts();
         
-        // Home Plugins
-        if (blockHomePlugins) {
-            addConflict("EssentialsX", FeatureType.HOMES, ConflictAction.COMMAND_BLOCK, 
-                    "BDCraft provides its own home system", 
-                    new String[]{"home", "sethome", "delhome", "homes"});
-            
-            addConflict("CMI", FeatureType.HOMES, ConflictAction.COMMAND_BLOCK, 
-                    "BDCraft provides its own home system", 
-                    new String[]{"home", "sethome", "delhome", "homes"});
-        }
+        // === Permissions Features ===
+        registerPermissionConflicts();
         
-        // Teleport Plugins
-        if (blockTeleportPlugins) {
-            addConflict("EssentialsX", FeatureType.TELEPORT, ConflictAction.COMMAND_BLOCK, 
-                    "BDCraft provides its own teleportation system", 
-                    new String[]{"tpa", "tpaccept", "tpdeny", "back", "spawn"});
-            
-            addConflict("CMI", FeatureType.TELEPORT, ConflictAction.COMMAND_BLOCK, 
-                    "BDCraft provides its own teleportation system", 
-                    new String[]{"tpa", "tpaccept", "tpdeny", "back", "spawn"});
-        }
+        // === Teleport Features ===
+        registerTeleportConflicts();
+        
+        // === Home Features ===
+        registerHomeConflicts();
+        
+        // === Messaging Features ===
+        registerMessagingConflicts();
+        
+        // === Progression Features ===
+        registerProgressionConflicts();
+        
+        // === Placeholder Features ===
+        registerPlaceholderConflicts();
     }
     
     /**
-     * Adds a conflict definition.
+     * Registers economy feature conflicts.
+     */
+    private void registerEconomyConflicts() {
+        // Vault Economy
+        addPluginHandler("Vault", plugin -> {
+            try {
+                // Find the Vault Economy Service Manager
+                // Rather than disable Vault, we'll override its economy provider
+                Class<?> vaultClass = Class.forName("net.milkbowl.vault.Vault");
+                
+                if (vaultClass.isInstance(plugin)) {
+                    logger.info("Detected Vault - BDCraft will use its own economy system instead");
+                    
+                    // Apply command blockers
+                    addCommandBlocker(FeatureType.ECONOMY, "eco", "/bdeco", "Vault");
+                    addCommandBlocker(FeatureType.ECONOMY, "economy", "/bdeco", "Vault");
+                    addCommandBlocker(FeatureType.ECONOMY, "bal", "/bdbal", "Vault");
+                    addCommandBlocker(FeatureType.ECONOMY, "balance", "/bdbal", "Vault");
+                    addCommandBlocker(FeatureType.ECONOMY, "pay", "/bdpay", "Vault");
+                    
+                    return DisableResult.FEATURE_DISABLED;
+                }
+            } catch (ClassNotFoundException e) {
+                // Vault not found, which is fine
+            }
+            return DisableResult.NO_ACTION;
+        });
+        
+        // EssentialsX Economy
+        addPluginHandler("Essentials", plugin -> {
+            // Apply command blockers
+            addCommandBlocker(FeatureType.ECONOMY, "eco", "/bdeco", "Essentials");
+            addCommandBlocker(FeatureType.ECONOMY, "economy", "/bdeco", "Essentials");
+            addCommandBlocker(FeatureType.ECONOMY, "bal", "/bdbal", "Essentials");
+            addCommandBlocker(FeatureType.ECONOMY, "balance", "/bdbal", "Essentials");
+            addCommandBlocker(FeatureType.ECONOMY, "pay", "/bdpay", "Essentials");
+            addCommandBlocker(FeatureType.ECONOMY, "balancetop", "/bdtop", "Essentials");
+            addCommandBlocker(FeatureType.ECONOMY, "baltop", "/bdtop", "Essentials");
+            
+            logger.info("Detected Essentials - BDCraft will block economy commands");
+            return DisableResult.FEATURE_DISABLED;
+        });
+        
+        // CMI Economy
+        addPluginHandler("CMI", plugin -> {
+            // Apply command blockers for CMI economy
+            addCommandBlocker(FeatureType.ECONOMY, "cmi money", "/bdeco", "CMI");
+            addCommandBlocker(FeatureType.ECONOMY, "cmi balance", "/bdbal", "CMI");
+            addCommandBlocker(FeatureType.ECONOMY, "cmi baltop", "/bdtop", "CMI");
+            addCommandBlocker(FeatureType.ECONOMY, "cmi pay", "/bdpay", "CMI");
+            
+            logger.info("Detected CMI - BDCraft will block economy commands");
+            return DisableResult.FEATURE_DISABLED;
+        });
+    }
+    
+    /**
+     * Registers market feature conflicts.
+     */
+    private void registerMarketConflicts() {
+        // QuickShop
+        addPluginHandler("QuickShop", plugin -> {
+            // Block shop-related commands that conflict with BD markets
+            addCommandBlocker(FeatureType.MARKETS, "qs", "/bdmarket", "QuickShop");
+            addCommandBlocker(FeatureType.MARKETS, "shop", "/bdmarket", "QuickShop");
+            addCommandBlocker(FeatureType.MARKETS, "quickshop", "/bdmarket", "QuickShop");
+            
+            logger.info("Detected QuickShop - BDCraft will use its own market system instead");
+            return DisableResult.FEATURE_DISABLED;
+        });
+        
+        // ShopKeepers
+        addPluginHandler("Shopkeepers", plugin -> {
+            // Block shop-related commands that conflict with BD markets
+            addCommandBlocker(FeatureType.MARKETS, "shopkeeper", "/bdmarket", "Shopkeepers");
+            addCommandBlocker(FeatureType.MARKETS, "shopkeepers", "/bdmarket", "Shopkeepers");
+            
+            logger.info("Detected Shopkeepers - BDCraft will use its own market system instead");
+            return DisableResult.FEATURE_DISABLED;
+        });
+    }
+    
+    /**
+     * Registers permission feature conflicts.
+     */
+    private void registerPermissionConflicts() {
+        // LuckPerms
+        addPluginHandler("LuckPerms", plugin -> {
+            // We won't block LuckPerms commands entirely, but we'll inform admins
+            // that our permissions system works alongside it
+            logger.info("Detected LuckPerms - BDCraft will use internal permission system for BD features");
+            return DisableResult.NOTIFY_ONLY;
+        });
+        
+        // PermissionsEx
+        addPluginHandler("PermissionsEx", plugin -> {
+            // We won't block PermissionsEx commands entirely, but we'll inform admins
+            // that our permissions system works alongside it
+            logger.info("Detected PermissionsEx - BDCraft will use internal permission system for BD features");
+            return DisableResult.NOTIFY_ONLY;
+        });
+    }
+    
+    /**
+     * Registers teleport feature conflicts.
+     */
+    private void registerTeleportConflicts() {
+        // EssentialsX Teleport Commands
+        addPluginHandler("Essentials", plugin -> {
+            // Block teleport-related commands
+            addCommandBlocker(FeatureType.TELEPORT, "tpa", "/bdtp", "Essentials");
+            addCommandBlocker(FeatureType.TELEPORT, "tpaccept", "/bdtpa", "Essentials");
+            addCommandBlocker(FeatureType.TELEPORT, "tpdeny", "/bdtpd", "Essentials");
+            addCommandBlocker(FeatureType.TELEPORT, "tphere", "/bdtpr", "Essentials");
+            addCommandBlocker(FeatureType.TELEPORT, "back", "/bdback", "Essentials");
+            addCommandBlocker(FeatureType.TELEPORT, "spawn", "/bdspawn", "Essentials");
+            
+            logger.info("Detected Essentials - BDCraft will block teleport commands");
+            return DisableResult.FEATURE_DISABLED;
+        });
+        
+        // CMI Teleport Commands
+        addPluginHandler("CMI", plugin -> {
+            // Block teleport-related commands
+            addCommandBlocker(FeatureType.TELEPORT, "tpa", "/bdtp", "CMI");
+            addCommandBlocker(FeatureType.TELEPORT, "tpaccept", "/bdtpa", "CMI");
+            addCommandBlocker(FeatureType.TELEPORT, "tpdeny", "/bdtpd", "CMI");
+            addCommandBlocker(FeatureType.TELEPORT, "cmi tpa", "/bdtp", "CMI");
+            addCommandBlocker(FeatureType.TELEPORT, "cmi tpaccept", "/bdtpa", "CMI");
+            addCommandBlocker(FeatureType.TELEPORT, "cmi tpdeny", "/bdtpd", "CMI");
+            addCommandBlocker(FeatureType.TELEPORT, "back", "/bdback", "CMI");
+            addCommandBlocker(FeatureType.TELEPORT, "spawn", "/bdspawn", "CMI");
+            
+            logger.info("Detected CMI - BDCraft will block teleport commands");
+            return DisableResult.FEATURE_DISABLED;
+        });
+    }
+    
+    /**
+     * Registers home feature conflicts.
+     */
+    private void registerHomeConflicts() {
+        // EssentialsX Home Commands
+        addPluginHandler("Essentials", plugin -> {
+            // Block home-related commands
+            addCommandBlocker(FeatureType.HOMES, "home", "/bdhome", "Essentials");
+            addCommandBlocker(FeatureType.HOMES, "homes", "/bdhome list", "Essentials");
+            addCommandBlocker(FeatureType.HOMES, "sethome", "/bdhome set", "Essentials");
+            addCommandBlocker(FeatureType.HOMES, "delhome", "/bdhome del", "Essentials");
+            
+            logger.info("Detected Essentials - BDCraft will block home commands");
+            return DisableResult.FEATURE_DISABLED;
+        });
+        
+        // CMI Home Commands
+        addPluginHandler("CMI", plugin -> {
+            // Block home-related commands
+            addCommandBlocker(FeatureType.HOMES, "home", "/bdhome", "CMI");
+            addCommandBlocker(FeatureType.HOMES, "homes", "/bdhome list", "CMI");
+            addCommandBlocker(FeatureType.HOMES, "sethome", "/bdhome set", "CMI");
+            addCommandBlocker(FeatureType.HOMES, "delhome", "/bdhome del", "CMI");
+            addCommandBlocker(FeatureType.HOMES, "cmi home", "/bdhome", "CMI");
+            addCommandBlocker(FeatureType.HOMES, "cmi sethome", "/bdhome set", "CMI");
+            addCommandBlocker(FeatureType.HOMES, "cmi delhome", "/bdhome del", "CMI");
+            
+            logger.info("Detected CMI - BDCraft will block home commands");
+            return DisableResult.FEATURE_DISABLED;
+        });
+    }
+    
+    /**
+     * Registers messaging feature conflicts.
+     */
+    private void registerMessagingConflicts() {
+        // EssentialsX Messaging
+        addPluginHandler("Essentials", plugin -> {
+            // Block message-related commands
+            addCommandBlocker(FeatureType.MESSAGING, "msg", "/bdmsg", "Essentials");
+            addCommandBlocker(FeatureType.MESSAGING, "message", "/bdmsg", "Essentials");
+            addCommandBlocker(FeatureType.MESSAGING, "tell", "/bdmsg", "Essentials");
+            addCommandBlocker(FeatureType.MESSAGING, "whisper", "/bdmsg", "Essentials");
+            addCommandBlocker(FeatureType.MESSAGING, "w", "/bdmsg", "Essentials");
+            addCommandBlocker(FeatureType.MESSAGING, "r", "/bdr", "Essentials");
+            addCommandBlocker(FeatureType.MESSAGING, "reply", "/bdr", "Essentials");
+            addCommandBlocker(FeatureType.MESSAGING, "mail", "/bdmail", "Essentials");
+            
+            logger.info("Detected Essentials - BDCraft will block messaging commands");
+            return DisableResult.FEATURE_DISABLED;
+        });
+        
+        // CMI Messaging
+        addPluginHandler("CMI", plugin -> {
+            // Block message-related commands
+            addCommandBlocker(FeatureType.MESSAGING, "msg", "/bdmsg", "CMI");
+            addCommandBlocker(FeatureType.MESSAGING, "message", "/bdmsg", "CMI");
+            addCommandBlocker(FeatureType.MESSAGING, "tell", "/bdmsg", "CMI");
+            addCommandBlocker(FeatureType.MESSAGING, "whisper", "/bdmsg", "CMI");
+            addCommandBlocker(FeatureType.MESSAGING, "r", "/bdr", "CMI");
+            addCommandBlocker(FeatureType.MESSAGING, "reply", "/bdr", "CMI");
+            addCommandBlocker(FeatureType.MESSAGING, "cmi msg", "/bdmsg", "CMI");
+            addCommandBlocker(FeatureType.MESSAGING, "cmi mail", "/bdmail", "CMI");
+            
+            logger.info("Detected CMI - BDCraft will block messaging commands");
+            return DisableResult.FEATURE_DISABLED;
+        });
+    }
+    
+    /**
+     * Registers progression feature conflicts.
+     */
+    private void registerProgressionConflicts() {
+        // Level/Rank plugins
+        addPluginHandler("EssentialsX", plugin -> {
+            // Only block specific rank-related commands
+            addCommandBlocker(FeatureType.PROGRESSION, "rank", "/bdrank", "EssentialsX");
+            return DisableResult.FEATURE_DISABLED;
+        });
+        
+        // PlayerLevels plugin
+        addPluginHandler("PlayerLevels", plugin -> {
+            // Block all commands to avoid conflicting with our progression system
+            addCommandBlocker(FeatureType.PROGRESSION, "level", "/bdrank", "PlayerLevels");
+            addCommandBlocker(FeatureType.PROGRESSION, "levels", "/bdrank", "PlayerLevels");
+            addCommandBlocker(FeatureType.PROGRESSION, "playerlevel", "/bdrank", "PlayerLevels");
+            addCommandBlocker(FeatureType.PROGRESSION, "playerlevels", "/bdrank", "PlayerLevels");
+            return DisableResult.FEATURE_DISABLED;
+        });
+    }
+    
+    /**
+     * Registers placeholder conflicts.
+     */
+    private void registerPlaceholderConflicts() {
+        // No need to block PlaceholderAPI as we'll hook into it
+        addPluginHandler("PlaceholderAPI", plugin -> {
+            logger.info("Detected PlaceholderAPI - BDCraft will register custom placeholders");
+            return DisableResult.NOTIFY_ONLY;
+        });
+    }
+    
+    /**
+     * Adds a new plugin handler to check for conflicts.
      * 
-     * @param pluginName The name of the conflicting plugin
-     * @param featureType The type of feature that conflicts
-     * @param action The action to take when conflict is detected
-     * @param reason The reason for the conflict
-     * @param commands The commands to block (if applicable)
+     * @param pluginName The name of the plugin to check
+     * @param handler The handler to process the plugin
      */
-    private void addConflict(String pluginName, FeatureType featureType, ConflictAction action, String reason, String[] commands) {
-        PluginConflict conflict = conflictingPlugins.computeIfAbsent(pluginName, k -> new PluginConflict(pluginName));
-        conflict.addFeatureConflict(featureType, action, reason, commands);
+    private void addPluginHandler(String pluginName, PluginFeatureHandler handler) {
+        pluginHandlers.put(pluginName, handler);
+    }
+    
+    /**
+     * Adds a command blocker for a specific feature.
+     * 
+     * @param featureType The feature type
+     * @param command The command to block
+     * @param replacement The suggested replacement command
+     * @param pluginName The name of the plugin that provides the command
+     */
+    private void addCommandBlocker(FeatureType featureType, String command, String replacement, String pluginName) {
+        commandBlockers.get(featureType).add(new CommandBlocker(command, replacement, pluginName));
+        
+        // Create a pattern to match this command
+        // This handles commands with or without slash and with arguments
+        Pattern pattern = Pattern.compile("^/?" + Pattern.quote(command) + "(?:\\s+.*)?$", Pattern.CASE_INSENSITIVE);
+        blockedCommandPatterns.put(pattern, replacement);
     }
     
     /**
@@ -155,125 +424,40 @@ public class PluginConflictManager implements Listener {
      */
     private void checkExistingPlugins() {
         for (Plugin p : Bukkit.getPluginManager().getPlugins()) {
-            checkPluginConflict(p);
+            handlePluginConflict(p);
         }
     }
     
     /**
-     * Checks if a plugin conflicts with BDCraft.
+     * Handles plugin conflict resolution for a specific plugin.
      * 
      * @param plugin The plugin to check
      */
-    private void checkPluginConflict(Plugin plugin) {
+    private void handlePluginConflict(Plugin plugin) {
         if (plugin == null || plugin.equals(this.plugin)) {
             return;
         }
         
         String pluginName = plugin.getName();
-        PluginConflict conflict = conflictingPlugins.get(pluginName);
+        PluginFeatureHandler handler = pluginHandlers.get(pluginName);
         
-        if (conflict != null) {
-            // Handle the conflict based on configuration
-            handleConflict(conflict, plugin);
-        }
-    }
-    
-    /**
-     * Handles a plugin conflict.
-     * 
-     * @param conflict The conflict definition
-     * @param conflictingPlugin The conflicting plugin
-     */
-    private void handleConflict(PluginConflict conflict, Plugin conflictingPlugin) {
-        logger.warning("Detected potential conflict with plugin: " + conflictingPlugin.getName());
-        
-        for (FeatureConflict featureConflict : conflict.getFeatureConflicts()) {
-            logger.warning(" - Feature conflict: " + featureConflict.getFeatureType() + " - " + featureConflict.getReason());
+        if (handler != null) {
+            DisableResult result = handler.handleFeature(plugin);
             
-            switch (featureConflict.getAction()) {
-                case NOTIFY_ONLY:
-                    // Just log the conflict, already done above
-                    break;
-                    
-                case COMMAND_BLOCK:
-                    // Add commands to blocked list
-                    for (String command : featureConflict.getCommands()) {
-                        if (!blockedCommands.contains(command)) {
-                            blockedCommands.add(command);
-                            logger.warning("   - Blocking command: /" + command);
-                        }
-                    }
-                    break;
-                    
-                case FEATURE_DISABLE:
-                    // Log that we're handling this conflict by disabling our competing feature
-                    logger.warning("   - BDCraft will override " + conflictingPlugin.getName() + 
-                            " functionality for " + featureConflict.getFeatureType());
-                    break;
-                    
-                case PLUGIN_DISABLE:
-                    // This is a severe conflict, disable the other plugin
-                    // This option should be used very sparingly
+            if (result != DisableResult.NO_ACTION) {
+                logger.info("Handled potential conflict with plugin " + pluginName + 
+                        ": " + result.name());
+                
+                if (result == DisableResult.PLUGIN_DISABLED) {
+                    // Only disable the entire plugin as a last resort and if allowed
                     if (plugin.getConfig().getBoolean("conflict-management.allow-plugin-disable", false)) {
-                        logger.warning("   - Disabling conflicting plugin: " + conflictingPlugin.getName());
-                        Bukkit.getPluginManager().disablePlugin(conflictingPlugin);
+                        logger.warning("Disabling conflicting plugin: " + pluginName);
+                        Bukkit.getPluginManager().disablePlugin(plugin);
                     } else {
-                        logger.warning("   - Not disabling plugin due to configuration. Manual resolution required.");
+                        logger.warning("Not disabling plugin due to configuration. Manual resolution may be required.");
                     }
-                    break;
-            }
-            
-            // Notify server admins about the conflict
-            if (notifyAdmins) {
-                for (String line : generateConflictMessage(conflict, featureConflict)) {
-                    Bukkit.getConsoleSender().sendMessage(line);
                 }
             }
-        }
-    }
-    
-    /**
-     * Generates a formatted conflict message for admins.
-     * 
-     * @param conflict The plugin conflict
-     * @param featureConflict The specific feature conflict
-     * @return The formatted message lines
-     */
-    private String[] generateConflictMessage(PluginConflict conflict, FeatureConflict featureConflict) {
-        List<String> message = new ArrayList<>();
-        
-        message.add("§c[BDCraft] Plugin Conflict Detected");
-        message.add("§e - Plugin: §f" + conflict.getPluginName());
-        message.add("§e - Feature: §f" + featureConflict.getFeatureType());
-        message.add("§e - Issue: §f" + featureConflict.getReason());
-        
-        if (featureConflict.getAction() == ConflictAction.COMMAND_BLOCK) {
-            message.add("§e - Blocked Commands: §f" + String.join(", ", featureConflict.getCommands()));
-        }
-        
-        message.add("§e - Resolution: §f" + getActionDescription(featureConflict.getAction()));
-        
-        return message.toArray(new String[0]);
-    }
-    
-    /**
-     * Gets a user-friendly description of a conflict action.
-     * 
-     * @param action The conflict action
-     * @return A description of the action
-     */
-    private String getActionDescription(ConflictAction action) {
-        switch (action) {
-            case NOTIFY_ONLY:
-                return "Notification only, no action taken";
-            case COMMAND_BLOCK:
-                return "Blocking conflicting commands";
-            case FEATURE_DISABLE:
-                return "BDCraft will override the conflicting functionality";
-            case PLUGIN_DISABLE:
-                return "Disabling the conflicting plugin";
-            default:
-                return "Unknown action";
         }
     }
     
@@ -284,7 +468,7 @@ public class PluginConflictManager implements Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPluginEnable(PluginEnableEvent event) {
-        checkPluginConflict(event.getPlugin());
+        handlePluginConflict(event.getPlugin());
     }
     
     /**
@@ -298,18 +482,51 @@ public class PluginConflictManager implements Listener {
             return;
         }
         
-        String command = event.getMessage().substring(1).split(" ")[0].toLowerCase();
+        String fullCommand = event.getMessage();
         
-        // Check if this command is blocked
-        if (blockedCommands.contains(command)) {
-            event.setCancelled(true);
-            
-            // Send message to player
-            event.getPlayer().sendMessage("§c[BDCraft] This command is disabled because BDCraft provides this functionality.");
-            event.getPlayer().sendMessage("§e Please use BDCraft commands instead. Type §f/bdhelp §efor more information.");
-            
-            // Log the blocked command
-            logger.info("Blocked command /" + command + " from player " + event.getPlayer().getName());
+        // Check if this command matches any blocked command pattern
+        for (Map.Entry<Pattern, String> entry : blockedCommandPatterns.entrySet()) {
+            if (entry.getKey().matcher(fullCommand).matches()) {
+                event.setCancelled(true);
+                
+                // Send message to player
+                Player player = event.getPlayer();
+                player.sendMessage("§c[BDCraft] This command is disabled because BDCraft provides this functionality.");
+                player.sendMessage("§e Please use §f" + entry.getValue() + " §einstead. Type §f/bdhelp §efor more information.");
+                
+                // Log the blocked command
+                logger.info("Blocked command " + fullCommand + " from player " + player.getName());
+                return;
+            }
+        }
+    }
+    
+    /**
+     * Event handler for server commands.
+     * 
+     * @param event The server command event
+     */
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onServerCommand(ServerCommandEvent event) {
+        if (event.isCancelled()) {
+            return;
+        }
+        
+        String fullCommand = event.getCommand();
+        
+        // Check if this command matches any blocked command pattern
+        for (Map.Entry<Pattern, String> entry : blockedCommandPatterns.entrySet()) {
+            if (entry.getKey().matcher(fullCommand).matches()) {
+                event.setCancelled(true);
+                
+                // Send message to console
+                event.getSender().sendMessage("§c[BDCraft] This command is disabled because BDCraft provides this functionality.");
+                event.getSender().sendMessage("§e Please use §f" + entry.getValue() + " §einstead.");
+                
+                // Log the blocked command
+                logger.info("Blocked console command: " + fullCommand);
+                return;
+            }
         }
     }
     
@@ -318,128 +535,122 @@ public class PluginConflictManager implements Listener {
      */
     public enum FeatureType {
         ECONOMY,
+        MARKETS,
         PERMISSIONS,
-        HOMES,
         TELEPORT,
+        HOMES,
         MESSAGING,
+        PROGRESSION,
         PLACEHOLDER
     }
     
     /**
-     * An enum for conflict actions.
+     * An enum for disable results.
      */
-    public enum ConflictAction {
-        NOTIFY_ONLY,      // Just notify the admin
-        COMMAND_BLOCK,    // Block specific commands from the other plugin
-        FEATURE_DISABLE,  // Disable a specific feature in our plugin
-        PLUGIN_DISABLE    // Disable the conflicting plugin (use sparingly)
+    public enum DisableResult {
+        NO_ACTION,        // No action needed
+        NOTIFY_ONLY,      // Just notify the admin about potential conflict
+        FEATURE_DISABLED, // The feature was disabled in the other plugin
+        PLUGIN_DISABLED   // The entire plugin was disabled
     }
     
     /**
-     * A class representing a feature conflict.
+     * Interface for plugin feature handlers.
      */
-    private static class FeatureConflict {
-        private final FeatureType featureType;
-        private final ConflictAction action;
-        private final String reason;
-        private final String[] commands;
-        
+    @FunctionalInterface
+    private interface PluginFeatureHandler {
         /**
-         * Creates a new feature conflict.
+         * Handles a potentially conflicting feature.
          * 
-         * @param featureType The feature type
-         * @param action The conflict action
-         * @param reason The reason for the conflict
-         * @param commands The commands to block (if applicable)
+         * @param plugin The plugin to handle
+         * @return The disable result
          */
-        public FeatureConflict(FeatureType featureType, ConflictAction action, String reason, String[] commands) {
-            this.featureType = featureType;
-            this.action = action;
-            this.reason = reason;
-            this.commands = commands;
-        }
-        
-        /**
-         * Gets the feature type.
-         * 
-         * @return The feature type
-         */
-        public FeatureType getFeatureType() {
-            return featureType;
-        }
-        
-        /**
-         * Gets the conflict action.
-         * 
-         * @return The conflict action
-         */
-        public ConflictAction getAction() {
-            return action;
-        }
-        
-        /**
-         * Gets the reason for the conflict.
-         * 
-         * @return The reason
-         */
-        public String getReason() {
-            return reason;
-        }
-        
-        /**
-         * Gets the commands to block.
-         * 
-         * @return The commands
-         */
-        public String[] getCommands() {
-            return commands;
-        }
+        DisableResult handleFeature(Plugin plugin);
     }
     
     /**
-     * A class representing a plugin conflict.
+     * Class for command blocking.
      */
-    private static class PluginConflict {
+    private static class CommandBlocker {
+        private final String command;
+        private final String replacement;
         private final String pluginName;
-        private final List<FeatureConflict> featureConflicts = new ArrayList<>();
         
         /**
-         * Creates a new plugin conflict.
+         * Creates a new command blocker.
          * 
-         * @param pluginName The plugin name
+         * @param command The command to block
+         * @param replacement The replacement command
+         * @param pluginName The name of the plugin that provides the command
          */
-        public PluginConflict(String pluginName) {
+        public CommandBlocker(String command, String replacement, String pluginName) {
+            this.command = command;
+            this.replacement = replacement;
             this.pluginName = pluginName;
         }
         
         /**
-         * Gets the plugin name.
+         * Gets the command to block.
+         * 
+         * @return The command
+         */
+        public String getCommand() {
+            return command;
+        }
+        
+        /**
+         * Gets the replacement command.
+         * 
+         * @return The replacement
+         */
+        public String getReplacement() {
+            return replacement;
+        }
+        
+        /**
+         * Gets the name of the plugin that provides the command.
          * 
          * @return The plugin name
          */
         public String getPluginName() {
             return pluginName;
         }
+    }
+    
+    /**
+     * Class for event listener blocking.
+     */
+    private static class ListenerBlocker {
+        private final Class<?> listenerClass;
+        private final String pluginName;
         
         /**
-         * Adds a feature conflict.
+         * Creates a new listener blocker.
          * 
-         * @param featureType The feature type
-         * @param action The conflict action
-         * @param reason The reason for the conflict
-         * @param commands The commands to block (if applicable)
+         * @param listenerClass The listener class to block
+         * @param pluginName The name of the plugin that provides the listener
          */
-        public void addFeatureConflict(FeatureType featureType, ConflictAction action, String reason, String[] commands) {
-            featureConflicts.add(new FeatureConflict(featureType, action, reason, commands));
+        public ListenerBlocker(Class<?> listenerClass, String pluginName) {
+            this.listenerClass = listenerClass;
+            this.pluginName = pluginName;
         }
         
         /**
-         * Gets the feature conflicts.
+         * Gets the listener class to block.
          * 
-         * @return The feature conflicts
+         * @return The listener class
          */
-        public List<FeatureConflict> getFeatureConflicts() {
-            return featureConflicts;
+        public Class<?> getListenerClass() {
+            return listenerClass;
+        }
+        
+        /**
+         * Gets the name of the plugin that provides the listener.
+         * 
+         * @return The plugin name
+         */
+        public String getPluginName() {
+            return pluginName;
         }
     }
 }

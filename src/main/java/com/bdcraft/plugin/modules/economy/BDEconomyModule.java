@@ -1,56 +1,48 @@
 package com.bdcraft.plugin.modules.economy;
 
 import com.bdcraft.plugin.BDCraft;
-import com.bdcraft.plugin.modules.Module;
-import com.bdcraft.plugin.modules.economy.farming.BDCropManager;
-import com.bdcraft.plugin.modules.economy.items.BDItemManager;
-import com.bdcraft.plugin.modules.economy.listeners.CropGrowthListener;
-import com.bdcraft.plugin.modules.economy.listeners.HouseTokenListener;
-import com.bdcraft.plugin.modules.economy.listeners.MarketTokenListener;
-import com.bdcraft.plugin.modules.economy.listeners.ToolUseListener;
-import com.bdcraft.plugin.modules.economy.listeners.VillagerTradeListener;
-import com.bdcraft.plugin.modules.economy.crafting.BDRecipeManager;
-import com.bdcraft.plugin.modules.economy.crafting.BDRecipeListener;
-import com.bdcraft.plugin.modules.economy.auction.AuctionManager;
-import com.bdcraft.plugin.modules.economy.auction.AuctionHouseGUI;
-import com.bdcraft.plugin.modules.economy.auction.AuctionListener;
+import com.bdcraft.plugin.api.EconomyAPI;
+import com.bdcraft.plugin.modules.BDModule;
 import com.bdcraft.plugin.modules.economy.market.MarketManager;
-import com.bdcraft.plugin.modules.economy.market.gui.MarketManagementGUI;
-import com.bdcraft.plugin.modules.economy.villager.BDVillagerManager;
-import com.bdcraft.plugin.modules.economy.villager.BDVillagerAPI;
-import com.bdcraft.plugin.modules.economy.BDEconomyAPI;
+import com.bdcraft.plugin.modules.economy.market.BDMarketManager;
+import com.bdcraft.plugin.modules.economy.auction.AuctionManager;
+import com.bdcraft.plugin.modules.economy.items.BDItemManager;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
-import java.io.File;
-import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * The BD Economy Module.
+ * Module for handling BDCraft economy, currency, markets and trading.
  */
-public class BDEconomyModule implements Module {
+public class BDEconomyModule implements BDModule, EconomyAPI {
     private final BDCraft plugin;
     private final Logger logger;
-    private boolean enabled = false;
-    
-    private BDItemManager itemManager;
-    private BDVillagerManager villagerManager;
+    private final Map<UUID, Integer> playerBalances;
     private MarketManager marketManager;
-    private BDCropManager cropManager;
-    private BDRecipeManager recipeManager;
-    private AuctionManager auctionManager;
-    private AuctionHouseGUI auctionHouseGUI;
-    private MarketManagementGUI marketManagementGUI;
+    private BDMarketManager bdMarketManager;
     
-    private final Map<UUID, Integer> playerBalances = new HashMap<>();
-    private final File economyFile;
-    private FileConfiguration economyConfig;
+    // Crop economy data
+    private final Map<String, Double> cropValues;
+    private final Map<String, Integer> cropDemand;
+    private final Map<String, Double> pricePredictions;
+    
+    // Market statistics data
+    private double inflationRate;
+    private double averageMarketValue;
+    private int totalTradesInDay;
+    private long lastTradeUpdateTime;
+    
+    // Other managers
+    private AuctionManager auctionManager;
+    private BDItemManager itemManager;
     
     /**
      * Creates a new BD economy module.
@@ -59,21 +51,67 @@ public class BDEconomyModule implements Module {
     public BDEconomyModule(BDCraft plugin) {
         this.plugin = plugin;
         this.logger = plugin.getLogger();
-        this.economyFile = new File(plugin.getDataFolder(), "economy.yml");
+        this.playerBalances = new HashMap<>();
+        this.cropValues = new HashMap<>();
+        this.cropDemand = new HashMap<>();
+        this.pricePredictions = new HashMap<>();
+        this.inflationRate = 0.0;
+        this.averageMarketValue = 100.0;
+        this.totalTradesInDay = 0;
+        this.lastTradeUpdateTime = System.currentTimeMillis();
+    }
+    
+    @Override
+    public void onEnable() {
+        logger.info("Enabling BD Economy Module...");
         
-        // Ensure file exists
-        if (!economyFile.exists()) {
-            try {
-                if (economyFile.createNewFile()) {
-                    logger.info("Created economy.yml file");
-                }
-            } catch (IOException e) {
-                logger.log(Level.SEVERE, "Could not create economy.yml file", e);
-            }
-        }
+        // Initialize market manager
+        marketManager = new MarketManager(plugin);
         
-        // Load config
-        this.economyConfig = YamlConfiguration.loadConfiguration(economyFile);
+        // Initialize BD market manager
+        bdMarketManager = new BDMarketManager(plugin, marketManager);
+        
+        // Initialize auction manager
+        auctionManager = new AuctionManager(plugin);
+        
+        // Initialize item manager
+        itemManager = new BDItemManager(plugin);
+        
+        // Register API interface
+        plugin.setEconomyAPI(this);
+        
+        // Load economy data
+        loadEconomyData();
+        
+        // Initialize crop values
+        initializeCropValues();
+        
+        logger.info("BD Economy Module enabled.");
+    }
+    
+    @Override
+    public void onDisable() {
+        logger.info("Disabling BD Economy Module...");
+        
+        // Save economy data
+        saveEconomyData();
+        
+        logger.info("BD Economy Module disabled.");
+    }
+    
+    @Override
+    public void onReload() {
+        logger.info("Reloading BD Economy Module...");
+        
+        // Reload economy data
+        loadEconomyData();
+        
+        logger.info("BD Economy Module reloaded.");
+    }
+    
+    @Override
+    public List<String> getDependencies() {
+        return Arrays.asList();
     }
     
     @Override
@@ -81,110 +119,162 @@ public class BDEconomyModule implements Module {
         return "Economy";
     }
     
-    @Override
-    public void enable() {
-        if (enabled) {
-            return;
-        }
+    /**
+     * Loads economy data from configuration.
+     */
+    private void loadEconomyData() {
+        FileConfiguration config = plugin.getConfig();
         
-        logger.info("Enabling BD Economy Module");
-        
-        // Initialize managers
-        this.itemManager = new BDItemManager(plugin);
-        this.villagerManager = new BDVillagerManager(plugin);
-        this.marketManager = new MarketManager(plugin);
-        this.cropManager = new BDCropManager(plugin);
-        this.recipeManager = new BDRecipeManager(plugin);
-        this.auctionManager = new AuctionManager(plugin);
-        this.auctionHouseGUI = new AuctionHouseGUI(plugin, auctionManager);
-        
-        // Register API implementations
-        plugin.setEconomyAPI(new BDEconomyAPI(plugin, this));
-        plugin.setVillagerAPI(new BDVillagerAPI(plugin, villagerManager, marketManager));
-        
-        // Register listeners
-        plugin.getServer().getPluginManager().registerEvents(new MarketTokenListener(plugin), plugin);
-        plugin.getServer().getPluginManager().registerEvents(new HouseTokenListener(plugin), plugin);
-        plugin.getServer().getPluginManager().registerEvents(new CropGrowthListener(plugin), plugin);
-        plugin.getServer().getPluginManager().registerEvents(new VillagerTradeListener(plugin), plugin);
-        plugin.getServer().getPluginManager().registerEvents(new BDRecipeListener(plugin, recipeManager), plugin);
-        plugin.getServer().getPluginManager().registerEvents(new AuctionListener(plugin, auctionHouseGUI), plugin);
-        plugin.getServer().getPluginManager().registerEvents(new ToolUseListener(plugin), plugin);
-        
-        // Register recipes
-        recipeManager.registerRecipes();
-        
-        // Load player balances
-        loadPlayerBalances();
-        
-        enabled = true;
-    }
-    
-    @Override
-    public void disable() {
-        if (!enabled) {
-            return;
-        }
-        
-        logger.info("Disabling BD Economy Module");
-        
-        // Save player balances
-        savePlayerBalances();
-        
-        // Save markets
-        marketManager.saveMarkets();
-        
-        // Unregister recipes
-        recipeManager.unregisterRecipes();
-        
-        enabled = false;
+        // Load economy configuration
+        inflationRate = config.getDouble("economy.inflation_rate", 0.02);
+        averageMarketValue = config.getDouble("economy.average_market_value", 100.0);
     }
     
     /**
-     * Loads player balances from the configuration.
+     * Saves economy data to configuration.
      */
-    private void loadPlayerBalances() {
-        if (!economyConfig.contains("balances")) {
-            return;
+    private void saveEconomyData() {
+        FileConfiguration config = plugin.getConfig();
+        
+        // Save economy configuration
+        config.set("economy.inflation_rate", inflationRate);
+        config.set("economy.average_market_value", averageMarketValue);
+        
+        plugin.saveConfig();
+    }
+    
+    /**
+     * Initializes crop values.
+     */
+    private void initializeCropValues() {
+        // Base crop values
+        cropValues.put("wheat", 5.0);
+        cropValues.put("carrot", 6.0);
+        cropValues.put("potato", 6.0);
+        cropValues.put("beetroot", 8.0);
+        cropValues.put("melon", 4.0);
+        cropValues.put("pumpkin", 10.0);
+        cropValues.put("sugar_cane", 3.0);
+        cropValues.put("cactus", 3.0);
+        cropValues.put("cocoa_beans", 12.0);
+        cropValues.put("sweet_berries", 7.0);
+        cropValues.put("red_mushroom", 15.0);
+        cropValues.put("brown_mushroom", 12.0);
+        cropValues.put("nether_wart", 20.0);
+        cropValues.put("chorus_fruit", 25.0);
+        
+        // Base crop demand
+        cropDemand.put("wheat", 100);
+        cropDemand.put("carrot", 80);
+        cropDemand.put("potato", 80);
+        cropDemand.put("beetroot", 60);
+        cropDemand.put("melon", 70);
+        cropDemand.put("pumpkin", 50);
+        cropDemand.put("sugar_cane", 90);
+        cropDemand.put("cactus", 30);
+        cropDemand.put("cocoa_beans", 40);
+        cropDemand.put("sweet_berries", 45);
+        cropDemand.put("red_mushroom", 25);
+        cropDemand.put("brown_mushroom", 30);
+        cropDemand.put("nether_wart", 20);
+        cropDemand.put("chorus_fruit", 15);
+        
+        // Initial price predictions
+        updatePricePredictions();
+    }
+    
+    /**
+     * Updates price predictions based on current trends.
+     */
+    private void updatePricePredictions() {
+        // Simulate market trends
+        LocalDateTime now = LocalDateTime.now();
+        int month = now.getMonthValue();
+        int day = now.getDayOfMonth();
+        
+        // Clear existing predictions
+        pricePredictions.clear();
+        
+        // Create seasonal trends
+        if (month >= 3 && month <= 5) {
+            // Spring trends
+            pricePredictions.put("carrot", 0.15);
+            pricePredictions.put("potato", 0.10);
+            pricePredictions.put("wheat", 0.05);
+            pricePredictions.put("beetroot", 0.20);
+        } else if (month >= 6 && month <= 8) {
+            // Summer trends
+            pricePredictions.put("melon", 0.25);
+            pricePredictions.put("sugar_cane", 0.15);
+            pricePredictions.put("cactus", 0.10);
+            pricePredictions.put("sweet_berries", 0.20);
+        } else if (month >= 9 && month <= 11) {
+            // Fall trends
+            pricePredictions.put("pumpkin", 0.30);
+            pricePredictions.put("cocoa_beans", 0.15);
+            pricePredictions.put("red_mushroom", 0.25);
+            pricePredictions.put("brown_mushroom", 0.20);
+        } else {
+            // Winter trends
+            pricePredictions.put("nether_wart", 0.15);
+            pricePredictions.put("chorus_fruit", 0.25);
+            pricePredictions.put("sweet_berries", -0.10);
+            pricePredictions.put("pumpkin", -0.15);
         }
         
-        for (String uuidStr : economyConfig.getConfigurationSection("balances").getKeys(false)) {
-            try {
-                UUID playerUuid = UUID.fromString(uuidStr);
-                int balance = economyConfig.getInt("balances." + uuidStr);
-                
-                playerBalances.put(playerUuid, balance);
-            } catch (IllegalArgumentException e) {
-                logger.warning("Invalid UUID in economy.yml: " + uuidStr);
-            }
+        // Add some random predictions based on day of month
+        if (day % 5 == 0) {
+            pricePredictions.put("wheat", 0.10);
+        } else if (day % 5 == 1) {
+            pricePredictions.put("carrot", 0.12);
+        } else if (day % 5 == 2) {
+            pricePredictions.put("potato", 0.08);
+        } else if (day % 5 == 3) {
+            pricePredictions.put("melon", 0.15);
+        } else {
+            pricePredictions.put("pumpkin", 0.11);
         }
     }
     
     /**
-     * Saves player balances to the configuration.
+     * Gets the market manager.
+     * 
+     * @return The market manager
      */
-    public void savePlayerBalances() {
-        // Clear existing balances
-        economyConfig.set("balances", null);
-        
-        // Add balances
-        for (Map.Entry<UUID, Integer> entry : playerBalances.entrySet()) {
-            UUID playerUuid = entry.getKey();
-            int balance = entry.getValue();
-            
-            economyConfig.set("balances." + playerUuid.toString(), balance);
-        }
-        
-        // Save config
-        try {
-            economyConfig.save(economyFile);
-        } catch (IOException e) {
-            logger.log(Level.SEVERE, "Could not save economy.yml file", e);
-        }
+    public MarketManager getMarketManager() {
+        return marketManager;
+    }
+    
+    /**
+     * Gets the auction manager.
+     * 
+     * @return The auction manager
+     */
+    public AuctionManager getAuctionManager() {
+        return auctionManager;
+    }
+    
+    /**
+     * Gets the item manager.
+     * 
+     * @return The item manager
+     */
+    public BDItemManager getItemManager() {
+        return itemManager;
+    }
+    
+    /**
+     * Gets the BD market manager.
+     * 
+     * @return The BD market manager
+     */
+    public BDMarketManager getBDMarketManager() {
+        return bdMarketManager;
     }
     
     /**
      * Gets a player's balance.
+     * 
      * @param player The player
      * @return The balance
      */
@@ -193,41 +283,18 @@ public class BDEconomyModule implements Module {
     }
     
     /**
-     * Adds to a player's balance.
+     * Sets a player's balance.
+     * 
      * @param player The player
-     * @param amount The amount to add
-     * @return The new balance
+     * @param balance The new balance
      */
-    public int addPlayerBalance(Player player, int amount) {
-        int currentBalance = getPlayerBalance(player);
-        int newBalance = currentBalance + amount;
-        
-        playerBalances.put(player.getUniqueId(), newBalance);
-        
-        return newBalance;
+    public void setPlayerBalance(Player player, int balance) {
+        playerBalances.put(player.getUniqueId(), balance);
     }
     
     /**
-     * Removes from a player's balance.
-     * @param player The player
-     * @param amount The amount to remove
-     * @return The new balance, or -1 if the player doesn't have enough
-     */
-    public int removePlayerBalance(Player player, int amount) {
-        int currentBalance = getPlayerBalance(player);
-        
-        if (currentBalance < amount) {
-            return -1;
-        }
-        
-        int newBalance = currentBalance - amount;
-        playerBalances.put(player.getUniqueId(), newBalance);
-        
-        return newBalance;
-    }
-    
-    /**
-     * Resets a player's balance (used for rebirth).
+     * Resets a player's balance.
+     * 
      * @param player The player
      */
     public void resetPlayerBalance(Player player) {
@@ -235,114 +302,201 @@ public class BDEconomyModule implements Module {
     }
     
     /**
-     * Gets the item manager.
-     * @return The item manager
+     * Adds to a player's balance.
+     * 
+     * @param player The player
+     * @param amount The amount to add
      */
-    public BDItemManager getItemManager() {
-        return itemManager;
+    public void addPlayerBalance(Player player, int amount) {
+        int balance = getPlayerBalance(player);
+        setPlayerBalance(player, balance + amount);
     }
     
     /**
-     * Gets the villager manager.
-     * @return The villager manager
+     * Removes from a player's balance.
+     * 
+     * @param player The player
+     * @param amount The amount to remove
+     * @return The amount actually removed
      */
-    public BDVillagerManager getVillagerManager() {
-        return villagerManager;
-    }
-    
-    /**
-     * Gets the market manager.
-     * @return The market manager
-     */
-    public MarketManager getMarketManager() {
-        return marketManager;
-    }
-    
-    /**
-     * Gets the crop manager.
-     * @return The crop manager
-     */
-    public BDCropManager getCropManager() {
-        return cropManager;
-    }
-    
-    /**
-     * Gets the recipe manager.
-     * @return The recipe manager
-     */
-    public BDRecipeManager getRecipeManager() {
-        return recipeManager;
-    }
-    
-    /**
-     * Gets the auction manager.
-     * @return The auction manager
-     */
-    public AuctionManager getAuctionManager() {
-        return auctionManager;
-    }
-    
-    /**
-     * Gets the auction house GUI.
-     * @return The auction house GUI
-     */
-    public AuctionHouseGUI getAuctionHouseGUI() {
-        return auctionHouseGUI;
-    }
-    
-    /**
-     * Gets the market management GUI.
-     * @return The market management GUI
-     */
-    public MarketManagementGUI getMarketManagementGUI() {
-        if (marketManagementGUI == null) {
-            marketManagementGUI = new MarketManagementGUI(plugin, marketManager);
+    public int removePlayerBalance(Player player, int amount) {
+        int balance = getPlayerBalance(player);
+        
+        // Ensure we don't go negative
+        if (balance < amount) {
+            amount = balance;
         }
-        return marketManagementGUI;
+        
+        setPlayerBalance(player, balance - amount);
+        return amount;
     }
     
     /**
-     * Checks if a player has enough coins.
+     * Adds coins to an offline player.
+     * 
+     * @param uuid The player UUID
+     * @param amount The amount to add
+     */
+    public void addOfflinePlayerCoins(UUID uuid, int amount) {
+        int balance = (int) getBalance(uuid);
+        playerBalances.put(uuid, balance + amount);
+    }
+    
+    /**
+     * Checks if a player has coins.
      * 
      * @param player The player
      * @param amount The amount to check
-     * @return True if the player has at least the specified amount
+     * @return True if player has enough coins
      */
     public boolean hasCoins(Player player, int amount) {
         return getPlayerBalance(player) >= amount;
     }
     
     /**
-     * Adds coins to a player.
+     * Gets the current crop values.
      * 
-     * @param player The player
-     * @param amount The amount to add
-     * @return The new balance
+     * @return The crop values
      */
-    public int addCoins(Player player, int amount) {
-        return addPlayerBalance(player, amount);
+    public Map<String, Double> getCurrentCropValues() {
+        return new HashMap<>(cropValues);
     }
     
     /**
-     * Removes coins from a player.
+     * Gets the current crop demand.
      * 
-     * @param player The player
-     * @param amount The amount to remove
-     * @return The new balance, or -1 if the player doesn't have enough
+     * @return The crop demand
      */
-    public int removeCoins(Player player, int amount) {
-        return removePlayerBalance(player, amount);
+    public Map<String, Integer> getCurrentCropDemand() {
+        return new HashMap<>(cropDemand);
     }
     
     /**
-     * Adds coins to an offline player.
+     * Gets the current price predictions.
      * 
-     * @param playerUUID The player's UUID
-     * @param amount The amount to add
+     * @return The price predictions
      */
-    public void addOfflinePlayerCoins(UUID playerUUID, int amount) {
-        int currentBalance = playerBalances.getOrDefault(playerUUID, 0);
-        playerBalances.put(playerUUID, currentBalance + amount);
-        savePlayerBalances();
+    public Map<String, Double> getPricePredictions() {
+        return new HashMap<>(pricePredictions);
+    }
+    
+    /**
+     * Gets the current inflation rate.
+     * 
+     * @return The inflation rate
+     */
+    public double getInflationRate() {
+        return inflationRate;
+    }
+    
+    /**
+     * Gets the average market value.
+     * 
+     * @return The average market value
+     */
+    public double getAverageMarketValue() {
+        return averageMarketValue;
+    }
+    
+    /**
+     * Gets the total trades in a period.
+     * 
+     * @param period The period in milliseconds
+     * @return The total trades
+     */
+    public int getTotalTradesInPeriod(long period) {
+        // For now, return a simulated value
+        // In a real implementation, this would look at actual trade history
+        return totalTradesInDay;
+    }
+    
+    // EconomyAPI implementation
+    
+    @Override
+    public double getBalance(UUID uuid) {
+        Player player = plugin.getServer().getPlayer(uuid);
+        if (player != null) {
+            return getPlayerBalance(player);
+        }
+        return 0;
+    }
+    
+    @Override
+    public boolean hasMoney(UUID uuid, double amount) {
+        return getBalance(uuid) >= amount;
+    }
+    
+    @Override
+    public boolean depositMoney(UUID uuid, double amount) {
+        Player player = plugin.getServer().getPlayer(uuid);
+        if (player != null) {
+            int newBalance = getPlayerBalance(player) + (int) amount;
+            setPlayerBalance(player, newBalance);
+            return true;
+        }
+        return false;
+    }
+    
+    @Override
+    public boolean withdrawMoney(UUID uuid, double amount) {
+        Player player = plugin.getServer().getPlayer(uuid);
+        if (player != null && hasMoney(uuid, amount)) {
+            int newBalance = getPlayerBalance(player) - (int) amount;
+            setPlayerBalance(player, newBalance);
+            return true;
+        }
+        return false;
+    }
+    
+    @Override
+    public boolean transferMoney(UUID fromUuid, UUID toUuid, double amount) {
+        if (hasMoney(fromUuid, amount)) {
+            withdrawMoney(fromUuid, amount);
+            depositMoney(toUuid, amount);
+            return true;
+        }
+        return false;
+    }
+    
+    @Override
+    public String getFormattedBalance(UUID uuid) {
+        double balance = getBalance(uuid);
+        return String.format("%.2f BD", balance);
+    }
+    
+    @Override
+    public void setCurrency(UUID uuid, double amount) {
+        Player player = plugin.getServer().getPlayer(uuid);
+        if (player != null) {
+            setPlayerBalance(player, (int) amount);
+        }
+    }
+    
+    @Override
+    public boolean hasCurrency(Player player, int amount) {
+        return getPlayerBalance(player) >= amount;
+    }
+    
+    @Override
+    public double getCurrencyValue(String itemType) {
+        return cropValues.getOrDefault(itemType, 0.0);
+    }
+    
+    @Override
+    public Map<String, Double> getAllCurrencyValues() {
+        return getCurrentCropValues();
+    }
+    
+    @Override
+    public boolean setCurrencyValue(String itemType, double value) {
+        cropValues.put(itemType, value);
+        return true;
+    }
+    
+    @Override
+    public List<UUID> getTopBalances(int limit) {
+        // This would require a proper database implementation
+        // Placeholder for now
+        return new ArrayList<>();
     }
 }

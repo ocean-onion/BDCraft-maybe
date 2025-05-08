@@ -193,8 +193,11 @@ public class BDCropManager implements Listener {
         
         // Drop BD crops
         Location dropLocation = block.getLocation().add(0.5, 0.5, 0.5);
-        BDCrop bdCrop = new BDCrop(plugin, cropType);
-        dropLocation.getWorld().dropItemNaturally(dropLocation, bdCrop.createItemStack(1));
+        
+        // Create crop item
+        int cropValue = BDCrop.getValueForType(cropType);
+        ItemStack cropItem = createCropItemStack(cropType, cropValue);
+        dropLocation.getWorld().dropItemNaturally(dropLocation, cropItem);
         
         // Chance to drop special seeds
         double seedDropChance = 0;
@@ -209,14 +212,14 @@ public class BDCropManager implements Listener {
         }
         
         if (specialSeedType != null && RANDOM.nextDouble() < seedDropChance) {
-            BDSeed specialSeed = new BDSeed(plugin, specialSeedType);
-            dropLocation.getWorld().dropItemNaturally(dropLocation, specialSeed.createItemStack(1));
+            ItemStack specialSeedItem = createSeedItemStack(specialSeedType);
+            dropLocation.getWorld().dropItemNaturally(dropLocation, specialSeedItem);
         }
         
         // Also drop regular BD seeds (50% chance)
         if (RANDOM.nextDouble() < 0.5) {
-            BDSeed regularSeed = new BDSeed(plugin, seedType);
-            dropLocation.getWorld().dropItemNaturally(dropLocation, regularSeed.createItemStack(1));
+            ItemStack regularSeedItem = createSeedItemStack(seedType);
+            dropLocation.getWorld().dropItemNaturally(dropLocation, regularSeedItem);
         }
         
         // Remove from tracking
@@ -254,6 +257,55 @@ public class BDCropManager implements Listener {
             if (seedType == SeedType.PURPLE) {
                 loc.getWorld().spawnParticle(Particle.END_ROD, loc, 1, 0.1, 0.1, 0.1, 0.01);
             }
+        }
+    }
+    
+    /**
+     * Creates a crop ItemStack.
+     * 
+     * @param cropType The crop type
+     * @param value The crop value
+     * @return The ItemStack
+     */
+    private ItemStack createCropItemStack(CropType cropType, int value) {
+        // Use the new BDCrop class createItemStack capability
+        BDCrop crop = new BDCrop(new ItemStack(Material.WHEAT), cropType, value);
+        return crop.createItemStack(1);
+    }
+    
+    /**
+     * Creates a seed ItemStack.
+     * 
+     * @param seedType The seed type
+     * @return The ItemStack
+     */
+    private ItemStack createSeedItemStack(SeedType seedType) {
+        // Use the new BDSeed class createItemStack capability
+        int growthTime = getGrowthTimeForSeedType(seedType);
+        BDSeed seed = new BDSeed(new ItemStack(Material.WHEAT_SEEDS), seedType, growthTime);
+        return seed.createItemStack(1);
+    }
+    
+    /**
+     * Gets the growth time for a seed type.
+     * 
+     * @param seedType The seed type
+     * @return The growth time in ticks
+     */
+    private int getGrowthTimeForSeedType(SeedType seedType) {
+        switch (seedType) {
+            case REGULAR:
+                return 2400; // 2 minutes
+            case GREEN:
+                return 3600; // 3 minutes
+            case BLUE:
+                return 4800; // 4 minutes
+            case PURPLE:
+                return 6000; // 5 minutes
+            case LEGENDARY:
+                return 9600; // 8 minutes
+            default:
+                return 2400;
         }
     }
     

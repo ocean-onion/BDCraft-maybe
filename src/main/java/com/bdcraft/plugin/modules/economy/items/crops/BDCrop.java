@@ -1,253 +1,256 @@
 package com.bdcraft.plugin.modules.economy.items.crops;
 
+import com.bdcraft.plugin.BDCraft;
+import com.bdcraft.plugin.modules.economy.items.seeds.BDSeed.SeedType;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.persistence.PersistentDataType;
-
-import com.bdcraft.plugin.BDCraft;
-import com.bdcraft.plugin.modules.economy.items.BDItem;
-import com.bdcraft.plugin.modules.economy.items.seeds.BDSeed.SeedType;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
- * Represents a BD crop item.
+ * Class representing a special BD crop.
  */
-public class BDCrop extends BDItem {
-    public static final String BD_CROP_KEY = "bd_crop";
-    public static final String GREEN_BD_CROP_KEY = "green_bd_crop";
-    public static final String PURPLE_BD_CROP_KEY = "purple_bd_crop";
-    
-    private final CropType cropType;
-    private final double emeraldValue;
-    private final double currencyValue;
+public class BDCrop {
+    private final ItemStack itemStack;
+    private final CropType type;
+    private final int value;
     
     /**
      * Creates a new BD crop.
      * 
-     * @param plugin The plugin instance
-     * @param cropType The type of crop
+     * @param itemStack The item stack
+     * @param type The crop type
+     * @param value The crop value
      */
-    public BDCrop(BDCraft plugin, CropType cropType) {
-        super(plugin);
-        this.cropType = cropType;
-        
-        switch (cropType) {
-            case REGULAR:
-                this.emeraldValue = 0.2; // 10 crops = 2 emeralds
-                this.currencyValue = 5; // 10 crops = 50 server currency
-                break;
-            case GREEN:
-                this.emeraldValue = 2.0; // 5 crops = 10 emeralds
-                this.currencyValue = 30; // 5 crops = 150 server currency
-                break;
-            case PURPLE:
-                this.emeraldValue = 6.67; // 3 crops = 20 emeralds
-                this.currencyValue = 133.33; // 3 crops = 400 server currency
-                break;
-            default:
-                this.emeraldValue = 0;
-                this.currencyValue = 0;
-                break;
-        }
-    }
-    
-    @Override
-    public ItemStack createItemStack(int amount) {
-        Material material;
-        String displayName;
-        String itemKey;
-        ChatColor color;
-        boolean hasGlow = false;
-        
-        switch (cropType) {
-            case REGULAR:
-                material = Material.FERN;
-                displayName = "BD Crop";
-                itemKey = BD_CROP_KEY;
-                color = ChatColor.GOLD;
-                break;
-            case GREEN:
-                material = Material.LARGE_FERN;
-                displayName = "Green BD Crop";
-                itemKey = GREEN_BD_CROP_KEY;
-                color = ChatColor.GREEN;
-                break;
-            case PURPLE:
-                material = Material.LARGE_FERN;
-                displayName = "Purple BD Crop";
-                itemKey = PURPLE_BD_CROP_KEY;
-                color = ChatColor.DARK_PURPLE;
-                hasGlow = true;
-                break;
-            default:
-                material = Material.FERN;
-                displayName = "Unknown BD Crop";
-                itemKey = BD_CROP_KEY;
-                color = ChatColor.GRAY;
-                break;
-        }
-        
-        ItemStack item = new ItemStack(material, amount);
-        ItemMeta meta = item.getItemMeta();
-        
-        if (meta != null) {
-            // Set display name
-            meta.setDisplayName(color + displayName);
-            
-            // Add enchantment glow if needed
-            if (hasGlow) {
-                Enchantment unbreaking = Enchantment.getByKey(org.bukkit.NamespacedKey.minecraft("unbreaking"));
-                if (unbreaking != null) {
-                    meta.addEnchant(unbreaking, 1, true);
-                }
-                meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            }
-            
-            // Add lore
-            List<String> lore = new ArrayList<>();
-            lore.add(ChatColor.GRAY + "A special BD crop");
-            lore.add(ChatColor.GRAY + "Value per crop: " + ChatColor.YELLOW + emeraldValue + " emeralds");
-            lore.add(ChatColor.GRAY + "Currency value: " + ChatColor.YELLOW + currencyValue + " coins");
-            
-            if (cropType == CropType.REGULAR) {
-                lore.add(ChatColor.GRAY + "50 crops can be traded for 1 diamond");
-            }
-            
-            lore.add(ChatColor.RED + "Can only be sold to Collector Villagers");
-            
-            meta.setLore(lore);
-            
-            // Add custom NBT data
-            PersistentDataContainer container = meta.getPersistentDataContainer();
-            container.set(getNamespacedKey(itemKey), PersistentDataType.STRING, itemKey);
-            
-            item.setItemMeta(meta);
-        }
-        
-        return item;
+    public BDCrop(ItemStack itemStack, CropType type, int value) {
+        this.itemStack = itemStack;
+        this.type = type;
+        this.value = value;
     }
     
     /**
-     * Gets the type of crop.
+     * Gets the item stack.
+     * 
+     * @return The item stack
+     */
+    public ItemStack getItemStack() {
+        return itemStack.clone();
+    }
+    
+    /**
+     * Gets the crop type.
      * 
      * @return The crop type
      */
-    public CropType getCropType() {
-        return cropType;
+    public CropType getType() {
+        return type;
     }
     
     /**
-     * Gets the emerald value of this crop.
+     * Gets the crop value.
      * 
-     * @return The emerald value per crop
+     * @return The crop value
      */
-    public double getEmeraldValue() {
-        return emeraldValue;
+    public int getValue() {
+        return value;
     }
     
     /**
-     * Gets the server currency value of this crop.
+     * Gets the corresponding crop type for a seed type.
      * 
-     * @return The currency value per crop
+     * @param seedType The seed type
+     * @return The crop type
      */
-    public double getCurrencyValue() {
-        return currencyValue;
-    }
-    
-    /**
-     * Gets the corresponding seed type for this crop.
-     * 
-     * @return The seed type
-     */
-    public SeedType getCorrespondingSeedType() {
-        switch (cropType) {
-            case REGULAR:
-                return SeedType.REGULAR;
+    public static CropType getCropTypeFromSeedType(SeedType seedType) {
+        if (seedType == null) {
+            return CropType.REGULAR;
+        }
+        
+        switch (seedType) {
             case GREEN:
-                return SeedType.GREEN;
+                return CropType.GREEN;
+            case BLUE:
+                return CropType.BLUE;
             case PURPLE:
-                return SeedType.PURPLE;
+                return CropType.PURPLE;
+            case LEGENDARY:
+                return CropType.LEGENDARY;
             default:
-                return SeedType.REGULAR;
+                return CropType.REGULAR;
         }
     }
     
     /**
-     * Checks if an item is a BD crop.
+     * Checks if an ItemStack is a BD crop.
      * 
-     * @param item The item to check
-     * @return True if the item is a BD crop
+     * @param item The ItemStack to check
+     * @return True if it's a BD crop
      */
     public static boolean isBDCrop(ItemStack item) {
-        if (item == null || !item.hasItemMeta()) {
+        if (item == null || !item.hasItemMeta() || !item.getItemMeta().hasLore()) {
             return false;
         }
         
-        ItemMeta meta = item.getItemMeta();
-        PersistentDataContainer container = meta.getPersistentDataContainer();
+        List<String> lore = item.getItemMeta().getLore();
+        if (lore == null || lore.isEmpty()) {
+            return false;
+        }
         
-        return container.has(BDItem.getStaticNamespacedKey(BD_CROP_KEY), PersistentDataType.STRING) ||
-               container.has(BDItem.getStaticNamespacedKey(GREEN_BD_CROP_KEY), PersistentDataType.STRING) ||
-               container.has(BDItem.getStaticNamespacedKey(PURPLE_BD_CROP_KEY), PersistentDataType.STRING);
+        // Check for BD crop identifier in lore
+        for (String line : lore) {
+            if (line.contains("Special") && line.contains("quality crop")) {
+                return true;
+            }
+        }
+        
+        return false;
     }
     
     /**
-     * Gets the crop type from an item.
+     * Gets the crop type from an ItemStack.
      * 
-     * @param item The item to check
-     * @return The crop type, or null if the item is not a BD crop
+     * @param item The ItemStack
+     * @return The crop type, or null if not a BD crop
      */
     public static CropType getCropType(ItemStack item) {
         if (!isBDCrop(item)) {
             return null;
         }
         
-        ItemMeta meta = item.getItemMeta();
-        PersistentDataContainer container = meta.getPersistentDataContainer();
+        String displayName = item.getItemMeta().getDisplayName();
         
-        if (container.has(BDItem.getStaticNamespacedKey(BD_CROP_KEY), PersistentDataType.STRING)) {
-            return CropType.REGULAR;
-        } else if (container.has(BDItem.getStaticNamespacedKey(GREEN_BD_CROP_KEY), PersistentDataType.STRING)) {
+        if (displayName.contains("Quality Crop")) {
             return CropType.GREEN;
-        } else if (container.has(BDItem.getStaticNamespacedKey(PURPLE_BD_CROP_KEY), PersistentDataType.STRING)) {
+        } else if (displayName.contains("Premium Crop")) {
+            return CropType.BLUE;
+        } else if (displayName.contains("Exceptional Crop")) {
             return CropType.PURPLE;
+        } else if (displayName.contains("Legendary Crop")) {
+            return CropType.LEGENDARY;
+        } else {
+            return CropType.REGULAR;
+        }
+    }
+    
+    /**
+     * Gets the value of a crop type.
+     * 
+     * @param type The crop type
+     * @return The value
+     */
+    public static int getValueForType(CropType type) {
+        switch (type) {
+            case REGULAR:
+                return 10;
+            case GREEN:
+                return 30;
+            case BLUE:
+                return 60;
+            case PURPLE:
+                return 100;
+            case LEGENDARY:
+                return 200;
+            default:
+                return 5;
+        }
+    }
+    
+    /**
+     * Creates an ItemStack for this crop.
+     * 
+     * @param quantity The quantity
+     * @return The ItemStack
+     */
+    public ItemStack createItemStack(int quantity) {
+        Material material = Material.WHEAT;
+        ItemStack crop = new ItemStack(material, quantity);
+        ItemMeta meta = crop.getItemMeta();
+        
+        if (meta != null) {
+            String displayName;
+            ChatColor color;
+            
+            switch (type) {
+                case GREEN:
+                    displayName = "Quality Crop";
+                    color = ChatColor.GREEN;
+                    break;
+                case BLUE:
+                    displayName = "Premium Crop";
+                    color = ChatColor.BLUE;
+                    break;
+                case PURPLE:
+                    displayName = "Exceptional Crop";
+                    color = ChatColor.LIGHT_PURPLE;
+                    break;
+                case LEGENDARY:
+                    displayName = "Legendary Crop";
+                    color = ChatColor.GOLD;
+                    break;
+                default:
+                    displayName = "Crop";
+                    color = ChatColor.WHITE;
+                    break;
+            }
+            
+            meta.setDisplayName(color + displayName);
+            
+            List<String> lore = new ArrayList<>();
+            lore.add(ChatColor.GRAY + "Special " + color + type.name().toLowerCase() + 
+                    ChatColor.GRAY + " quality crop.");
+            lore.add(ChatColor.GRAY + "Can be sold to BD collectors for");
+            lore.add(ChatColor.GOLD + String.valueOf(value) + " BD" + 
+                    ChatColor.GRAY + " each.");
+            lore.add("");
+            lore.add(ChatColor.GRAY + "ID: " + UUID.randomUUID().toString().substring(0, 8));
+            
+            meta.setLore(lore);
+            
+            // Add enchant glow for better crops
+            if (type != CropType.REGULAR) {
+                meta.addEnchant(Enchantment.DURABILITY, 1, true);
+                meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            }
+            
+            crop.setItemMeta(meta);
         }
         
-        return null;
+        return crop;
     }
     
     /**
-     * Gets a crop type from a seed type.
-     * 
-     * @param seedType The seed type
-     * @return The corresponding crop type
-     */
-    public static CropType getCropTypeFromSeedType(SeedType seedType) {
-        switch (seedType) {
-            case REGULAR:
-                return CropType.REGULAR;
-            case GREEN:
-                return CropType.GREEN;
-            case PURPLE:
-                return CropType.PURPLE;
-            default:
-                return CropType.REGULAR;
-        }
-    }
-    
-    /**
-     * Enum for different crop types.
+     * Enum for crop types.
      */
     public enum CropType {
+        /**
+         * Regular crop type.
+         */
         REGULAR,
+        
+        /**
+         * Green quality crop type.
+         */
         GREEN,
-        PURPLE
+        
+        /**
+         * Blue premium crop type.
+         */
+        BLUE,
+        
+        /**
+         * Purple exceptional crop type.
+         */
+        PURPLE,
+        
+        /**
+         * Legendary gold crop type.
+         */
+        LEGENDARY
     }
 }

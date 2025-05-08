@@ -1,475 +1,574 @@
 package com.bdcraft.plugin.commands.admin;
 
 import com.bdcraft.plugin.BDCraft;
-import com.bdcraft.plugin.modules.economy.market.BDMarket;
+import com.bdcraft.plugin.commands.CommandBase;
+import com.bdcraft.plugin.commands.SubCommand;
+import com.bdcraft.plugin.modules.economy.market.Market;
 import com.bdcraft.plugin.modules.economy.market.MarketManager;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
+import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
- * Command for managing BD Markets.
+ * Command class for market administration.
  */
-public class MarketCommand implements CommandExecutor, TabCompleter {
+public class MarketCommand extends CommandBase {
     private final BDCraft plugin;
-    
+    private final MarketManager marketManager;
+
     /**
      * Creates a new market command.
+     * 
      * @param plugin The plugin instance
      */
     public MarketCommand(BDCraft plugin) {
+        super(plugin, "bdmarket", "bdcraft.admin.market");
         this.plugin = plugin;
-        plugin.getCommand("bdmarket").setExecutor(this);
-        plugin.getCommand("bdmarket").setTabCompleter(this);
-    }
-    
-    @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!(sender instanceof Player)) {
-            sender.sendMessage(ChatColor.RED + "This command can only be used by players.");
-            return true;
-        }
-        
-        Player player = (Player) sender;
-        
-        // Check for basic market permission, specific actions will check their own permissions
-        if (!player.hasPermission("bdcraft.market.check") && 
-            !player.hasPermission("bdcraft.market.info") && 
-            !player.hasPermission("bdcraft.market.create") && 
-            !player.hasPermission("bdcraft.market.associate") && 
-            !player.hasPermission("bdcraft.admin.market")) {
-            player.sendMessage(ChatColor.RED + "You don't have permission to use this command.");
-            return true;
-        }
-        
-        if (args.length == 0) {
-            sendUsage(player);
-            return true;
-        }
-        
-        MarketManager marketManager = plugin.getEconomyModule().getMarketManager();
-        
-        switch (args[0].toLowerCase()) {
-            case "create":
-                createMarket(player, marketManager);
-                break;
-            case "upgrade":
-                upgradeMarket(player, args, marketManager);
-                break;
-            case "info":
-                getMarketInfo(player, marketManager);
-                break;
-            case "list":
-                listMarkets(player, marketManager);
-                break;
-            case "delete":
-                deleteMarket(player, args, marketManager);
-                break;
-            case "check":
-                checkMarketBoundary(player, marketManager);
-                break;
-            case "associate":
-                handleAssociateCommand(player, args, marketManager);
-                break;
-            default:
-                sendUsage(player);
-                break;
-        }
-        
-        return true;
-    }
-    
-    /**
-     * Creates a market at the player's location.
-     * @param player The player
-     * @param marketManager The market manager
-     */
-    private void createMarket(Player player, MarketManager marketManager) {
-        // Check permission (bdcraft.market.create according to documentation)
-        if (!player.hasPermission("bdcraft.market.create") && !player.hasPermission("bdcraft.admin.market")) {
-            player.sendMessage(ChatColor.RED + "You don't have permission to create markets.");
-            return;
-        }
-        
-        Location location = player.getLocation();
-        
-        // Check if near existing market
-        if (marketManager.getMarketAt(location) != null) {
-            player.sendMessage(ChatColor.RED + "There is already a market in this area.");
-            return;
-        }
+        this.marketManager = plugin.getEconomyModule().getMarketManager();
         
         // Create market
-        BDMarket market = marketManager.createMarket(location, player);
-        
-        if (market != null) {
-            player.sendMessage(ChatColor.GREEN + "Market created successfully!");
-        } else {
-            player.sendMessage(ChatColor.RED + "Failed to create market.");
-        }
-    }
-    
-    /**
-     * Upgrades a market.
-     * @param player The player
-     * @param args The command arguments
-     * @param marketManager The market manager
-     */
-    private void upgradeMarket(Player player, String[] args, MarketManager marketManager) {
-        // Check permission (bdcraft.market.upgrade according to documentation)
-        if (!player.hasPermission("bdcraft.market.upgrade") && !player.hasPermission("bdcraft.admin.market")) {
-            player.sendMessage(ChatColor.RED + "You don't have permission to upgrade markets.");
-            return;
-        }
-        
-        // Check if in a market
-        BDMarket market = marketManager.getMarketAt(player.getLocation());
-        
-        if (market == null) {
-            player.sendMessage(ChatColor.RED + "You are not in a market.");
-            return;
-        }
-        
-        // Check if player is the founder or has admin permissions
-        if (!player.getUniqueId().equals(market.getFounderId()) && !player.hasPermission("bdcraft.admin.market")) {
-            player.sendMessage(ChatColor.RED + "Only the market founder can upgrade this market.");
-            return;
-        }
-        
-        // Check if already max level
-        if (market.getLevel() >= 4) {
-            player.sendMessage(ChatColor.RED + "This market is already at maximum level.");
-            return;
-        }
-        
-        // Upgrade market
-        if (marketManager.upgradeMarket(market)) {
-            player.sendMessage(ChatColor.GREEN + "Market upgraded to level " + market.getLevel() + "!");
-        } else {
-            player.sendMessage(ChatColor.RED + "Failed to upgrade market.");
-        }
-    }
-    
-    /**
-     * Gets information about a market.
-     * @param player The player
-     * @param marketManager The market manager
-     */
-    private void getMarketInfo(Player player, MarketManager marketManager) {
-        // Check permission (bdcraft.market.info according to documentation)
-        if (!player.hasPermission("bdcraft.market.info") && !player.hasPermission("bdcraft.admin.market")) {
-            player.sendMessage(ChatColor.RED + "You don't have permission to view market information.");
-            return;
-        }
-        
-        // Check if in a market
-        BDMarket market = marketManager.getMarketAt(player.getLocation());
-        
-        if (market == null) {
-            player.sendMessage(ChatColor.RED + "You are not in a market.");
-            return;
-        }
-        
-        // Send info
-        player.sendMessage(ChatColor.GOLD + "=== Market Information ===");
-        player.sendMessage(ChatColor.YELLOW + "ID: " + ChatColor.WHITE + market.getId());
-        player.sendMessage(ChatColor.YELLOW + "Founder: " + ChatColor.WHITE + market.getFounderName());
-        player.sendMessage(ChatColor.YELLOW + "Level: " + ChatColor.WHITE + market.getLevel());
-        player.sendMessage(ChatColor.YELLOW + "Traders: " + ChatColor.WHITE + market.getTraders().size());
-        player.sendMessage(ChatColor.YELLOW + "Collectors: " + ChatColor.WHITE + market.getTraderCount("COLLECTOR") + 
-                "/" + getMaxCollectors(market));
-        player.sendMessage(ChatColor.YELLOW + "Price Modifier: " + ChatColor.WHITE + 
-                String.format("%.2fx", market.getPriceModifier()));
-        player.sendMessage(ChatColor.YELLOW + "Center: " + ChatColor.WHITE + 
-                formatLocation(market.getCenter()));
-    }
-    
-    /**
-     * Lists all markets.
-     * @param player The player
-     * @param marketManager The market manager
-     */
-    private void listMarkets(Player player, MarketManager marketManager) {
-        // Check permission (bdcraft.market.create according to documentation)
-        if (!player.hasPermission("bdcraft.market.create") && !player.hasPermission("bdcraft.admin.market")) {
-            player.sendMessage(ChatColor.RED + "You don't have permission to list markets.");
-            return;
-        }
-        
-        List<BDMarket> markets = marketManager.getMarketsInWorld(player.getWorld().getName());
-        
-        if (markets.isEmpty()) {
-            player.sendMessage(ChatColor.RED + "There are no markets in this world.");
-            return;
-        }
-        
-        player.sendMessage(ChatColor.GOLD + "=== Markets in " + player.getWorld().getName() + " ===");
-        
-        for (BDMarket market : markets) {
-            player.sendMessage(ChatColor.YELLOW + "ID: " + ChatColor.WHITE + market.getId() + 
-                    ChatColor.YELLOW + " | Founder: " + ChatColor.WHITE + market.getFounderName() + 
-                    ChatColor.YELLOW + " | Level: " + ChatColor.WHITE + market.getLevel() + 
-                    ChatColor.YELLOW + " | Location: " + ChatColor.WHITE + 
-                    formatLocation(market.getCenter()));
-        }
-    }
-    
-    /**
-     * Deletes a market.
-     * @param player The player
-     * @param args The command arguments
-     * @param marketManager The market manager
-     */
-    private void deleteMarket(Player player, String[] args, MarketManager marketManager) {
-        // Check permission (bdcraft.admin.market according to documentation)
-        if (!player.hasPermission("bdcraft.admin.market")) {
-            player.sendMessage(ChatColor.RED + "You don't have permission to delete markets.");
-            return;
-        }
-        
-        // Check if in a market
-        BDMarket market = marketManager.getMarketAt(player.getLocation());
-        
-        if (market == null) {
-            player.sendMessage(ChatColor.RED + "You are not in a market.");
-            return;
-        }
-        
-        // Confirm deletion
-        if (args.length < 2 || !args[1].equalsIgnoreCase("confirm")) {
-            player.sendMessage(ChatColor.RED + "WARNING: This will permanently delete this market and remove all associated villagers.");
-            player.sendMessage(ChatColor.RED + "To confirm, type: /bdmarket delete confirm");
-            return;
-        }
+        addSubCommand(new SubCommand() {
+            @Override
+            public String getName() {
+                return "create";
+            }
+            
+            @Override
+            public String getDescription() {
+                return "Creates a new market at player's location";
+            }
+            
+            @Override
+            public String getUsage() {
+                return "<name> [player]";
+            }
+            
+            @Override
+            public String getPermission() {
+                return "bdcraft.admin.market.create";
+            }
+            
+            @Override
+            public boolean isPlayerOnly() {
+                return true;
+            }
+            
+            @Override
+            public boolean execute(CommandSender sender, String[] args) {
+                if (args.length < 1) {
+                    sender.sendMessage(ChatColor.RED + "Usage: /bdmarket create <name> [player]");
+                    return true;
+                }
+                
+                String marketName = args[0];
+                Player owner;
+                
+                if (args.length >= 2) {
+                    // Creating market for another player
+                    String playerName = args[1];
+                    owner = plugin.getServer().getPlayer(playerName);
+                    
+                    if (owner == null) {
+                        sender.sendMessage(ChatColor.RED + "Player not found: " + playerName);
+                        return true;
+                    }
+                } else {
+                    // Creating market for command sender
+                    owner = (Player) sender;
+                }
+                
+                Player player = (Player) sender;
+                Location center = player.getLocation();
+                
+                // Create the market
+                Market market = marketManager.createMarket(owner, marketName, center);
+                
+                if (market != null) {
+                    sender.sendMessage(ChatColor.GREEN + "Market '" + marketName + "' created for " + owner.getName() + 
+                            " at " + formatLocation(center));
+                } else {
+                    sender.sendMessage(ChatColor.RED + "Failed to create market. Check for overlap with existing markets.");
+                }
+                
+                return true;
+            }
+        });
         
         // Delete market
-        marketManager.removeMarket(market);
-        player.sendMessage(ChatColor.GREEN + "Market deleted successfully!");
-    }
-    
-    /**
-     * Gets the maximum number of collectors for a market.
-     * @param market The market
-     * @return The maximum number of collectors
-     */
-    private int getMaxCollectors(BDMarket market) {
-        int level = market.getLevel();
+        addSubCommand(new SubCommand() {
+            @Override
+            public String getName() {
+                return "delete";
+            }
+            
+            @Override
+            public String getDescription() {
+                return "Deletes a market by ID or at player's location";
+            }
+            
+            @Override
+            public String getUsage() {
+                return "[market_id]";
+            }
+            
+            @Override
+            public String getPermission() {
+                return "bdcraft.admin.market.delete";
+            }
+            
+            @Override
+            public boolean isPlayerOnly() {
+                return true;
+            }
+            
+            @Override
+            public boolean execute(CommandSender sender, String[] args) {
+                Player player = (Player) sender;
+                
+                if (args.length >= 1) {
+                    // Try to parse as UUID
+                    try {
+                        UUID marketId = UUID.fromString(args[0]);
+                        Market market = marketManager.getMarket(marketId);
+                        
+                        if (market == null) {
+                            sender.sendMessage(ChatColor.RED + "Market not found with ID: " + marketId);
+                            return true;
+                        }
+                        
+                        boolean removed = marketManager.removeMarket(marketId);
+                        
+                        if (removed) {
+                            sender.sendMessage(ChatColor.GREEN + "Market '" + market.getName() + "' deleted.");
+                        } else {
+                            sender.sendMessage(ChatColor.RED + "Failed to delete market.");
+                        }
+                    } catch (IllegalArgumentException e) {
+                        sender.sendMessage(ChatColor.RED + "Invalid market ID format. Use the market ID or stand inside a market.");
+                    }
+                } else {
+                    // Try to get market at player location
+                    Market market = marketManager.getMarketAt(player.getLocation());
+                    
+                    if (market == null) {
+                        sender.sendMessage(ChatColor.RED + "No market found at your location.");
+                        return true;
+                    }
+                    
+                    boolean removed = marketManager.removeMarket(market.getId());
+                    
+                    if (removed) {
+                        sender.sendMessage(ChatColor.GREEN + "Market '" + market.getName() + "' deleted.");
+                    } else {
+                        sender.sendMessage(ChatColor.RED + "Failed to delete market.");
+                    }
+                }
+                
+                return true;
+            }
+        });
         
-        switch (level) {
-            case 1:
-                return 3;
-            case 2:
-                return 5;
-            case 3:
-                return 7;
-            case 4:
-                return 10;
-            default:
-                return 3;
-        }
+        // Info command
+        addSubCommand(new SubCommand() {
+            @Override
+            public String getName() {
+                return "info";
+            }
+            
+            @Override
+            public String getDescription() {
+                return "Shows information about a market";
+            }
+            
+            @Override
+            public String getUsage() {
+                return "[market_id]";
+            }
+            
+            @Override
+            public String getPermission() {
+                return "bdcraft.admin.market.info";
+            }
+            
+            @Override
+            public boolean isPlayerOnly() {
+                return true;
+            }
+            
+            @Override
+            public boolean execute(CommandSender sender, String[] args) {
+                Player player = (Player) sender;
+                Market market;
+                
+                if (args.length >= 1) {
+                    // Try to parse as UUID
+                    try {
+                        UUID marketId = UUID.fromString(args[0]);
+                        market = marketManager.getMarket(marketId);
+                        
+                        if (market == null) {
+                            sender.sendMessage(ChatColor.RED + "Market not found with ID: " + marketId);
+                            return true;
+                        }
+                    } catch (IllegalArgumentException e) {
+                        sender.sendMessage(ChatColor.RED + "Invalid market ID format. Use the market ID or stand inside a market.");
+                        return true;
+                    }
+                } else {
+                    // Try to get market at player location
+                    market = marketManager.getMarketAt(player.getLocation());
+                    
+                    if (market == null) {
+                        sender.sendMessage(ChatColor.RED + "No market found at your location.");
+                        return true;
+                    }
+                }
+                
+                // Display market info
+                sender.sendMessage(ChatColor.GOLD + "=== Market Information ===");
+                sender.sendMessage(ChatColor.YELLOW + "ID: " + ChatColor.WHITE + market.getId());
+                sender.sendMessage(ChatColor.YELLOW + "Name: " + ChatColor.WHITE + market.getName());
+                sender.sendMessage(ChatColor.YELLOW + "Owner: " + ChatColor.WHITE + market.getOwnerName() + 
+                        " (" + market.getOwnerId() + ")");
+                sender.sendMessage(ChatColor.YELLOW + "Location: " + ChatColor.WHITE + 
+                        market.getWorldName() + " at " + market.getCenterX() + ", " + 
+                        market.getCenterY() + ", " + market.getCenterZ());
+                sender.sendMessage(ChatColor.YELLOW + "Level: " + ChatColor.WHITE + market.getLevel());
+                sender.sendMessage(ChatColor.YELLOW + "Total Sales: " + ChatColor.WHITE + market.getTotalSales());
+                
+                // List associates
+                List<UUID> associates = market.getAssociates();
+                sender.sendMessage(ChatColor.YELLOW + "Associates (" + associates.size() + "/5):");
+                
+                if (associates.isEmpty()) {
+                    sender.sendMessage(ChatColor.GRAY + "  No associates");
+                } else {
+                    for (UUID associateId : associates) {
+                        String associateName = plugin.getServer().getOfflinePlayer(associateId).getName();
+                        if (associateName == null) {
+                            associateName = "Unknown";
+                        }
+                        sender.sendMessage(ChatColor.GRAY + "  - " + associateName + " (" + associateId + ")");
+                    }
+                }
+                
+                return true;
+            }
+        });
+        
+        // List command
+        addSubCommand(new SubCommand() {
+            @Override
+            public String getName() {
+                return "list";
+            }
+            
+            @Override
+            public String getDescription() {
+                return "Lists all markets or markets in current world";
+            }
+            
+            @Override
+            public String getUsage() {
+                return "[world|all]";
+            }
+            
+            @Override
+            public String getPermission() {
+                return "bdcraft.admin.market.list";
+            }
+            
+            @Override
+            public boolean execute(CommandSender sender, String[] args) {
+                boolean allWorlds = false;
+                String worldName = null;
+                
+                if (sender instanceof Player && args.length == 0) {
+                    // Default to current world if player and no args
+                    worldName = ((Player) sender).getWorld().getName();
+                } else if (args.length > 0 && args[0].equalsIgnoreCase("all")) {
+                    // List all worlds
+                    allWorlds = true;
+                } else if (args.length > 0) {
+                    // Specific world name
+                    worldName = args[0];
+                    World world = plugin.getServer().getWorld(worldName);
+                    
+                    if (world == null) {
+                        sender.sendMessage(ChatColor.RED + "World not found: " + worldName);
+                        return true;
+                    }
+                } else {
+                    // Console with no args defaults to all worlds
+                    allWorlds = true;
+                }
+                
+                // Get all markets
+                List<Market> markets = marketManager.getMarkets();
+                
+                // Filter by world if needed
+                if (!allWorlds && worldName != null) {
+                    final String targetWorld = worldName;
+                    markets = markets.stream()
+                            .filter(m -> m.getWorldName().equals(targetWorld))
+                            .collect(java.util.stream.Collectors.toList());
+                }
+                
+                // Display market list
+                if (markets.isEmpty()) {
+                    sender.sendMessage(ChatColor.YELLOW + "No markets found" + 
+                            (allWorlds ? "" : " in world '" + worldName + "'") + ".");
+                    return true;
+                }
+                
+                sender.sendMessage(ChatColor.GOLD + "=== Markets (" + markets.size() + ") ===");
+                
+                for (Market market : markets) {
+                    sender.sendMessage(
+                            ChatColor.YELLOW + market.getName() + 
+                            ChatColor.GRAY + " (" + market.getOwnerName() + ") - " + 
+                            ChatColor.WHITE + market.getWorldName() + " at " + 
+                            market.getCenterX() + ", " + market.getCenterY() + ", " + market.getCenterZ());
+                }
+                
+                return true;
+            }
+        });
+        
+        // Add associate command
+        addSubCommand(new SubCommand() {
+            @Override
+            public String getName() {
+                return "addassociate";
+            }
+            
+            @Override
+            public String getDescription() {
+                return "Adds an associate to a market";
+            }
+            
+            @Override
+            public String getUsage() {
+                return "<player>";
+            }
+            
+            @Override
+            public String getPermission() {
+                return "bdcraft.admin.market.associate";
+            }
+            
+            @Override
+            public boolean isPlayerOnly() {
+                return true;
+            }
+            
+            @Override
+            public boolean execute(CommandSender sender, String[] args) {
+                if (args.length < 1) {
+                    sender.sendMessage(ChatColor.RED + "Usage: /bdmarket addassociate <player>");
+                    return true;
+                }
+                
+                Player player = (Player) sender;
+                String targetName = args[0];
+                Player target = plugin.getServer().getPlayer(targetName);
+                
+                if (target == null) {
+                    sender.sendMessage(ChatColor.RED + "Player not found: " + targetName);
+                    return true;
+                }
+                
+                // Get market at location
+                Market market = marketManager.getMarketAt(player.getLocation());
+                
+                if (market == null) {
+                    sender.sendMessage(ChatColor.RED + "No market found at your location.");
+                    return true;
+                }
+                
+                // Add associate
+                boolean added = market.addAssociate(target.getUniqueId());
+                
+                if (added) {
+                    sender.sendMessage(ChatColor.GREEN + "Added " + target.getName() + " as an associate to market '" + 
+                            market.getName() + "'.");
+                    target.sendMessage(ChatColor.GREEN + "You have been added as an associate to market '" + 
+                            market.getName() + "' owned by " + market.getOwnerName() + ".");
+                } else {
+                    sender.sendMessage(ChatColor.RED + "Failed to add associate. Market may already have 5 associates " + 
+                            "or player is already an associate.");
+                }
+                
+                return true;
+            }
+        });
+        
+        // Remove associate command
+        addSubCommand(new SubCommand() {
+            @Override
+            public String getName() {
+                return "removeassociate";
+            }
+            
+            @Override
+            public String getDescription() {
+                return "Removes an associate from a market";
+            }
+            
+            @Override
+            public String getUsage() {
+                return "<player>";
+            }
+            
+            @Override
+            public String getPermission() {
+                return "bdcraft.admin.market.associate";
+            }
+            
+            @Override
+            public boolean isPlayerOnly() {
+                return true;
+            }
+            
+            @Override
+            public boolean execute(CommandSender sender, String[] args) {
+                if (args.length < 1) {
+                    sender.sendMessage(ChatColor.RED + "Usage: /bdmarket removeassociate <player>");
+                    return true;
+                }
+                
+                Player player = (Player) sender;
+                String targetName = args[0];
+                
+                // Try to get UUID from username
+                UUID targetUuid = null;
+                Player target = plugin.getServer().getPlayer(targetName);
+                
+                if (target != null) {
+                    targetUuid = target.getUniqueId();
+                } else {
+                    // Try to get offline player
+                    targetUuid = plugin.getServer().getOfflinePlayer(targetName).getUniqueId();
+                }
+                
+                if (targetUuid == null) {
+                    sender.sendMessage(ChatColor.RED + "Player not found: " + targetName);
+                    return true;
+                }
+                
+                // Get market at location
+                Market market = marketManager.getMarketAt(player.getLocation());
+                
+                if (market == null) {
+                    sender.sendMessage(ChatColor.RED + "No market found at your location.");
+                    return true;
+                }
+                
+                // Remove associate
+                boolean removed = market.removeAssociate(targetUuid);
+                
+                if (removed) {
+                    sender.sendMessage(ChatColor.GREEN + "Removed " + targetName + " as an associate from market '" + 
+                            market.getName() + "'.");
+                    
+                    if (target != null) {
+                        target.sendMessage(ChatColor.YELLOW + "You have been removed as an associate from market '" + 
+                                market.getName() + "'.");
+                    }
+                } else {
+                    sender.sendMessage(ChatColor.RED + "Failed to remove associate. Player may not be an associate of this market.");
+                }
+                
+                return true;
+            }
+        });
+        
+        // Set level command
+        addSubCommand(new SubCommand() {
+            @Override
+            public String getName() {
+                return "setlevel";
+            }
+            
+            @Override
+            public String getDescription() {
+                return "Sets the level of a market";
+            }
+            
+            @Override
+            public String getUsage() {
+                return "<level>";
+            }
+            
+            @Override
+            public String getPermission() {
+                return "bdcraft.admin.market.setlevel";
+            }
+            
+            @Override
+            public boolean isPlayerOnly() {
+                return true;
+            }
+            
+            @Override
+            public boolean execute(CommandSender sender, String[] args) {
+                if (args.length < 1) {
+                    sender.sendMessage(ChatColor.RED + "Usage: /bdmarket setlevel <level>");
+                    return true;
+                }
+                
+                Player player = (Player) sender;
+                
+                // Parse level
+                int level;
+                try {
+                    level = Integer.parseInt(args[0]);
+                    
+                    if (level < 1 || level > 5) {
+                        sender.sendMessage(ChatColor.RED + "Level must be between 1 and 5.");
+                        return true;
+                    }
+                } catch (NumberFormatException e) {
+                    sender.sendMessage(ChatColor.RED + "Invalid level. Must be a number between 1 and 5.");
+                    return true;
+                }
+                
+                // Get market at location
+                Market market = marketManager.getMarketAt(player.getLocation());
+                
+                if (market == null) {
+                    sender.sendMessage(ChatColor.RED + "No market found at your location.");
+                    return true;
+                }
+                
+                // Set level
+                market.setLevel(level);
+                
+                sender.sendMessage(ChatColor.GREEN + "Set market '" + market.getName() + "' to level " + level + ".");
+                
+                return true;
+            }
+        });
     }
     
     /**
-     * Formats a location for display.
+     * Formats a location as a string.
+     * 
      * @param location The location
-     * @return The formatted location
+     * @return The formatted string
      */
     private String formatLocation(Location location) {
-        return location.getBlockX() + ", " + 
+        return location.getWorld().getName() + " (" + 
+                location.getBlockX() + ", " + 
                 location.getBlockY() + ", " + 
-                location.getBlockZ();
-    }
-    
-    /**
-     * Shows the boundary of a market using wool blocks.
-     * @param player The player
-     * @param marketManager The market manager
-     */
-    private void checkMarketBoundary(Player player, MarketManager marketManager) {
-        // Check permission (bdcraft.market.check according to documentation)
-        if (!player.hasPermission("bdcraft.market.check") && !player.hasPermission("bdcraft.admin.market")) {
-            player.sendMessage(ChatColor.RED + "You don't have permission to check market boundaries.");
-            return;
-        }
-        
-        // Check if in a market
-        BDMarket market = marketManager.getMarketAt(player.getLocation());
-        
-        if (market == null) {
-            player.sendMessage(ChatColor.RED + "You are not in a market.");
-            return;
-        }
-        
-        // Show boundary using wool blocks as specified in docs
-        market.showBoundary(player, plugin);
-    }
-    
-    /**
-     * Handles the associate commands for adding/removing market associates.
-     * 
-     * @param player The player executing the command
-     * @param args The command arguments
-     * @param marketManager The market manager
-     */
-    private void handleAssociateCommand(Player player, String[] args, MarketManager marketManager) {
-        // Check permissions
-        if (!player.hasPermission("bdcraft.market.associate")) {
-            player.sendMessage(ChatColor.RED + "You don't have permission to manage market associates.");
-            return;
-        }
-        
-        // Check if enough arguments
-        if (args.length < 3) {
-            player.sendMessage(ChatColor.RED + "Usage:");
-            player.sendMessage(ChatColor.RED + "/bdmarket associate add <player> - Add a player as a market associate");
-            player.sendMessage(ChatColor.RED + "/bdmarket associate remove <player> - Remove a player as a market associate");
-            return;
-        }
-        
-        // Check if in a market
-        BDMarket market = marketManager.getMarketAt(player.getLocation());
-        if (market == null) {
-            player.sendMessage(ChatColor.RED + "You are not in a market.");
-            return;
-        }
-        
-        // Check if player is the founder or has admin permissions
-        if (!player.getUniqueId().equals(market.getFounderId()) && !player.hasPermission("bdcraft.admin.market")) {
-            player.sendMessage(ChatColor.RED + "Only the market founder can manage associates.");
-            return;
-        }
-        
-        // Get the target player
-        String targetName = args[2];
-        Player targetPlayer = plugin.getServer().getPlayer(targetName);
-        
-        // Add or remove associate
-        if (args[1].equalsIgnoreCase("add")) {
-            if (targetPlayer == null) {
-                player.sendMessage(ChatColor.RED + "Player '" + targetName + "' is not online. Associates must be online when added.");
-                return;
-            }
-            
-            // Check if target is founder
-            if (targetPlayer.getUniqueId().equals(market.getFounderId())) {
-                player.sendMessage(ChatColor.RED + "You can't add the market founder as an associate.");
-                return;
-            }
-            
-            // Add associate
-            if (market.addAssociate(targetPlayer.getUniqueId(), targetPlayer.getName())) {
-                player.sendMessage(ChatColor.GREEN + "Added " + targetPlayer.getName() + " as an associate to your market.");
-                targetPlayer.sendMessage(ChatColor.GREEN + "You have been added as an associate to " +
-                        market.getFounderName() + "'s market.");
-            } else {
-                if (market.isAssociate(targetPlayer.getUniqueId())) {
-                    player.sendMessage(ChatColor.RED + targetPlayer.getName() + " is already an associate of this market.");
-                } else {
-                    player.sendMessage(ChatColor.RED + "Market already has the maximum of 5 associates.");
-                }
-            }
-        } else if (args[1].equalsIgnoreCase("remove")) {
-            // Try to get player by name if online
-            UUID targetId = null;
-            if (targetPlayer != null) {
-                targetId = targetPlayer.getUniqueId();
-            } else {
-                // Check existing associates by name (if they're offline)
-                for (UUID associateId : market.getAssociates()) {
-                    String associateName = null;
-                    
-                    // Try to get the player's name from the server
-                    Player associatePlayer = plugin.getServer().getPlayer(associateId);
-                    if (associatePlayer != null) {
-                        associateName = associatePlayer.getName();
-                    } else {
-                        // Try to get from offline player data
-                        associateName = plugin.getServer().getOfflinePlayer(associateId).getName();
-                    }
-                    
-                    if (associateName != null && associateName.equalsIgnoreCase(targetName)) {
-                        targetId = associateId;
-                        break;
-                    }
-                }
-            }
-            
-            // Check if target was found
-            if (targetId == null) {
-                player.sendMessage(ChatColor.RED + "Player '" + targetName + "' is not an associate of this market.");
-                return;
-            }
-            
-            // Remove associate
-            if (market.removeAssociate(targetId, targetName)) {
-                player.sendMessage(ChatColor.GREEN + "Removed " + targetName + " as an associate from your market.");
-                
-                // Notify the target player if they're online
-                if (targetPlayer != null) {
-                    targetPlayer.sendMessage(ChatColor.YELLOW + "You have been removed as an associate from " +
-                            market.getFounderName() + "'s market.");
-                }
-            } else {
-                player.sendMessage(ChatColor.RED + "Player '" + targetName + "' is not an associate of this market.");
-            }
-        } else {
-            player.sendMessage(ChatColor.RED + "Unknown associate command: " + args[1]);
-            player.sendMessage(ChatColor.RED + "Available commands: add, remove");
-        }
-    }
-    
-    /**
-     * Sends usage information to a player.
-     * @param player The player
-     */
-    private void sendUsage(Player player) {
-        player.sendMessage(ChatColor.GOLD + "=== BD Market Commands ===");
-        player.sendMessage(ChatColor.YELLOW + "/bdmarket create" + ChatColor.WHITE + " - Creates a market at your location");
-        player.sendMessage(ChatColor.YELLOW + "/bdmarket upgrade" + ChatColor.WHITE + " - Upgrades the market you're in");
-        player.sendMessage(ChatColor.YELLOW + "/bdmarket info" + ChatColor.WHITE + " - Shows information about the market you're in");
-        player.sendMessage(ChatColor.YELLOW + "/bdmarket list" + ChatColor.WHITE + " - Lists all markets in the current world");
-        player.sendMessage(ChatColor.YELLOW + "/bdmarket delete" + ChatColor.WHITE + " - Deletes the market you're in");
-        player.sendMessage(ChatColor.YELLOW + "/bdmarket check" + ChatColor.WHITE + " - Visualize market boundaries with wool blocks");
-        player.sendMessage(ChatColor.YELLOW + "/bdmarket associate add <player>" + ChatColor.WHITE + " - Add a player as a market associate");
-        player.sendMessage(ChatColor.YELLOW + "/bdmarket associate remove <player>" + ChatColor.WHITE + " - Remove a player as a market associate");
-    }
-    
-    @Override
-    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-        if (args.length == 1) {
-            List<String> completions = Arrays.asList("create", "upgrade", "info", "list", "delete", "check", "associate");
-            
-            return completions.stream()
-                    .filter(s -> s.startsWith(args[0].toLowerCase()))
-                    .collect(Collectors.toList());
-        } else if (args.length == 2) {
-            if (args[0].equalsIgnoreCase("delete")) {
-                return Arrays.asList("confirm");
-            } else if (args[0].equalsIgnoreCase("associate")) {
-                return Arrays.asList("add", "remove").stream()
-                        .filter(s -> s.startsWith(args[1].toLowerCase()))
-                        .collect(Collectors.toList());
-            }
-        } else if (args.length == 3 && args[0].equalsIgnoreCase("associate")) {
-            // Return online player names for tab completion of associate commands
-            if (args[1].equalsIgnoreCase("add") || args[1].equalsIgnoreCase("remove")) {
-                return plugin.getServer().getOnlinePlayers().stream()
-                        .map(Player::getName)
-                        .filter(name -> name.toLowerCase().startsWith(args[2].toLowerCase()))
-                        .collect(Collectors.toList());
-            }
-        }
-        
-        return new ArrayList<>();
+                location.getBlockZ() + ")";
     }
 }

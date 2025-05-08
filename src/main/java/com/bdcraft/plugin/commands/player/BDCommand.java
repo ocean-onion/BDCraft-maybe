@@ -1,269 +1,264 @@
 package com.bdcraft.plugin.commands.player;
 
 import com.bdcraft.plugin.BDCraft;
-import com.bdcraft.plugin.modules.economy.BDEconomyModule;
-import com.bdcraft.plugin.modules.economy.market.BDMarket;
+import com.bdcraft.plugin.commands.CommandBase;
+import com.bdcraft.plugin.commands.SubCommand;
+import com.bdcraft.plugin.modules.economy.market.Market;
 import com.bdcraft.plugin.modules.economy.market.MarketManager;
-import com.bdcraft.plugin.modules.progression.BDRankManager;
 import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
+import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
- * Main command for BD Plugin.
+ * Main command for the BDCraft plugin.
  */
-public class BDCommand implements CommandExecutor, TabCompleter {
+public class BDCommand extends CommandBase {
     private final BDCraft plugin;
+    private final MarketManager marketManager;
     
     /**
      * Creates a new BD command.
+     * 
      * @param plugin The plugin instance
      */
     public BDCommand(BDCraft plugin) {
+        super(plugin, "bdcraft", "bdcraft.command");
+        aliases.add("bd");
+        
         this.plugin = plugin;
-        plugin.getCommand("bd").setExecutor(this);
-        plugin.getCommand("bd").setTabCompleter(this);
-    }
-    
-    @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!(sender instanceof Player)) {
-            sender.sendMessage(ChatColor.RED + "This command can only be used by players.");
-            return true;
-        }
+        this.marketManager = plugin.getEconomyModule().getMarketManager();
         
-        Player player = (Player) sender;
-        
-        if (args.length == 0) {
-            sendMainMenu(player);
-            return true;
-        }
-        
-        switch (args[0].toLowerCase()) {
-            case "balance":
-            case "bal":
-                showBalance(player);
-                break;
-            case "market":
-                handleMarketCommand(player, args);
-                break;
-            case "rank":
-                showRank(player);
-                break;
-            case "help":
-                sendHelp(player);
-                break;
-            default:
-                sendMainMenu(player);
-                break;
-        }
-        
-        return true;
-    }
-    
-    /**
-     * Shows a player's balance.
-     * @param player The player
-     */
-    private void showBalance(Player player) {
-        BDEconomyModule economyModule = plugin.getEconomyModule();
-        int balance = economyModule.getPlayerBalance(player);
-        
-        player.sendMessage(ChatColor.GOLD + "=== Your BD Balance ===");
-        player.sendMessage(ChatColor.GREEN + "Balance: " + balance + " BD Currency");
-    }
-    
-    /**
-     * Handles the market subcommand.
-     * @param player The player
-     * @param args The command arguments
-     */
-    private void handleMarketCommand(Player player, String[] args) {
-        if (args.length < 2) {
-            sendMarketHelp(player);
-            return;
-        }
-        
-        MarketManager marketManager = plugin.getEconomyModule().getMarketManager();
-        
-        switch (args[1].toLowerCase()) {
-            case "info":
-                showMarketInfo(player, marketManager);
-                break;
-            case "list":
-                listMarkets(player, marketManager);
-                break;
-            default:
-                sendMarketHelp(player);
-                break;
-        }
-    }
-    
-    /**
-     * Shows information about the market a player is in.
-     * @param player The player
-     * @param marketManager The market manager
-     */
-    private void showMarketInfo(Player player, MarketManager marketManager) {
-        BDMarket market = marketManager.getMarketAt(player.getLocation());
-        
-        if (market == null) {
-            player.sendMessage(ChatColor.RED + "You are not in a market.");
-            return;
-        }
-        
-        // Show market info
-        player.sendMessage(ChatColor.GOLD + "=== Market Information ===");
-        player.sendMessage(ChatColor.YELLOW + "Founder: " + ChatColor.WHITE + market.getFounderName());
-        player.sendMessage(ChatColor.YELLOW + "Level: " + ChatColor.WHITE + market.getLevel());
-        player.sendMessage(ChatColor.YELLOW + "Collectors: " + ChatColor.WHITE + market.getTraderCount("COLLECTOR") + 
-                "/" + getMaxCollectors(market));
-    }
-    
-    /**
-     * Lists markets in the player's world.
-     * @param player The player
-     * @param marketManager The market manager
-     */
-    private void listMarkets(Player player, MarketManager marketManager) {
-        List<BDMarket> markets = marketManager.getMarketsInWorld(player.getWorld().getName());
-        
-        if (markets.isEmpty()) {
-            player.sendMessage(ChatColor.RED + "There are no markets in this world.");
-            return;
-        }
-        
-        player.sendMessage(ChatColor.GOLD + "=== Markets in " + player.getWorld().getName() + " ===");
-        
-        for (int i = 0; i < Math.min(markets.size(), 5); i++) {
-            BDMarket market = markets.get(i);
-            player.sendMessage(ChatColor.YELLOW + "Founder: " + ChatColor.WHITE + market.getFounderName() + 
-                    ChatColor.YELLOW + " | Level: " + ChatColor.WHITE + market.getLevel() + 
-                    ChatColor.YELLOW + " | Location: " + ChatColor.WHITE + 
-                    formatLocation(market.getCenter()));
-        }
-        
-        if (markets.size() > 5) {
-            player.sendMessage(ChatColor.GRAY + "...and " + (markets.size() - 5) + " more.");
-        }
-    }
-    
-    /**
-     * Shows a player's rank.
-     * @param player The player
-     */
-    private void showRank(Player player) {
-        BDRankManager rankManager = plugin.getProgressionModule().getRankManager();
-        String rankName = rankManager.getPlayerRankName(player);
-        int experience = rankManager.getPlayerExperience(player);
-        int nextRankExp = rankManager.getNextRankExperience(player);
-        
-        player.sendMessage(ChatColor.GOLD + "=== Your BD Rank ===");
-        player.sendMessage(ChatColor.GREEN + "Current Rank: " + rankName);
-        player.sendMessage(ChatColor.GREEN + "Experience: " + experience + 
-                (nextRankExp > 0 ? " / " + nextRankExp + " for next rank" : " (Max Rank)"));
-        
-        // Show rebirth status if applicable
-        if (rankManager.hasRebirthStatus(player)) {
-            int rebirthLevel = rankManager.getRebirthLevel(player);
-            player.sendMessage(ChatColor.LIGHT_PURPLE + "Rebirth Level: " + rebirthLevel);
-        }
-    }
-    
-    /**
-     * Gets the maximum number of collectors for a market.
-     * @param market The market
-     * @return The maximum number of collectors
-     */
-    private int getMaxCollectors(BDMarket market) {
-        int level = market.getLevel();
-        
-        switch (level) {
-            case 1:
-                return 3;
-            case 2:
-                return 5;
-            case 3:
-                return 7;
-            case 4:
-                return 10;
-            default:
-                return 3;
-        }
-    }
-    
-    /**
-     * Formats a location for display.
-     * @param location The location
-     * @return The formatted location
-     */
-    private String formatLocation(org.bukkit.Location location) {
-        return location.getBlockX() + ", " + 
-                location.getBlockY() + ", " + 
-                location.getBlockZ();
-    }
-    
-    /**
-     * Sends the main menu to a player.
-     * @param player The player
-     */
-    private void sendMainMenu(Player player) {
-        player.sendMessage(ChatColor.GOLD + "=== BD Plugin Commands ===");
-        player.sendMessage(ChatColor.YELLOW + "/bd balance" + ChatColor.WHITE + " - Shows your BD currency balance");
-        player.sendMessage(ChatColor.YELLOW + "/bd market" + ChatColor.WHITE + " - Market management commands");
-        player.sendMessage(ChatColor.YELLOW + "/bd rank" + ChatColor.WHITE + " - Shows your current rank and progress");
-        player.sendMessage(ChatColor.YELLOW + "/bd help" + ChatColor.WHITE + " - Shows this help message");
-    }
-    
-    /**
-     * Sends market help to a player.
-     * @param player The player
-     */
-    private void sendMarketHelp(Player player) {
-        player.sendMessage(ChatColor.GOLD + "=== BD Market Commands ===");
-        player.sendMessage(ChatColor.YELLOW + "/bd market info" + ChatColor.WHITE + " - Shows information about the market you're in");
-        player.sendMessage(ChatColor.YELLOW + "/bd market list" + ChatColor.WHITE + " - Lists all markets in the current world");
-    }
-    
-    /**
-     * Sends help to a player.
-     * @param player The player
-     */
-    private void sendHelp(Player player) {
-        sendMainMenu(player);
-        
-        // Additional help
-        player.sendMessage(ChatColor.GOLD + "=== BD Plugin Help ===");
-        player.sendMessage(ChatColor.YELLOW + "• Use BD Seeds to grow special crops");
-        player.sendMessage(ChatColor.YELLOW + "• Sell crops to BD Collectors for currency");
-        player.sendMessage(ChatColor.YELLOW + "• Create your own market with a Market Token");
-        player.sendMessage(ChatColor.YELLOW + "• Place a House Token in your market to add a Collector");
-    }
-    
-    @Override
-    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-        if (args.length == 1) {
-            List<String> completions = Arrays.asList("balance", "market", "rank", "help");
+        // Version command
+        addSubCommand(new SubCommand() {
+            @Override
+            public String getName() {
+                return "version";
+            }
             
-            return completions.stream()
-                    .filter(s -> s.startsWith(args[0].toLowerCase()))
-                    .collect(Collectors.toList());
-        } else if (args.length == 2 && args[0].equalsIgnoreCase("market")) {
-            List<String> completions = Arrays.asList("info", "list");
+            @Override
+            public String getDescription() {
+                return "Shows the plugin version";
+            }
             
-            return completions.stream()
-                    .filter(s -> s.startsWith(args[1].toLowerCase()))
-                    .collect(Collectors.toList());
-        }
+            @Override
+            public String getUsage() {
+                return "";
+            }
+            
+            @Override
+            public String getPermission() {
+                return "bdcraft.version";
+            }
+            
+            @Override
+            public boolean execute(CommandSender sender, String[] args) {
+                String version = plugin.getDescription().getVersion();
+                sender.sendMessage(ChatColor.GREEN + "BDCraft v" + version);
+                return true;
+            }
+        });
         
-        return new ArrayList<>();
+        // Status command
+        addSubCommand(new SubCommand() {
+            @Override
+            public String getName() {
+                return "status";
+            }
+            
+            @Override
+            public String getDescription() {
+                return "Shows the plugin status";
+            }
+            
+            @Override
+            public String getUsage() {
+                return "";
+            }
+            
+            @Override
+            public String getPermission() {
+                return "bdcraft.status";
+            }
+            
+            @Override
+            public boolean execute(CommandSender sender, String[] args) {
+                sender.sendMessage(ChatColor.GREEN + "BDCraft Status:");
+                
+                // Module status
+                sender.sendMessage(ChatColor.YELLOW + "Modules:");
+                sender.sendMessage(ChatColor.WHITE + "  Economy: " + ChatColor.GREEN + "Enabled");
+                sender.sendMessage(ChatColor.WHITE + "  Permissions: " + ChatColor.GREEN + "Enabled");
+                sender.sendMessage(ChatColor.WHITE + "  Vital: " + ChatColor.GREEN + "Enabled");
+                sender.sendMessage(ChatColor.WHITE + "  Progression: " + ChatColor.GREEN + "Enabled");
+                
+                // Show market stats
+                List<Market> markets = marketManager.getMarkets();
+                sender.sendMessage(ChatColor.YELLOW + "Markets: " + ChatColor.WHITE + markets.size());
+                
+                return true;
+            }
+        });
+        
+        // Reload command
+        addSubCommand(new SubCommand() {
+            @Override
+            public String getName() {
+                return "reload";
+            }
+            
+            @Override
+            public String getDescription() {
+                return "Reloads the plugin configuration";
+            }
+            
+            @Override
+            public String getUsage() {
+                return "";
+            }
+            
+            @Override
+            public String getPermission() {
+                return "bdcraft.reload";
+            }
+            
+            @Override
+            public boolean execute(CommandSender sender, String[] args) {
+                plugin.reloadConfig();
+                sender.sendMessage(ChatColor.GREEN + "BDCraft configuration reloaded.");
+                return true;
+            }
+        });
+        
+        // Market check command
+        addSubCommand(new SubCommand() {
+            @Override
+            public String getName() {
+                return "marketcheck";
+            }
+            
+            @Override
+            public String getDescription() {
+                return "Checks if you're standing in a market";
+            }
+            
+            @Override
+            public String getUsage() {
+                return "";
+            }
+            
+            @Override
+            public String getPermission() {
+                return "bdcraft.market.check";
+            }
+            
+            @Override
+            public boolean isPlayerOnly() {
+                return true;
+            }
+            
+            @Override
+            public boolean execute(CommandSender sender, String[] args) {
+                Player player = (Player) sender;
+                
+                // Check if player is in a market
+                Market market = marketManager.getMarketAt(player.getLocation());
+                
+                if (market != null) {
+                    sender.sendMessage(ChatColor.GREEN + "You are in market '" + market.getName() + 
+                            "' owned by " + market.getOwnerName() + ".");
+                } else {
+                    sender.sendMessage(ChatColor.YELLOW + "You are not in a market.");
+                }
+                
+                return true;
+            }
+        });
+        
+        // Nearest market command
+        addSubCommand(new SubCommand() {
+            @Override
+            public String getName() {
+                return "nearestmarket";
+            }
+            
+            @Override
+            public String getDescription() {
+                return "Shows the nearest market";
+            }
+            
+            @Override
+            public String getUsage() {
+                return "";
+            }
+            
+            @Override
+            public String getPermission() {
+                return "bdcraft.market.nearest";
+            }
+            
+            @Override
+            public boolean isPlayerOnly() {
+                return true;
+            }
+            
+            @Override
+            public boolean execute(CommandSender sender, String[] args) {
+                Player player = (Player) sender;
+                
+                // Get all markets in this world
+                List<Market> markets = marketManager.getMarkets();
+                
+                if (markets.isEmpty()) {
+                    sender.sendMessage(ChatColor.YELLOW + "No markets found.");
+                    return true;
+                }
+                
+                // Find the nearest market
+                Market nearestMarket = null;
+                double nearestDistance = Double.MAX_VALUE;
+                Location playerLoc = player.getLocation();
+                
+                for (Market market : markets) {
+                    if (!market.getWorldName().equals(player.getWorld().getName())) {
+                        continue; // Skip markets in other worlds
+                    }
+                    
+                    Location marketLoc = new Location(
+                            player.getWorld(),
+                            market.getCenterX(),
+                            market.getCenterY(),
+                            market.getCenterZ()
+                    );
+                    
+                    double distance = playerLoc.distance(marketLoc);
+                    
+                    if (distance < nearestDistance) {
+                        nearestDistance = distance;
+                        nearestMarket = market;
+                    }
+                }
+                
+                if (nearestMarket == null) {
+                    sender.sendMessage(ChatColor.YELLOW + "No markets found in this world.");
+                } else {
+                    sender.sendMessage(ChatColor.GREEN + "Nearest market: " + ChatColor.WHITE + 
+                            nearestMarket.getName() + ChatColor.GREEN + " owned by " + 
+                            ChatColor.WHITE + nearestMarket.getOwnerName());
+                    
+                    sender.sendMessage(ChatColor.GREEN + "Distance: " + ChatColor.WHITE + 
+                            String.format("%.2f", nearestDistance) + " blocks");
+                    
+                    sender.sendMessage(ChatColor.GREEN + "Location: " + ChatColor.WHITE + 
+                            nearestMarket.getCenterX() + ", " + 
+                            nearestMarket.getCenterY() + ", " + 
+                            nearestMarket.getCenterZ());
+                }
+                
+                return true;
+            }
+        });
     }
 }

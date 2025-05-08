@@ -5,6 +5,10 @@ import com.bdcraft.plugin.api.ProgressionAPI;
 import com.bdcraft.plugin.commands.CommandBase;
 import com.bdcraft.plugin.commands.SubCommand;
 import com.bdcraft.plugin.modules.BDModule;
+import com.bdcraft.plugin.modules.progression.commands.BDBlessCommand;
+import com.bdcraft.plugin.modules.progression.commands.BDAuraCommand;
+import com.bdcraft.plugin.modules.progression.commands.BDTouchCommand;
+import com.bdcraft.plugin.modules.progression.commands.BDInsightCommand;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -444,6 +448,13 @@ public class BDProgressionModule implements BDModule, ProgressionAPI {
      * Registers commands for this module.
      */
     private void registerCommands() {
+        // Register deity commands
+        plugin.getCommand("bdbless").setExecutor(new BDBlessCommand(plugin));
+        plugin.getCommand("bdaura").setExecutor(new BDAuraCommand(plugin));
+        plugin.getCommand("bdtouch").setExecutor(new BDTouchCommand(plugin));
+        plugin.getCommand("bdinsight").setExecutor(new BDInsightCommand(plugin));
+        
+        // Register regular progression commands
         new CommandBase(plugin, "bdrank", "bdcraft.rank") {
             {
                 // Check rank info

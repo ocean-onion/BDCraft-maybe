@@ -1,27 +1,25 @@
 package com.bdcraft.plugin.modules.economy.items;
 
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-
 import com.bdcraft.plugin.BDCraft;
 import com.bdcraft.plugin.modules.economy.items.crops.BDCrop;
-import com.bdcraft.plugin.modules.economy.items.crops.BDCrop.CropType;
 import com.bdcraft.plugin.modules.economy.items.seeds.BDSeed;
-import com.bdcraft.plugin.modules.economy.items.seeds.BDSeed.SeedType;
-import com.bdcraft.plugin.modules.economy.items.tokens.BDToken;
-import com.bdcraft.plugin.modules.economy.items.tokens.TokenType;
-import com.bdcraft.plugin.modules.economy.items.tools.BDTool;
 import com.bdcraft.plugin.modules.economy.items.tools.ToolType;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.ItemFlag;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 /**
- * Manages BD items.
+ * Manages special BD items like tokens, crops, etc.
  */
 public class BDItemManager {
     private final BDCraft plugin;
-    private final Map<String, BDItem> itemRegistry;
     
     /**
      * Creates a new BD item manager.
@@ -30,353 +28,977 @@ public class BDItemManager {
      */
     public BDItemManager(BDCraft plugin) {
         this.plugin = plugin;
-        this.itemRegistry = new HashMap<>();
-        
-        // Register all BD items
-        registerItems();
     }
     
     /**
-     * Registers all BD items.
-     */
-    private void registerItems() {
-        // Register seeds
-        for (SeedType seedType : SeedType.values()) {
-            BDSeed seed = new BDSeed(plugin, seedType);
-            String key = getKeyForSeedType(seedType);
-            itemRegistry.put(key, seed);
-        }
-        
-        // Register crops
-        for (CropType cropType : CropType.values()) {
-            BDCrop crop = new BDCrop(plugin, cropType);
-            String key = getKeyForCropType(cropType);
-            itemRegistry.put(key, crop);
-        }
-        
-        // Register tools
-        for (ToolType toolType : ToolType.values()) {
-            BDTool tool = new BDTool(plugin, toolType);
-            String key = getKeyForToolType(toolType);
-            itemRegistry.put(key, tool);
-        }
-        
-        // TODO: Register tokens when they're implemented
-    }
-    
-    /**
-     * Creates an item by type.
+     * Creates a market token with the specified name and owner.
      * 
-     * @param itemType The item type
-     * @param amount The amount
-     * @return The item stack, or null if the item type is invalid
+     * @param name The market name
+     * @param ownerName The owner name
+     * @param level The market level (1-3)
+     * @return The market token
      */
-    public ItemStack createItem(String itemType, int amount) {
-        BDItem bdItem = itemRegistry.get(itemType);
+    public ItemStack createMarketToken(String name, String ownerName, int level) {
+        ItemStack token = new ItemStack(Material.EMERALD);
+        ItemMeta meta = token.getItemMeta();
         
-        if (bdItem != null) {
-            return bdItem.createItemStack(amount);
+        if (meta != null) {
+            meta.setDisplayName(ChatColor.GREEN + "Market Token: " + ChatColor.GOLD + name);
+            List<String> lore = new ArrayList<>();
+            lore.add(ChatColor.GRAY + "Owner: " + ChatColor.WHITE + ownerName);
+            lore.add(ChatColor.GRAY + "Level: " + ChatColor.YELLOW + level);
+            lore.add("");
+            lore.add(ChatColor.YELLOW + "Place this token in the center of a");
+            lore.add(ChatColor.YELLOW + "3x3 obsidian platform to create a market.");
+            lore.add("");
+            lore.add(ChatColor.GRAY + "ID: " + UUID.randomUUID().toString().substring(0, 8));
+            
+            meta.setLore(lore);
+            
+            // Add enchant glow
+            meta.addEnchant(Enchantment.DURABILITY, 1, true);
+            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            
+            token.setItemMeta(meta);
         }
         
-        // Handle seed types
-        if (itemType.equals("bd_seed")) {
-            return createBDSeed(SeedType.REGULAR, amount);
-        } else if (itemType.equals("green_bd_seed")) {
-            return createBDSeed(SeedType.GREEN, amount);
-        } else if (itemType.equals("purple_bd_seed")) {
-            return createBDSeed(SeedType.PURPLE, amount);
-        }
-        
-        // Handle crop types
-        if (itemType.equals("bd_crop")) {
-            return createBDCrop(CropType.REGULAR, amount);
-        } else if (itemType.equals("green_bd_crop")) {
-            return createBDCrop(CropType.GREEN, amount);
-        } else if (itemType.equals("purple_bd_crop")) {
-            return createBDCrop(CropType.PURPLE, amount);
-        }
-        
-        // Handle tool types
-        if (itemType.equals("bd_stick")) {
-            return createBDTool(ToolType.BDSTICK);
-        } else if (itemType.equals("bd_harvester")) {
-            return createBDTool(ToolType.HARVESTER);
-        } else if (itemType.equals("bd_ultimate_harvester")) {
-            return createBDTool(ToolType.ULTIMATE_HARVESTER);
-        }
-        
-        // TODO: Handle token types
-        
-        return null;
+        return token;
     }
     
     /**
-     * Creates a BD seed.
-     * 
-     * @param type The seed type
-     * @param amount The amount of seeds
-     * @return The BD seed item
-     */
-    public ItemStack createBDSeed(SeedType type, int amount) {
-        return new BDSeed(plugin, type).createItemStack(amount);
-    }
-    
-    /**
-     * Creates a BD crop.
+     * Creates a special BD crop item.
      * 
      * @param type The crop type
-     * @param amount The amount of crops
-     * @return The BD crop item
+     * @param quantity The quantity
+     * @return The crop item
      */
-    public ItemStack createBDCrop(CropType type, int amount) {
-        return new BDCrop(plugin, type).createItemStack(amount);
+    public ItemStack createBDCrop(CropType type, int quantity) {
+        Material material;
+        String displayName;
+        ChatColor color;
+        
+        switch (type) {
+            case REGULAR:
+                material = Material.WHEAT;
+                displayName = "Standard Crop";
+                color = ChatColor.YELLOW;
+                break;
+            case GREEN:
+                material = Material.APPLE;
+                displayName = "Quality Crop";
+                color = ChatColor.GREEN;
+                break;
+            case BLUE:
+                material = Material.GOLDEN_CARROT;
+                displayName = "Premium Crop";
+                color = ChatColor.BLUE;
+                break;
+            case PURPLE:
+                material = Material.GOLDEN_APPLE;
+                displayName = "Exceptional Crop";
+                color = ChatColor.LIGHT_PURPLE;
+                break;
+            case LEGENDARY:
+                material = Material.ENCHANTED_GOLDEN_APPLE;
+                displayName = "Legendary Crop";
+                color = ChatColor.GOLD;
+                break;
+            default:
+                material = Material.WHEAT;
+                displayName = "Crop";
+                color = ChatColor.WHITE;
+                break;
+        }
+        
+        ItemStack crop = new ItemStack(material, quantity);
+        ItemMeta meta = crop.getItemMeta();
+        
+        if (meta != null) {
+            meta.setDisplayName(color + displayName);
+            
+            List<String> lore = new ArrayList<>();
+            lore.add(ChatColor.GRAY + "A special " + color + type.name().toLowerCase() + 
+                    ChatColor.GRAY + " crop grown with");
+            lore.add(ChatColor.GRAY + "careful tending and agricultural expertise.");
+            lore.add("");
+            lore.add(ChatColor.GRAY + "Value: " + ChatColor.GOLD + getCropValue(type) + " BD each");
+            lore.add(ChatColor.GRAY + "Can be sold to collectors or at markets.");
+            
+            meta.setLore(lore);
+            
+            // Add enchant glow for better crops
+            if (type != CropType.REGULAR) {
+                meta.addEnchant(Enchantment.DURABILITY, 1, true);
+                meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            }
+            
+            crop.setItemMeta(meta);
+        }
+        
+        return crop;
     }
     
     /**
-     * Creates a BD token.
+     * Gets the value of a crop type.
+     * 
+     * @param type The crop type
+     * @return The value
+     */
+    public int getCropValue(CropType type) {
+        switch (type) {
+            case REGULAR:
+                return 5;
+            case GREEN:
+                return 15;
+            case BLUE:
+                return 30;
+            case PURPLE:
+                return 50;
+            case LEGENDARY:
+                return 100;
+            default:
+                return 1;
+        }
+    }
+    
+    /**
+     * Creates a special seed item.
+     * 
+     * @param type The seed type (e.g., GREEN, BLUE)
+     * @param quantity The quantity
+     * @return The seed item
+     */
+    public ItemStack createSpecialSeed(CropType type, int quantity) {
+        Material material = Material.WHEAT_SEEDS;
+        String displayName;
+        ChatColor color;
+        
+        switch (type) {
+            case GREEN:
+                displayName = "Quality Seeds";
+                color = ChatColor.GREEN;
+                break;
+            case BLUE:
+                displayName = "Premium Seeds";
+                color = ChatColor.BLUE;
+                break;
+            case PURPLE:
+                displayName = "Exceptional Seeds";
+                color = ChatColor.LIGHT_PURPLE;
+                break;
+            case LEGENDARY:
+                displayName = "Legendary Seeds";
+                color = ChatColor.GOLD;
+                break;
+            default:
+                displayName = "Seeds";
+                color = ChatColor.WHITE;
+                break;
+        }
+        
+        ItemStack seeds = new ItemStack(material, quantity);
+        ItemMeta meta = seeds.getItemMeta();
+        
+        if (meta != null) {
+            meta.setDisplayName(color + displayName);
+            
+            List<String> lore = new ArrayList<>();
+            lore.add(ChatColor.GRAY + "Special " + color + type.name().toLowerCase() + 
+                    ChatColor.GRAY + " quality seeds that");
+            lore.add(ChatColor.GRAY + "grow into higher value crops.");
+            lore.add("");
+            lore.add(ChatColor.GRAY + "Plant these to grow special crops");
+            lore.add(ChatColor.GRAY + "worth " + ChatColor.GOLD + getCropValue(type) + " BD each" + 
+                    ChatColor.GRAY + " when harvested.");
+            
+            meta.setLore(lore);
+            
+            // Add enchant glow
+            meta.addEnchant(Enchantment.DURABILITY, 1, true);
+            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            
+            seeds.setItemMeta(meta);
+        }
+        
+        return seeds;
+    }
+    
+    /**
+     * Creates a villager token.
+     * 
+     * @param type The villager type (e.g., "collector", "vendor")
+     * @param level The villager level (1-3)
+     * @return The villager token
+     */
+    public ItemStack createVillagerToken(String type, int level) {
+        Material material = Material.EMERALD;
+        String displayName;
+        ChatColor color = ChatColor.GREEN;
+        
+        if ("collector".equalsIgnoreCase(type)) {
+            displayName = "Collector Villager Token";
+        } else if ("vendor".equalsIgnoreCase(type)) {
+            displayName = "Vendor Villager Token";
+            material = Material.DIAMOND;
+            color = ChatColor.AQUA;
+        } else {
+            displayName = "Villager Token";
+        }
+        
+        ItemStack token = new ItemStack(material);
+        ItemMeta meta = token.getItemMeta();
+        
+        if (meta != null) {
+            meta.setDisplayName(color + displayName);
+            
+            List<String> lore = new ArrayList<>();
+            lore.add(ChatColor.GRAY + "Level: " + ChatColor.YELLOW + level);
+            lore.add("");
+            lore.add(ChatColor.YELLOW + "Place this token to spawn a " + type);
+            lore.add(ChatColor.YELLOW + "villager at your market.");
+            lore.add("");
+            lore.add(ChatColor.GRAY + "ID: " + UUID.randomUUID().toString().substring(0, 8));
+            
+            meta.setLore(lore);
+            
+            // Add enchant glow
+            meta.addEnchant(Enchantment.DURABILITY, 1, true);
+            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            
+            token.setItemMeta(meta);
+        }
+        
+        return token;
+    }
+    
+    /**
+     * Creates a special BD crop item using the BDCrop.CropType.
+     * 
+     * @param type The crop type
+     * @param quantity The quantity
+     * @return The crop item
+     */
+    public ItemStack createBDCrop(BDCrop.CropType type, int quantity) {
+        Material material;
+        String displayName;
+        ChatColor color;
+        
+        switch (type) {
+            case REGULAR:
+                material = Material.WHEAT;
+                displayName = "Standard Crop";
+                color = ChatColor.YELLOW;
+                break;
+            case GREEN:
+                material = Material.APPLE;
+                displayName = "Quality Crop";
+                color = ChatColor.GREEN;
+                break;
+            case BLUE:
+                material = Material.GOLDEN_CARROT;
+                displayName = "Premium Crop";
+                color = ChatColor.BLUE;
+                break;
+            case PURPLE:
+                material = Material.GOLDEN_APPLE;
+                displayName = "Exceptional Crop";
+                color = ChatColor.LIGHT_PURPLE;
+                break;
+            case LEGENDARY:
+                material = Material.ENCHANTED_GOLDEN_APPLE;
+                displayName = "Legendary Crop";
+                color = ChatColor.GOLD;
+                break;
+            default:
+                material = Material.WHEAT;
+                displayName = "Crop";
+                color = ChatColor.WHITE;
+                break;
+        }
+        
+        ItemStack crop = new ItemStack(material, quantity);
+        ItemMeta meta = crop.getItemMeta();
+        
+        if (meta != null) {
+            meta.setDisplayName(color + displayName);
+            
+            List<String> lore = new ArrayList<>();
+            lore.add(ChatColor.GRAY + "A special " + color + type.name().toLowerCase() + 
+                    ChatColor.GRAY + " crop grown with");
+            lore.add(ChatColor.GRAY + "careful tending and agricultural expertise.");
+            lore.add("");
+            lore.add(ChatColor.GRAY + "Value: " + ChatColor.GOLD + getCropValue(type) + " BD each");
+            lore.add(ChatColor.GRAY + "Can be sold to collectors or at markets.");
+            
+            meta.setLore(lore);
+            
+            // Add enchant glow for better crops
+            if (type != BDCrop.CropType.REGULAR) {
+                meta.addEnchant(Enchantment.DURABILITY, 1, true);
+                meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            }
+            
+            crop.setItemMeta(meta);
+        }
+        
+        return crop;
+    }
+    
+    /**
+     * Gets the value of a BDCrop.CropType.
+     * 
+     * @param type The crop type
+     * @return The value
+     */
+    public int getCropValue(BDCrop.CropType type) {
+        switch (type) {
+            case REGULAR:
+                return 5;
+            case GREEN:
+                return 15;
+            case BLUE:
+                return 30;
+            case PURPLE:
+                return 50;
+            case LEGENDARY:
+                return 100;
+            default:
+                return 1;
+        }
+    }
+    
+    /**
+     * Creates a BD seed with the specified seed type.
+     * 
+     * @param type The seed type
+     * @param quantity The quantity
+     * @return The seed item
+     */
+    public ItemStack createBDSeed(SeedType type, int quantity) {
+        Material material = Material.WHEAT_SEEDS;
+        String displayName;
+        ChatColor color;
+        
+        switch (type) {
+            case GREEN:
+                displayName = "Quality Seeds";
+                color = ChatColor.GREEN;
+                break;
+            case BLUE:
+                displayName = "Premium Seeds";
+                color = ChatColor.BLUE;
+                break;
+            case PURPLE:
+                displayName = "Exceptional Seeds";
+                color = ChatColor.LIGHT_PURPLE;
+                break;
+            case LEGENDARY:
+                displayName = "Legendary Seeds";
+                color = ChatColor.GOLD;
+                break;
+            default:
+                displayName = "Seeds";
+                color = ChatColor.WHITE;
+                break;
+        }
+        
+        ItemStack seeds = new ItemStack(material, quantity);
+        ItemMeta meta = seeds.getItemMeta();
+        
+        if (meta != null) {
+            meta.setDisplayName(color + displayName);
+            
+            List<String> lore = new ArrayList<>();
+            lore.add(ChatColor.GRAY + "Special " + color + type.name().toLowerCase() + 
+                    ChatColor.GRAY + " quality seeds that");
+            lore.add(ChatColor.GRAY + "grow into higher value crops.");
+            lore.add("");
+            lore.add(ChatColor.GRAY + "Plant these to grow special crops");
+            lore.add(ChatColor.GRAY + "worth " + ChatColor.GOLD + getSeedValue(type) + " BD each" + 
+                    ChatColor.GRAY + " when harvested.");
+            
+            meta.setLore(lore);
+            
+            // Add enchant glow for better seeds
+            if (type != SeedType.REGULAR) {
+                meta.addEnchant(Enchantment.DURABILITY, 1, true);
+                meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            }
+            
+            seeds.setItemMeta(meta);
+        }
+        
+        return seeds;
+    }
+    
+    /**
+     * Creates a BD seed with the specified BDSeed.SeedType.
+     * 
+     * @param type The seed type
+     * @param quantity The quantity
+     * @return The seed item
+     */
+    public ItemStack createBDSeed(BDSeed.SeedType type, int quantity) {
+        Material material = Material.WHEAT_SEEDS;
+        String displayName;
+        ChatColor color;
+        
+        switch (type) {
+            case GREEN:
+                displayName = "Quality Seeds";
+                color = ChatColor.GREEN;
+                break;
+            case BLUE:
+                displayName = "Premium Seeds";
+                color = ChatColor.BLUE;
+                break;
+            case PURPLE:
+                displayName = "Exceptional Seeds";
+                color = ChatColor.LIGHT_PURPLE;
+                break;
+            case LEGENDARY:
+                displayName = "Legendary Seeds";
+                color = ChatColor.GOLD;
+                break;
+            default:
+                displayName = "Seeds";
+                color = ChatColor.WHITE;
+                break;
+        }
+        
+        ItemStack seeds = new ItemStack(material, quantity);
+        ItemMeta meta = seeds.getItemMeta();
+        
+        if (meta != null) {
+            meta.setDisplayName(color + displayName);
+            
+            List<String> lore = new ArrayList<>();
+            lore.add(ChatColor.GRAY + "Special " + color + type.name().toLowerCase() + 
+                    ChatColor.GRAY + " quality seeds that");
+            lore.add(ChatColor.GRAY + "grow into higher value crops.");
+            lore.add("");
+            lore.add(ChatColor.GRAY + "Plant these to grow special crops");
+            lore.add(ChatColor.GRAY + "worth " + ChatColor.GOLD + getSeedValue(type) + " BD each" + 
+                    ChatColor.GRAY + " when harvested.");
+            
+            meta.setLore(lore);
+            
+            // Add enchant glow for better seeds
+            if (type != BDSeed.SeedType.REGULAR) {
+                meta.addEnchant(Enchantment.DURABILITY, 1, true);
+                meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            }
+            
+            seeds.setItemMeta(meta);
+        }
+        
+        return seeds;
+    }
+    
+    /**
+     * Gets the value of a seed type.
+     * 
+     * @param type The seed type
+     * @return The value
+     */
+    public int getSeedValue(SeedType type) {
+        switch (type) {
+            case REGULAR:
+                return 5;
+            case GREEN:
+                return 15;
+            case BLUE:
+                return 30;
+            case PURPLE:
+                return 50;
+            case LEGENDARY:
+                return 100;
+            default:
+                return 1;
+        }
+    }
+    
+    /**
+     * Gets the value of a BDSeed.SeedType.
+     * 
+     * @param type The seed type
+     * @return The value
+     */
+    public int getSeedValue(BDSeed.SeedType type) {
+        switch (type) {
+            case REGULAR:
+                return 5;
+            case GREEN:
+                return 15;
+            case BLUE:
+                return 30;
+            case PURPLE:
+                return 50;
+            case LEGENDARY:
+                return 100;
+            default:
+                return 1;
+        }
+    }
+    
+    /**
+     * Creates a BD crop with the specified crop type.
+     * 
+     * @param type The crop type
+     * @param quantity The quantity
+     * @return The crop item
+     */
+    public ItemStack createBDCrop(BDCrop.CropType type, int quantity) {
+        Material material = Material.WHEAT;
+        String displayName;
+        ChatColor color;
+        
+        switch (type) {
+            case GREEN:
+                displayName = "Quality Crop";
+                color = ChatColor.GREEN;
+                break;
+            case BLUE:
+                displayName = "Premium Crop";
+                color = ChatColor.BLUE;
+                break;
+            case PURPLE:
+                displayName = "Exceptional Crop";
+                color = ChatColor.LIGHT_PURPLE;
+                break;
+            case LEGENDARY:
+                displayName = "Legendary Crop";
+                color = ChatColor.GOLD;
+                break;
+            default:
+                displayName = "BD Crop";
+                color = ChatColor.WHITE;
+                break;
+        }
+        
+        ItemStack crop = new ItemStack(material, quantity);
+        ItemMeta meta = crop.getItemMeta();
+        
+        if (meta != null) {
+            meta.setDisplayName(color + displayName);
+            
+            List<String> lore = new ArrayList<>();
+            lore.add(ChatColor.GRAY + "A special " + color + type.name().toLowerCase() + 
+                    ChatColor.GRAY + " quality crop");
+            lore.add(ChatColor.GRAY + "grown from special seeds.");
+            lore.add("");
+            lore.add(ChatColor.GRAY + "Worth " + ChatColor.GOLD + getCropValue(type) + " BD each" + 
+                    ChatColor.GRAY + " when sold.");
+            lore.add("");
+            lore.add(ChatColor.GRAY + "ID: " + UUID.randomUUID().toString().substring(0, 8));
+            
+            meta.setLore(lore);
+            
+            // Add enchant glow for better crops
+            if (type != BDCrop.CropType.REGULAR) {
+                meta.addEnchant(Enchantment.DURABILITY, 1, true);
+                meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            }
+            
+            crop.setItemMeta(meta);
+        }
+        
+        return crop;
+    }
+    
+    /**
+     * Gets the value of a crop type.
+     * 
+     * @param type The crop type
+     * @return The value
+     */
+    public int getCropValue(BDCrop.CropType type) {
+        switch (type) {
+            case REGULAR:
+                return 10;
+            case GREEN:
+                return 30;
+            case BLUE:
+                return 60;
+            case PURPLE:
+                return 100;
+            case LEGENDARY:
+                return 200;
+            default:
+                return 1;
+        }
+    }
+    
+    /**
+     * Creates a BD token of the specified type.
      * 
      * @param type The token type
-     * @param amount The amount of tokens
-     * @return The BD token item
+     * @param level The token level (1-3)
+     * @return The token
      */
-    public ItemStack createBDToken(TokenType type, int amount) {
-        return new BDToken(plugin, type).createItemStack(amount);
-    }
-    
-    /**
-     * Creates a BD tool.
-     * 
-     * @param type The tool type
-     * @return The BD tool item
-     */
-    public ItemStack createBDTool(ToolType type) {
-        return new BDTool(plugin, type).createItemStack(1);
-    }
-    
-    /**
-     * Gives an item to a player.
-     * 
-     * @param player The player
-     * @param itemId The item ID
-     * @param amount The amount
-     * @param value The value (for value-based items)
-     * @return True if the item was given successfully
-     */
-    public boolean giveItem(Player player, String itemId, int amount, int value) {
-        ItemStack itemStack = createItem(itemId, amount);
+    public ItemStack createBDToken(TokenType type, int level) {
+        Material material;
+        String displayName;
+        ChatColor color;
         
-        if (itemStack == null) {
-            return false;
+        switch (type) {
+            case MARKET:
+                material = Material.EMERALD;
+                displayName = "Market Token";
+                color = ChatColor.GREEN;
+                break;
+            case TRADE:
+                material = Material.DIAMOND;
+                displayName = "Trade Token";
+                color = ChatColor.AQUA;
+                break;
+            case HOUSE:
+                material = Material.GOLD_INGOT;
+                displayName = "House Token";
+                color = ChatColor.GOLD;
+                break;
+            case COLLECTOR:
+                material = Material.EMERALD;
+                displayName = "Collector Token";
+                color = ChatColor.GREEN;
+                break;
+            case VENDOR:
+                material = Material.DIAMOND;
+                displayName = "Vendor Token";
+                color = ChatColor.BLUE;
+                break;
+            default:
+                material = Material.IRON_INGOT;
+                displayName = "Basic Token";
+                color = ChatColor.WHITE;
+                break;
         }
         
-        // Add the item to the player's inventory
-        Map<Integer, ItemStack> leftovers = player.getInventory().addItem(itemStack);
+        ItemStack token = new ItemStack(material);
+        ItemMeta meta = token.getItemMeta();
         
-        // If there were leftovers, drop them at the player's feet
-        if (!leftovers.isEmpty()) {
-            for (ItemStack leftover : leftovers.values()) {
-                player.getWorld().dropItemNaturally(player.getLocation(), leftover);
+        if (meta != null) {
+            meta.setDisplayName(color + displayName);
+            
+            List<String> lore = new ArrayList<>();
+            lore.add(ChatColor.GRAY + "Level: " + ChatColor.YELLOW + level);
+            lore.add("");
+            
+            switch (type) {
+                case MARKET:
+                    lore.add(ChatColor.YELLOW + "Place this token in the center of a");
+                    lore.add(ChatColor.YELLOW + "3x3 obsidian platform to create a market.");
+                    break;
+                case TRADE:
+                    lore.add(ChatColor.YELLOW + "Use this token to establish a trade");
+                    lore.add(ChatColor.YELLOW + "route between two markets.");
+                    break;
+                case HOUSE:
+                    lore.add(ChatColor.YELLOW + "Place this token to claim a plot");
+                    lore.add(ChatColor.YELLOW + "for your house or shop.");
+                    break;
+                case COLLECTOR:
+                case VENDOR:
+                    lore.add(ChatColor.YELLOW + "Place this token to spawn a special");
+                    lore.add(ChatColor.YELLOW + "villager in your market.");
+                    break;
+                default:
+                    lore.add(ChatColor.YELLOW + "A basic token with unknown powers.");
+                    break;
             }
+            
+            lore.add("");
+            lore.add(ChatColor.GRAY + "ID: " + UUID.randomUUID().toString().substring(0, 8));
+            
+            meta.setLore(lore);
+            
+            // Add enchant glow
+            meta.addEnchant(Enchantment.DURABILITY, 1, true);
+            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            
+            token.setItemMeta(meta);
         }
         
-        return true;
+        return token;
     }
     
     /**
      * Checks if an item is a BD item.
      * 
      * @param item The item to check
-     * @return True if the item is a BD item
+     * @return True if it's a BD item
      */
     public boolean isBDItem(ItemStack item) {
-        return isBDSeed(item) || isBDCrop(item) || isBDToken(item) || isBDTool(item);
+        if (item == null || !item.hasItemMeta() || !item.getItemMeta().hasLore()) {
+            return false;
+        }
+        
+        List<String> lore = item.getItemMeta().getLore();
+        if (lore == null || lore.isEmpty()) {
+            return false;
+        }
+        
+        // Check for ID in lore which is unique to BD items
+        for (String line : lore) {
+            if (line.startsWith(ChatColor.GRAY + "ID:")) {
+                return true;
+            }
+        }
+        
+        return false;
     }
     
     /**
      * Gets the type of a BD item.
      * 
      * @param item The item to check
-     * @return The BD item type, or null if the item is not a BD item
+     * @return The item type as a string, or null if not a BD item
      */
     public String getBDItemType(ItemStack item) {
-        if (isBDSeed(item)) {
-            SeedType seedType = getBDSeedType(item);
-            return getKeyForSeedType(seedType);
-        } else if (isBDCrop(item)) {
-            CropType cropType = getBDCropType(item);
-            return getKeyForCropType(cropType);
-        } else if (isBDToken(item)) {
-            TokenType tokenType = getBDTokenType(item);
-            return getKeyForTokenType(tokenType);
-        } else if (isBDTool(item)) {
-            ToolType toolType = getBDToolType(item);
-            return getKeyForToolType(toolType);
+        if (!isBDItem(item)) {
+            return null;
         }
         
-        return null;
-    }
-    
-    /**
-     * Checks if an item is a BD seed.
-     * 
-     * @param item The item to check
-     * @return True if the item is a BD seed
-     */
-    public boolean isBDSeed(ItemStack item) {
-        return BDSeed.isBDSeed(item);
-    }
-    
-    /**
-     * Checks if an item is a BD crop.
-     * 
-     * @param item The item to check
-     * @return True if the item is a BD crop
-     */
-    public boolean isBDCrop(ItemStack item) {
-        return BDCrop.isBDCrop(item);
-    }
-    
-    /**
-     * Checks if an item is a BD token.
-     * 
-     * @param item The item to check
-     * @return True if the item is a BD token
-     */
-    public boolean isBDToken(ItemStack item) {
-        return BDToken.isBDToken(item);
-    }
-    
-    /**
-     * Checks if an item is a BD tool.
-     * 
-     * @param item The item to check
-     * @return True if the item is a BD tool
-     */
-    public boolean isBDTool(ItemStack item) {
-        return BDTool.isBDTool(item);
-    }
-    
-    /**
-     * Gets the seed type of an item.
-     * 
-     * @param item The item to check
-     * @return The seed type, or null if the item is not a BD seed
-     */
-    public SeedType getBDSeedType(ItemStack item) {
-        return BDSeed.getSeedType(item);
-    }
-    
-    /**
-     * Gets the crop type of an item.
-     * 
-     * @param item The item to check
-     * @return The crop type, or null if the item is not a BD crop
-     */
-    public CropType getBDCropType(ItemStack item) {
-        return BDCrop.getCropType(item);
-    }
-    
-    /**
-     * Gets the token type of an item.
-     * 
-     * @param item The item to check
-     * @return The token type, or null if the item is not a BD token
-     */
-    public TokenType getBDTokenType(ItemStack item) {
-        return BDToken.getTokenType(item);
-    }
-    
-    /**
-     * Gets the tool type of an item.
-     * 
-     * @param item The item to check
-     * @return The tool type, or null if the item is not a BD tool
-     */
-    public ToolType getBDToolType(ItemStack item) {
-        return BDTool.getToolType(item);
-    }
-    
-    /**
-     * Gets the key for a seed type.
-     * 
-     * @param seedType The seed type
-     * @return The key
-     */
-    private String getKeyForSeedType(SeedType seedType) {
-        switch (seedType) {
-            case REGULAR:
-                return "bd_seed";
-            case GREEN:
+        String displayName = item.getItemMeta().getDisplayName();
+        Material material = item.getType();
+        
+        // Check for tokens
+        if (material == Material.EMERALD && displayName.contains("Market Token")) {
+            return "market_token";
+        } else if (material == Material.DIAMOND && displayName.contains("Trade Token")) {
+            return "trade_token";
+        } else if (material == Material.GOLD_INGOT && displayName.contains("House Token")) {
+            return "house_token";
+        } else if (material == Material.EMERALD && displayName.contains("Collector Token")) {
+            return "collector_token";
+        } else if (material == Material.DIAMOND && displayName.contains("Vendor Token")) {
+            return "vendor_token";
+        }
+        
+        // Check for crops/seeds
+        if (material == Material.WHEAT_SEEDS) {
+            if (displayName.contains("Quality Seeds")) {
                 return "green_bd_seed";
-            case PURPLE:
+            } else if (displayName.contains("Premium Seeds")) {
+                return "blue_bd_seed";
+            } else if (displayName.contains("Exceptional Seeds")) {
                 return "purple_bd_seed";
-            default:
-                return "unknown_seed";
-        }
-    }
-    
-    /**
-     * Gets the key for a crop type.
-     * 
-     * @param cropType The crop type
-     * @return The key
-     */
-    private String getKeyForCropType(CropType cropType) {
-        switch (cropType) {
-            case REGULAR:
-                return "bd_crop";
-            case GREEN:
+            } else if (displayName.contains("Legendary Seeds")) {
+                return "legendary_bd_seed";
+            } else {
+                return "bd_seed";
+            }
+        } else if (material == Material.WHEAT) {
+            if (displayName.contains("Quality Crop")) {
                 return "green_bd_crop";
-            case PURPLE:
+            } else if (displayName.contains("Premium Crop")) {
+                return "blue_bd_crop";
+            } else if (displayName.contains("Exceptional Crop")) {
                 return "purple_bd_crop";
-            default:
-                return "unknown_crop";
+            } else if (displayName.contains("Legendary Crop")) {
+                return "legendary_bd_crop";
+            } else {
+                return "bd_crop";
+            }
         }
+        
+        // Check for tools
+        if (displayName.contains("BD Stick")) {
+            return "bd_stick";
+        } else if (displayName.contains("BD Shovel")) {
+            return "bd_shovel";
+        } else if (displayName.contains("BD Hoe")) {
+            return "bd_hoe";
+        } else if (displayName.contains("BD Pickaxe")) {
+            return "bd_pickaxe";
+        } else if (displayName.contains("BD Axe")) {
+            return "bd_axe";
+        } else if (displayName.contains("Ultimate BD Harvester")) {
+            return "ultimate_harvester";
+        } else if (displayName.contains("BD Harvester")) {
+            return "harvester";
+        }
+        
+        return "unknown_bd_item";
     }
     
     /**
-     * Gets the key for a token type.
+     * Creates a BD item by type string and quantity.
      * 
-     * @param tokenType The token type
-     * @return The key
+     * @param itemType The item type string
+     * @param quantity The quantity
+     * @return The created item
      */
-    private String getKeyForTokenType(TokenType tokenType) {
-        if (tokenType == null) {
-            return "unknown_token";
+    public ItemStack createItem(String itemType, int quantity) {
+        // Handle tokens
+        if (itemType.equals("market_token")) {
+            return createBDToken(TokenType.MARKET, 1);
+        } else if (itemType.equals("trade_token")) {
+            return createBDToken(TokenType.TRADE, 1);
+        } else if (itemType.equals("house_token")) {
+            return createBDToken(TokenType.HOUSE, 1);
+        } else if (itemType.equals("collector_token")) {
+            return createBDToken(TokenType.COLLECTOR, 1);
+        } else if (itemType.equals("vendor_token")) {
+            return createBDToken(TokenType.VENDOR, 1);
         }
         
-        switch (tokenType) {
-            case MARKET:
-                return "market_token";
-            case HOUSE:
-                return "house_token";
-            case TRADE:
-                return "trade_token";
-            default:
-                return "unknown_token";
+        // Handle seeds
+        if (itemType.equals("bd_seed")) {
+            return createBDSeed(SeedType.REGULAR, quantity);
+        } else if (itemType.equals("green_bd_seed")) {
+            return createBDSeed(SeedType.GREEN, quantity);
+        } else if (itemType.equals("blue_bd_seed")) {
+            return createBDSeed(SeedType.BLUE, quantity);
+        } else if (itemType.equals("purple_bd_seed")) {
+            return createBDSeed(SeedType.PURPLE, quantity);
+        } else if (itemType.equals("legendary_bd_seed")) {
+            return createBDSeed(SeedType.LEGENDARY, quantity);
         }
+        
+        // Handle crops
+        if (itemType.equals("bd_crop")) {
+            return createBDCrop(BDCrop.CropType.REGULAR, quantity);
+        } else if (itemType.equals("green_bd_crop")) {
+            return createBDCrop(BDCrop.CropType.GREEN, quantity);
+        } else if (itemType.equals("blue_bd_crop")) {
+            return createBDCrop(BDCrop.CropType.BLUE, quantity);
+        } else if (itemType.equals("purple_bd_crop")) {
+            return createBDCrop(BDCrop.CropType.PURPLE, quantity);
+        } else if (itemType.equals("legendary_bd_crop")) {
+            return createBDCrop(BDCrop.CropType.LEGENDARY, quantity);
+        }
+        
+        // Handle tools
+        if (itemType.equals("bd_stick")) {
+            return createBDTool(ToolType.BDSTICK);
+        } else if (itemType.equals("bd_shovel")) {
+            return createBDTool(ToolType.BDSHOVEL);
+        } else if (itemType.equals("bd_hoe")) {
+            return createBDTool(ToolType.BDHOE);
+        } else if (itemType.equals("bd_pickaxe")) {
+            return createBDTool(ToolType.BDPICKAXE);
+        } else if (itemType.equals("bd_axe")) {
+            return createBDTool(ToolType.BDAXE);
+        } else if (itemType.equals("harvester")) {
+            return createBDTool(ToolType.HARVESTER);
+        } else if (itemType.equals("ultimate_harvester")) {
+            return createBDTool(ToolType.ULTIMATE_HARVESTER);
+        }
+        
+        // Default fallback
+        ItemStack defaultItem = new ItemStack(Material.PAPER, quantity);
+        ItemMeta meta = defaultItem.getItemMeta();
+        if (meta != null) {
+            meta.setDisplayName(ChatColor.RED + "Unknown BD Item");
+            defaultItem.setItemMeta(meta);
+        }
+        return defaultItem;
     }
     
     /**
-     * Gets the key for a tool type.
+     * Creates a special BD tool.
      * 
-     * @param toolType The tool type
-     * @return The key
+     * @param type The tool type
+     * @return The tool
      */
-    private String getKeyForToolType(ToolType toolType) {
-        if (toolType == null) {
-            return "unknown_tool";
-        }
+    public ItemStack createBDTool(com.bdcraft.plugin.modules.economy.items.tools.ToolType type) {
+        Material material;
+        String displayName;
+        ChatColor color = ChatColor.AQUA;
         
-        switch (toolType) {
+        switch (type) {
             case BDSTICK:
-                return "bd_stick";
+                material = Material.STICK;
+                displayName = "BD Stick";
+                break;
+            case BDSHOVEL:
+                material = Material.DIAMOND_SHOVEL;
+                displayName = "BD Shovel";
+                break;
+            case BDHOE:
+                material = Material.DIAMOND_HOE;
+                displayName = "BD Hoe";
+                break;
+            case BDPICKAXE:
+                material = Material.DIAMOND_PICKAXE;
+                displayName = "BD Pickaxe";
+                break;
+            case BDAXE:
+                material = Material.DIAMOND_AXE;
+                displayName = "BD Axe";
+                break;
             case HARVESTER:
-                return "bd_harvester";
+                material = Material.GOLDEN_HOE;
+                displayName = "BD Harvester";
+                break;
             case ULTIMATE_HARVESTER:
-                return "bd_ultimate_harvester";
+                material = Material.NETHERITE_HOE;
+                displayName = "Ultimate BD Harvester";
+                break;
             default:
-                return "unknown_tool";
+                material = Material.STICK;
+                displayName = "BD Tool";
+                break;
         }
+        
+        ItemStack tool = new ItemStack(material);
+        ItemMeta meta = tool.getItemMeta();
+        
+        if (meta != null) {
+            meta.setDisplayName(color + displayName);
+            
+            List<String> lore = new ArrayList<>();
+            
+            switch (type) {
+                case BDSTICK:
+                    lore.add(ChatColor.GRAY + "A magical stick that can be used");
+                    lore.add(ChatColor.GRAY + "for crafting special BD items.");
+                    break;
+                case BDSHOVEL:
+                    lore.add(ChatColor.GRAY + "A special shovel that harvests");
+                    lore.add(ChatColor.GRAY + "crops with higher efficiency.");
+                    break;
+                case BDHOE:
+                    lore.add(ChatColor.GRAY + "A powerful hoe that tills multiple");
+                    lore.add(ChatColor.GRAY + "blocks at once and increases crop yield.");
+                    break;
+                case BDPICKAXE:
+                    lore.add(ChatColor.GRAY + "A magical pickaxe that finds");
+                    lore.add(ChatColor.GRAY + "special resources occasionally.");
+                    break;
+                case BDAXE:
+                    lore.add(ChatColor.GRAY + "An enchanted axe that harvests");
+                    lore.add(ChatColor.GRAY + "wood more efficiently.");
+                    break;
+                case HARVESTER:
+                    lore.add(ChatColor.GRAY + "A legendary harvester that collects");
+                    lore.add(ChatColor.GRAY + "crops with magical efficiency.");
+                    lore.add(ChatColor.GRAY + "Grants bonus crops when harvesting.");
+                    break;
+                case ULTIMATE_HARVESTER:
+                    lore.add(ChatColor.GOLD + "The ultimate harvesting tool,");
+                    lore.add(ChatColor.GOLD + "blessed by agricultural deities.");
+                    lore.add(ChatColor.GOLD + "Significantly increases crop yields");
+                    lore.add(ChatColor.GOLD + "and has a chance to produce rare crops.");
+                    break;
+                default:
+                    lore.add(ChatColor.GRAY + "A basic BD tool.");
+                    break;
+            }
+            
+            lore.add("");
+            lore.add(ChatColor.GRAY + "ID: " + UUID.randomUUID().toString().substring(0, 8));
+            
+            meta.setLore(lore);
+            
+            // Add enchant glow
+            meta.addEnchant(Enchantment.DURABILITY, 1, true);
+            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            
+            tool.setItemMeta(meta);
+        }
+        
+        return tool;
     }
 }

@@ -1,96 +1,62 @@
 package com.bdcraft.plugin.modules.economy.auction;
 
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.UUID;
-import java.util.Date;
 
 /**
- * Represents an item listed in the BD Auction House.
+ * Represents an item listed in the auction house.
  */
 public class AuctionItem {
     private final UUID id;
-    private final UUID sellerUUID;
+    private final UUID sellerId;
     private final String sellerName;
     private final ItemStack item;
-    private final int price;
-    private final Date listedDate;
-    private boolean sold;
-    private Date soldDate;
-    private UUID buyerUUID;
-    private String buyerName;
+    private final double price;
+    private final long listTime;
+    private final long expireTime;
     
     /**
      * Creates a new auction item.
      * 
-     * @param seller The player who listed the item
-     * @param item The item stack being listed
-     * @param price The listing price in BD coins
-     */
-    public AuctionItem(Player seller, ItemStack item, int price) {
-        this.id = UUID.randomUUID();
-        this.sellerUUID = seller.getUniqueId();
-        this.sellerName = seller.getName();
-        this.item = item.clone(); // Clone to avoid modifications
-        this.price = price;
-        this.listedDate = new Date();
-        this.sold = false;
-        this.soldDate = null;
-        this.buyerUUID = null;
-        this.buyerName = null;
-    }
-    
-    /**
-     * Creates an auction item from serialized data.
-     * 
-     * @param id The item ID
-     * @param sellerUUID The seller's UUID
+     * @param id The auction ID
+     * @param sellerId The seller's ID
      * @param sellerName The seller's name
-     * @param item The item stack
+     * @param item The item being sold
      * @param price The price
-     * @param listedDate The date listed
-     * @param sold Whether the item is sold
-     * @param soldDate The date sold, or null
-     * @param buyerUUID The buyer's UUID, or null
-     * @param buyerName The buyer's name, or null
+     * @param listTime The time when the auction was listed
+     * @param expireTime The time when the auction expires
      */
-    public AuctionItem(UUID id, UUID sellerUUID, String sellerName, ItemStack item, 
-            int price, Date listedDate, boolean sold, Date soldDate, 
-            UUID buyerUUID, String buyerName) {
+    public AuctionItem(UUID id, UUID sellerId, String sellerName, ItemStack item, double price, long listTime, long expireTime) {
         this.id = id;
-        this.sellerUUID = sellerUUID;
+        this.sellerId = sellerId;
         this.sellerName = sellerName;
         this.item = item;
         this.price = price;
-        this.listedDate = listedDate;
-        this.sold = sold;
-        this.soldDate = soldDate;
-        this.buyerUUID = buyerUUID;
-        this.buyerName = buyerName;
+        this.listTime = listTime;
+        this.expireTime = expireTime;
     }
     
     /**
-     * Gets the ID of the auction item.
+     * Gets the auction ID.
      * 
-     * @return The UUID
+     * @return The ID
      */
     public UUID getId() {
         return id;
     }
     
     /**
-     * Gets the UUID of the seller.
+     * Gets the seller's ID.
      * 
-     * @return The seller's UUID
+     * @return The seller's ID
      */
-    public UUID getSellerUUID() {
-        return sellerUUID;
+    public UUID getSellerId() {
+        return sellerId;
     }
     
     /**
-     * Gets the name of the seller.
+     * Gets the seller's name.
      * 
      * @return The seller's name
      */
@@ -99,34 +65,120 @@ public class AuctionItem {
     }
     
     /**
-     * Gets the listed item.
+     * Gets the item being sold.
      * 
-     * @return The item stack
+     * @return The item
      */
     public ItemStack getItem() {
-        return item.clone(); // Return a clone to prevent modifications
+        return item.clone();
     }
     
     /**
-     * Gets the price of the item.
+     * Gets the price.
      * 
-     * @return The price in BD coins
+     * @return The price
      */
-    public int getPrice() {
+    public double getPrice() {
         return price;
     }
     
     /**
-     * Gets the date the item was listed.
+     * Gets the time when the auction was listed.
      * 
-     * @return The listed date
+     * @return The list time
      */
-    public Date getListedDate() {
-        return listedDate;
+    public long getListTime() {
+        return listTime;
     }
     
     /**
-     * Checks if the item is sold.
+     * Gets the time when the auction was listed (as Date).
+     * 
+     * @return The list date
+     */
+    public java.util.Date getListedDate() {
+        return new java.util.Date(listTime);
+    }
+    
+    /**
+     * Gets the time when the auction expires.
+     * 
+     * @return The expire time
+     */
+    public long getExpireTime() {
+        return expireTime;
+    }
+    
+    /**
+     * Checks if the auction is expired.
+     * 
+     * @return True if expired
+     */
+    public boolean isExpired() {
+        return System.currentTimeMillis() > expireTime;
+    }
+    
+    /**
+     * Gets the remaining time in milliseconds.
+     * 
+     * @return The remaining time
+     */
+    public long getRemainingTime() {
+        long now = System.currentTimeMillis();
+        if (now > expireTime) {
+            return 0;
+        }
+        return expireTime - now;
+    }
+    
+    /**
+     * Gets a formatted string of the remaining time.
+     * 
+     * @return The formatted remaining time
+     */
+    public String getFormattedRemainingTime() {
+        long remaining = getRemainingTime();
+        
+        if (remaining <= 0) {
+            return "Expired";
+        }
+        
+        long seconds = remaining / 1000;
+        long minutes = seconds / 60;
+        long hours = minutes / 60;
+        long days = hours / 24;
+        
+        hours %= 24;
+        minutes %= 60;
+        seconds %= 60;
+        
+        StringBuilder sb = new StringBuilder();
+        
+        if (days > 0) {
+            sb.append(days).append("d ");
+        }
+        
+        if (hours > 0 || days > 0) {
+            sb.append(hours).append("h ");
+        }
+        
+        if (minutes > 0 || hours > 0 || days > 0) {
+            sb.append(minutes).append("m ");
+        }
+        
+        sb.append(seconds).append("s");
+        
+        return sb.toString();
+    }
+    
+    // Fields for sale tracking
+    private boolean sold = false;
+    private UUID buyerId = null;
+    private String buyerName = null;
+    private long soldTime = 0;
+    
+    /**
+     * Checks if the auction item has been sold.
      * 
      * @return True if sold
      */
@@ -135,25 +187,29 @@ public class AuctionItem {
     }
     
     /**
-     * Gets the date the item was sold.
+     * Marks the item as sold.
      * 
-     * @return The sold date, or null if not sold
+     * @param buyerId The buyer's ID
+     * @param buyerName The buyer's name
      */
-    public Date getSoldDate() {
-        return soldDate;
+    public void markAsSold(UUID buyerId, String buyerName) {
+        this.sold = true;
+        this.buyerId = buyerId;
+        this.buyerName = buyerName;
+        this.soldTime = System.currentTimeMillis();
     }
     
     /**
-     * Gets the UUID of the buyer.
+     * Gets the buyer's ID.
      * 
-     * @return The buyer's UUID, or null if not sold
+     * @return The buyer's ID, or null if not sold
      */
-    public UUID getBuyerUUID() {
-        return buyerUUID;
+    public UUID getBuyerId() {
+        return buyerId;
     }
     
     /**
-     * Gets the name of the buyer.
+     * Gets the buyer's name.
      * 
      * @return The buyer's name, or null if not sold
      */
@@ -162,49 +218,20 @@ public class AuctionItem {
     }
     
     /**
-     * Marks the item as sold.
+     * Gets the time when the item was sold.
      * 
-     * @param buyer The buyer
+     * @return The time when sold, or 0 if not sold
      */
-    public void markAsSold(Player buyer) {
-        this.sold = true;
-        this.soldDate = new Date();
-        this.buyerUUID = buyer.getUniqueId();
-        this.buyerName = buyer.getName();
+    public long getSoldTime() {
+        return soldTime;
     }
     
     /**
-     * Creates a formatted display of the auction item.
+     * Gets the date when the item was sold.
      * 
-     * @return The formatted display
+     * @return The date when sold, or null if not sold
      */
-    public String getFormattedDisplay() {
-        StringBuilder display = new StringBuilder();
-        String itemName = item.hasItemMeta() && item.getItemMeta().hasDisplayName() ? 
-                item.getItemMeta().getDisplayName() : 
-                item.getType().toString().toLowerCase().replace('_', ' ');
-        
-        display.append(ChatColor.GOLD).append("Item: ").append(ChatColor.WHITE).append(itemName).append("\n");
-        display.append(ChatColor.GOLD).append("Seller: ").append(ChatColor.WHITE).append(sellerName).append("\n");
-        display.append(ChatColor.GOLD).append("Price: ").append(ChatColor.GREEN).append(price).append(" BD coins").append("\n");
-        
-        if (sold) {
-            display.append(ChatColor.RED).append("SOLD to ").append(ChatColor.WHITE).append(buyerName);
-        } else {
-            display.append(ChatColor.GREEN).append("Available for purchase");
-        }
-        
-        return display.toString();
-    }
-    
-    @Override
-    public String toString() {
-        return "AuctionItem{" +
-                "id=" + id +
-                ", seller=" + sellerName +
-                ", item=" + item.getType() +
-                ", price=" + price +
-                ", sold=" + sold +
-                '}';
+    public java.util.Date getSoldDate() {
+        return soldTime > 0 ? new java.util.Date(soldTime) : null;
     }
 }

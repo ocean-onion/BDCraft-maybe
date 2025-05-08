@@ -115,6 +115,27 @@ commands:
     aliases: [bdrb]
     permission: bdcraft.rebirth
     
+  # Deity Commands (Rebirth-only)
+  bdbless:
+    description: Bless another player with temporary bonuses
+    usage: /bdbless <player>
+    permission: bdcraft.deity.bless
+    
+  bdaura:
+    description: Toggle your rebirth aura for nearby players
+    usage: /bdaura
+    permission: bdcraft.deity.aura
+    
+  bdtouch:
+    description: Use Golden Touch to grow crops in an area
+    usage: /bdtouch
+    permission: bdcraft.deity.touch
+    
+  bdinsight:
+    description: Gain seasonal market insights and predictions
+    usage: /bdinsight
+    permission: bdcraft.deity.insight
+    
   # Admin Commands
   bdgive:
     description: Gives BD items to players
@@ -209,6 +230,14 @@ permissions:
     
   bdcraft.deity.aura:
     description: Allows toggling abundance aura (Rebirth 10)
+    default: false
+    
+  bdcraft.deity.touch:
+    description: Allows using Golden Touch ability (Rebirth 6)
+    default: false
+    
+  bdcraft.deity.insight:
+    description: Allows using Seasonal Insight market predictions (Rebirth 10)
     default: false
     
   # Vital Module Permissions
