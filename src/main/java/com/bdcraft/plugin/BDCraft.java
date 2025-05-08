@@ -5,9 +5,12 @@ import com.bdcraft.plugin.api.PermissionAPI;
 import com.bdcraft.plugin.api.ProgressionAPI;
 import com.bdcraft.plugin.api.VillagerAPI;
 import com.bdcraft.plugin.commands.admin.GiveItemCommand;
+import com.bdcraft.plugin.compat.PlaceholderManager;
+import com.bdcraft.plugin.compat.PluginConflictManager;
 import com.bdcraft.plugin.config.ConfigManager;
 import com.bdcraft.plugin.modules.ModuleManager;
 import com.bdcraft.plugin.modules.economy.BDEconomyModule;
+import com.bdcraft.plugin.modules.logging.BDLoggingModule;
 import com.bdcraft.plugin.modules.perms.BDPermsModule;
 import com.bdcraft.plugin.modules.progression.BDProgressionModule;
 import com.bdcraft.plugin.modules.vital.BDVitalModule;
@@ -29,6 +32,8 @@ public class BDCraft extends JavaPlugin {
     private ConfigManager configManager;
     private ModuleManager moduleManager;
     private PluginBlocker pluginBlocker;
+    private PluginConflictManager pluginConflictManager;
+    private PlaceholderManager placeholderManager;
     
     // APIs
     private EconomyAPI economyAPI;
@@ -55,6 +60,9 @@ public class BDCraft extends JavaPlugin {
         logger = getLogger();
         logger.info("Enabling BDCraft...");
         
+        // Initialize conflict management
+        pluginConflictManager = new PluginConflictManager(this);
+        
         // Initialize plugin blocker to disable conflicting plugins
         pluginBlocker = new PluginBlocker(this);
         pluginBlocker.checkAndDisableConflictingPlugins();
@@ -63,14 +71,23 @@ public class BDCraft extends JavaPlugin {
         configManager = new ConfigManager(this);
         moduleManager = new ModuleManager(this);
         
-        // Register modules
+        // Register core modules
         moduleManager.registerModule(new BDPermsModule(this, moduleManager));
         moduleManager.registerModule(new BDEconomyModule(this));
         moduleManager.registerModule(new BDProgressionModule(this));
         moduleManager.registerModule(new BDVitalModule(this, moduleManager));
         
+        // Register utility modules
+        moduleManager.registerModule(new BDLoggingModule(this));
+        
         // Enable modules
         moduleManager.enableModules();
+        
+        // Setup placeholder support
+        placeholderManager = new PlaceholderManager(this);
+        if (placeholderManager.isPlaceholderAPIHooked()) {
+            logger.info("Hooked into PlaceholderAPI for placeholders.");
+        }
         
         // Register commands
         registerCommands();
@@ -224,6 +241,30 @@ public class BDCraft extends JavaPlugin {
      */
     public BDVitalModule getVitalModule() {
         return moduleManager.getModule(BDVitalModule.class);
+    }
+    
+    /**
+     * Gets the logging module.
+     * @return The logging module
+     */
+    public BDLoggingModule getLoggingModule() {
+        return moduleManager.getModule(BDLoggingModule.class);
+    }
+    
+    /**
+     * Gets the placeholder manager.
+     * @return The placeholder manager
+     */
+    public PlaceholderManager getPlaceholderManager() {
+        return placeholderManager;
+    }
+    
+    /**
+     * Gets the plugin conflict manager.
+     * @return The plugin conflict manager
+     */
+    public PluginConflictManager getPluginConflictManager() {
+        return pluginConflictManager;
     }
     
     /**

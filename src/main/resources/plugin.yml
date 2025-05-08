@@ -121,6 +121,13 @@ commands:
     usage: /bdgive item <player> <item_id> [amount] [value]
     aliases: [bdg]
     permission: bdcraft.admin.give
+    
+  # Logging Commands
+  bdlogs:
+    description: View server activity logs
+    usage: /bdlogs <list|player|action|time|radius> [args]
+    aliases: [bdl]
+    permission: bdcraft.admin.logs
 
 permissions:
   # Admin Permissions
@@ -137,6 +144,7 @@ permissions:
       bdcraft.admin.market: true
       bdcraft.admin.villager: true
       bdcraft.admin.debug: true
+      bdcraft.admin.logs: true
       
   # Economy Permissions
   bdcraft.currency:
