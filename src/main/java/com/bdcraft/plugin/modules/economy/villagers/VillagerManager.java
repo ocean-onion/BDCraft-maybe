@@ -17,7 +17,7 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.block.Action;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.ItemMeta;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.MerchantInventory;
 import org.bukkit.inventory.MerchantRecipe;
 import org.bukkit.persistence.PersistentDataContainer;
@@ -278,7 +278,7 @@ public class VillagerManager implements Listener {
             // Trade is happening - player has provided diamonds, now check BD currency
             ItemStack result = recipe.getResult();
             if (result.getType() == Material.PAPER) {
-                org.bukkit.inventory.meta.ItemMeta meta = result.getItemMeta();
+                ItemMeta meta = result.getItemMeta();
                 if (meta != null && meta.getPersistentDataContainer().has(
                         plugin.getNamespacedKey("market_upgrade_certificate"), PersistentDataType.STRING)) {
                     
@@ -321,7 +321,7 @@ public class VillagerManager implements Listener {
                     
                     // Update the certificate to mark it as paid
                     ItemStack certificate = result.clone();
-                    org.bukkit.inventory.meta.ItemMeta certMeta = certificate.getItemMeta();
+                    ItemMeta certMeta = certificate.getItemMeta();
                     
                     // Update lore to show it's a paid certificate
                     certMeta.setLore(Arrays.asList(
@@ -517,7 +517,7 @@ public class VillagerManager implements Listener {
      */
     private ItemStack createMarketUpgradeCertificate(BDMarket market, int newLevel) {
         ItemStack certificate = new ItemStack(Material.PAPER);
-        org.bukkit.inventory.meta.ItemMeta meta = certificate.getItemMeta();
+        ItemMeta meta = certificate.getItemMeta();
         if (meta != null) {
             meta.setDisplayName(ChatColor.GOLD + "Market Upgrade Certificate");
             meta.setLore(Arrays.asList(
@@ -555,7 +555,7 @@ public class VillagerManager implements Listener {
             return;
         }
         
-        org.bukkit.inventory.meta.ItemMeta meta = item.getItemMeta();
+        ItemMeta meta = item.getItemMeta();
         if (meta == null) {
             return;
         }

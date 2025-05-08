@@ -248,7 +248,7 @@ public class BDCropManager implements Listener {
             }
             
             // Show green particles
-            loc.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, loc, particleCount, 0.2, 0.1, 0.2, 0.01);
+            loc.getWorld().spawnParticle(Particle.COMPOSTER, loc, particleCount, 0.2, 0.1, 0.2, 0.01);
             
             // Show additional glow effect for purple seeds
             if (seedType == SeedType.PURPLE) {
@@ -304,7 +304,7 @@ public class BDCropManager implements Listener {
                 }
                 
                 // Show green particles just to this player
-                player.spawnParticle(Particle.VILLAGER_HAPPY, particleLoc, particleCount, 0.2, 0.1, 0.2, 0.01);
+                player.spawnParticle(Particle.COMPOSTER, particleLoc, particleCount, 0.2, 0.1, 0.2, 0.01);
                 
                 // Show additional glow effect for purple seeds
                 if (seedType == SeedType.PURPLE) {

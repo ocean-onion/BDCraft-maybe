@@ -38,6 +38,22 @@ public class BDItemFactory {
     }
     
     /**
+     * Adds an enchantment glow effect to an item.
+     * @param item The item to add glow to
+     */
+    public static void addEnchantGlow(ItemStack item) {
+        if (item != null && item.hasItemMeta()) {
+            ItemMeta meta = item.getItemMeta();
+            Enchantment unbreaking = Enchantment.getByKey(org.bukkit.NamespacedKey.minecraft("unbreaking"));
+            if (unbreaking != null) {
+                meta.addEnchant(unbreaking, 1, true);
+                meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                item.setItemMeta(meta);
+            }
+        }
+    }
+    
+    /**
      * Creates a regular BD seed item.
      * @param amount The amount
      * @return The item
@@ -58,7 +74,7 @@ public class BDItemFactory {
         
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         item.setItemMeta(meta);
-        item.addUnsafeEnchantment(Enchantment.DURABILITY, 1); // Adds enchant glow
+        addEnchantGlow(item); // Adds enchant glow
         
         return item;
     }
@@ -85,7 +101,7 @@ public class BDItemFactory {
         
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         item.setItemMeta(meta);
-        item.addUnsafeEnchantment(Enchantment.DURABILITY, 1); // Adds enchant glow
+        addEnchantGlow(item); // Adds enchant glow
         
         return item;
     }
@@ -112,7 +128,7 @@ public class BDItemFactory {
         
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         item.setItemMeta(meta);
-        item.addUnsafeEnchantment(Enchantment.DURABILITY, 1); // Adds enchant glow
+        addEnchantGlow(item); // Adds enchant glow
         
         return item;
     }
@@ -138,7 +154,7 @@ public class BDItemFactory {
         
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         item.setItemMeta(meta);
-        item.addUnsafeEnchantment(Enchantment.DURABILITY, 1); // Adds enchant glow
+        addEnchantGlow(item); // Adds enchant glow
         
         return item;
     }
@@ -165,7 +181,7 @@ public class BDItemFactory {
         
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         item.setItemMeta(meta);
-        item.addUnsafeEnchantment(Enchantment.DURABILITY, 1); // Adds enchant glow
+        addEnchantGlow(item); // Adds enchant glow
         
         return item;
     }
@@ -192,7 +208,7 @@ public class BDItemFactory {
         
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         item.setItemMeta(meta);
-        item.addUnsafeEnchantment(Enchantment.DURABILITY, 1); // Adds enchant glow
+        addEnchantGlow(item); // Adds enchant glow
         
         return item;
     }
@@ -220,7 +236,7 @@ public class BDItemFactory {
         
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         item.setItemMeta(meta);
-        item.addUnsafeEnchantment(Enchantment.DURABILITY, 1); // Adds enchant glow
+        addEnchantGlow(item); // Adds enchant glow
         
         return item;
     }
@@ -248,7 +264,7 @@ public class BDItemFactory {
         
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         item.setItemMeta(meta);
-        item.addUnsafeEnchantment(Enchantment.DURABILITY, 1); // Adds enchant glow
+        addEnchantGlow(item); // Adds enchant glow
         
         return item;
     }
@@ -277,7 +293,7 @@ public class BDItemFactory {
         
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         item.setItemMeta(meta);
-        item.addUnsafeEnchantment(Enchantment.DURABILITY, 1); // Adds enchant glow
+        addEnchantGlow(item); // Adds enchant glow
         
         return item;
     }
@@ -304,7 +320,7 @@ public class BDItemFactory {
         
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         item.setItemMeta(meta);
-        item.addUnsafeEnchantment(Enchantment.DURABILITY, 1); // Adds enchant glow
+        addEnchantGlow(item); // Adds enchant glow
         
         return item;
     }
@@ -331,7 +347,7 @@ public class BDItemFactory {
         
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         item.setItemMeta(meta);
-        item.addUnsafeEnchantment(Enchantment.DURABILITY, 1); // Adds enchant glow
+        addEnchantGlow(item); // Adds enchant glow
         
         return item;
     }
@@ -477,4 +493,6 @@ public class BDItemFactory {
         item.setItemMeta(meta);
         return item;
     }
+    
+    // Using the static addEnchantGlow method defined earlier in this class instead
 }

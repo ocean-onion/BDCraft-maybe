@@ -147,7 +147,7 @@ public class BDMarket {
         this.priceModifier = 1.0 + (0.1 * (level - 1)); // 10% increase per level
         
         // Create upgrade effects at market center
-        center.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, center, 100, 3, 3, 3);
+        center.getWorld().spawnParticle(Particle.COMPOSTER, center, 100, 3, 3, 3);
         center.getWorld().playSound(center, Sound.BLOCK_BEACON_POWER_SELECT, 1.0f, 1.0f);
         
         // Notify nearby players
