@@ -11,9 +11,14 @@ import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.VillagerCareerChangeEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.MerchantRecipe;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -116,6 +121,179 @@ public class MarketOwnerVillager extends BDVillager {
         gui.openMainMenu(player, market);
         
         return true;
+    }
+    
+    /**
+     * Opens the upgrade trading interface with this villager.
+     * This shows the standard villager trading GUI with upgrade options.
+     * 
+     * @param player The player
+     */
+    public void openUpgradeTrading(Player player) {
+        // Verify market exists
+        if (market == null) {
+            player.sendMessage(ChatColor.RED + "This market owner is not linked to a valid market.");
+            return;
+        }
+        
+        // Check if already max level
+        if (market.getLevel() >= 4) {
+            player.sendMessage(ChatColor.RED + "This market is already at maximum level.");
+            return;
+        }
+        
+        // Remove any existing trades
+        getVillager().setRecipes(new ArrayList<>());
+        
+        // Add appropriate upgrade trades based on current market level
+        addUpgradeTrades();
+        
+        // Allow standard villager trading interface to open
+        player.sendMessage(ChatColor.GREEN + "Click the Market Owner to view upgrade options.");
+    }
+    
+    /**
+     * Adds upgrade trades based on the market's current level.
+     */
+    private void addUpgradeTrades() {
+        int currentLevel = market.getLevel();
+        
+        switch(currentLevel) {
+            case 1:
+                // Level 1 to Level 2 upgrade
+                addLevel2UpgradeTrade();
+                break;
+            case 2:
+                // Level 2 to Level 3 upgrade
+                addLevel3UpgradeTrade();
+                break;
+            case 3:
+                // Level 3 to Level 4 upgrade
+                addLevel4UpgradeTrade();
+                break;
+        }
+    }
+    
+    /**
+     * Adds the trade for upgrading from level 1 to level 2.
+     */
+    private void addLevel2UpgradeTrade() {
+        ItemStack result = createUpgradeResult(2);
+        
+        // Required items
+        ItemStack emeralds = new ItemStack(Material.EMERALD, 16);
+        ItemStack wheat = new ItemStack(Material.WHEAT, 64);
+        
+        addTrade(emeralds, wheat, result);
+    }
+    
+    /**
+     * Adds the trade for upgrading from level 2 to level 3.
+     */
+    private void addLevel3UpgradeTrade() {
+        ItemStack result = createUpgradeResult(3);
+        
+        // Required items
+        ItemStack emeralds = new ItemStack(Material.EMERALD, 32);
+        ItemStack goldIngots = new ItemStack(Material.GOLD_INGOT, 16);
+        
+        addTrade(emeralds, goldIngots, result);
+        
+        // Additional wheat requirement (separate trade)
+        ItemStack wheat = new ItemStack(Material.WHEAT, 64);
+        ItemStack wheatTicket = createWheatTicket();
+        
+        addTrade(wheat, new ItemStack(Material.WHEAT, 64), wheatTicket);
+    }
+    
+    /**
+     * Adds the trade for upgrading from level 3 to level 4.
+     */
+    private void addLevel4UpgradeTrade() {
+        ItemStack result = createUpgradeResult(4);
+        
+        // Required items
+        ItemStack emeralds = new ItemStack(Material.EMERALD, 64);
+        ItemStack diamonds = new ItemStack(Material.DIAMOND, 8);
+        
+        addTrade(emeralds, diamonds, result);
+        
+        // Additional wheat requirement (separate trade)
+        ItemStack wheat = new ItemStack(Material.WHEAT, 64);
+        ItemStack wheatTicket = createWheatTicket();
+        
+        addTrade(wheat, new ItemStack(Material.WHEAT, 64), wheatTicket);
+        addTrade(wheat, new ItemStack(Material.WHEAT, 64), wheatTicket);
+    }
+    
+    /**
+     * Creates a wheat contribution ticket.
+     * 
+     * @return The wheat ticket item
+     */
+    private ItemStack createWheatTicket() {
+        ItemStack ticket = new ItemStack(Material.PAPER);
+        ItemMeta meta = ticket.getItemMeta();
+        if (meta != null) {
+            meta.setDisplayName(ChatColor.GOLD + "Wheat Contribution Receipt");
+            meta.setLore(Arrays.asList(
+                ChatColor.YELLOW + "Thank you for contributing wheat",
+                ChatColor.YELLOW + "to your market's upgrade!",
+                "",
+                ChatColor.GRAY + "This receipt is proof of your contribution."
+            ));
+            ticket.setItemMeta(meta);
+        }
+        return ticket;
+    }
+    
+    /**
+     * Creates the upgrade result item.
+     * 
+     * @param newLevel The new level after upgrade
+     * @return The upgrade result item
+     */
+    private ItemStack createUpgradeResult(int newLevel) {
+        ItemStack certificate = new ItemStack(Material.PAPER);
+        ItemMeta meta = certificate.getItemMeta();
+        if (meta != null) {
+            meta.setDisplayName(ChatColor.GOLD + "Market Upgrade Certificate");
+            meta.setLore(Arrays.asList(
+                ChatColor.YELLOW + "Use this to upgrade your market",
+                ChatColor.YELLOW + "from level " + market.getLevel() + " to level " + newLevel,
+                "",
+                ChatColor.GRAY + "Right-click while holding to apply upgrade."
+            ));
+            
+            // Add persistent data to identify this as a valid upgrade certificate
+            meta.getPersistentDataContainer().set(
+                plugin.getNamespacedKey("market_upgrade"),
+                PersistentDataType.STRING,
+                market.getId() + ":" + newLevel
+            );
+            
+            certificate.setItemMeta(meta);
+        }
+        return certificate;
+    }
+    
+    /**
+     * Adds a trade to this villager.
+     * 
+     * @param item1 The first input item
+     * @param item2 The second input item (can be null)
+     * @param result The result item
+     */
+    private void addTrade(ItemStack item1, ItemStack item2, ItemStack result) {
+        // Create the trade
+        MerchantRecipe recipe = new MerchantRecipe(result, 0, 1, false, 0, 0);
+        recipe.addIngredient(item1);
+        if (item2 != null) {
+            recipe.addIngredient(item2);
+        }
+        
+        // Add the trade to the villager
+        getVillager().getRecipes().add(recipe);
     }
     
     /**
