@@ -5,7 +5,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -17,21 +16,17 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 /**
- * Handles the creation and management of special BD items.
+ * Manages BD items.
  */
 public class BDItemManager {
     private final BDCraft plugin;
-    private final Logger logger;
     private final NamespacedKey bdItemKey;
     private final NamespacedKey bdItemTypeKey;
     private final NamespacedKey bdItemValueKey;
     
-    private final Map<String, BDItemTemplate> itemTemplates;
-    private final BDItemFactory itemFactory;
+    private final Map<String, BDItemInfo> itemInfoMap;
     
     /**
      * Creates a new BD item manager.
@@ -39,192 +34,150 @@ public class BDItemManager {
      */
     public BDItemManager(BDCraft plugin) {
         this.plugin = plugin;
-        this.logger = plugin.getLogger();
         this.bdItemKey = new NamespacedKey(plugin, "bd_item");
         this.bdItemTypeKey = new NamespacedKey(plugin, "bd_item_type");
         this.bdItemValueKey = new NamespacedKey(plugin, "bd_item_value");
         
-        this.itemTemplates = new HashMap<>();
-        this.itemFactory = new BDItemFactory(plugin);
+        this.itemInfoMap = new HashMap<>();
         
-        // Load item templates
-        loadItemTemplates();
+        // Initialize item definitions
+        initializeItemInfo();
     }
     
     /**
-     * Loads item templates from configuration.
+     * Initializes item info.
      */
-    private void loadItemTemplates() {
-        // BD Seeds (Regular, Green, Purple)
-        registerItemTemplate("bd_seed", Material.WHEAT_SEEDS, 
-                "&6BD Seed", 
-                Arrays.asList(
-                    "&7Special seeds for growing BD crops.",
-                    "&7Plant like normal wheat seeds.",
-                    "&7Produces BD Crops when harvested."
-                ));
+    private void initializeItemInfo() {
+        // Seeds
+        registerItemInfo("bd_seed", Material.WHEAT_SEEDS, "BD Seed", 
+                Arrays.asList("A special seed from BD Craft", "Grows into a valuable crop"), 
+                5, ChatColor.YELLOW);
         
-        registerItemTemplate("green_bd_seed", Material.BEETROOT_SEEDS, 
-                "&aGreen BD Seed", 
-                Arrays.asList(
-                    "&7Premium seeds that grow 30% faster.",
-                    "&7Plant like normal seeds.",
-                    "&7Produces Green BD Crops when harvested.",
-                    "&7Requires Farmer rank or higher."
-                ));
+        registerItemInfo("green_bd_seed", Material.WHEAT_SEEDS, "Green BD Seed", 
+                Arrays.asList("A rare green seed from BD Craft", "Grows faster and produces more valuable crops", 
+                        "Requires Farmer rank"), 
+                25, ChatColor.GREEN);
         
-        registerItemTemplate("purple_bd_seed", Material.PUMPKIN_SEEDS, 
-                "&5Purple BD Seed", 
-                Arrays.asList(
-                    "&7Rare seeds that produce valuable crops.",
-                    "&7Plant like normal seeds.",
-                    "&7Produces Purple BD Crops when harvested.",
-                    "&7Requires Master Farmer rank or higher."
-                ));
+        registerItemInfo("purple_bd_seed", Material.WHEAT_SEEDS, "Purple BD Seed", 
+                Arrays.asList("An extremely rare purple seed from BD Craft", "Grows very fast and produces highly valuable crops", 
+                        "Requires Master Farmer rank"), 
+                100, ChatColor.LIGHT_PURPLE);
         
-        // BD Crops (Regular, Green, Purple)
-        registerItemTemplate("bd_crop", Material.FERN, 
-                "&6BD Crop", 
-                Arrays.asList(
-                    "&7Standard BD crop harvested from BD Seeds.",
-                    "&7Sell to BD Collectors for emeralds.",
-                    "&710 crops = 2 emeralds + 50 server currency"
-                ));
+        // Crops
+        registerItemInfo("bd_crop", Material.WHEAT, "BD Crop", 
+                Arrays.asList("A special crop from BD Craft", "Can be sold to BD Collectors for currency"), 
+                10, ChatColor.YELLOW);
         
-        registerItemTemplate("green_bd_crop", Material.LARGE_FERN, 
-                "&aGreen BD Crop", 
-                Arrays.asList(
-                    "&7Premium BD crop, worth 5x more than regular.",
-                    "&7Sell to BD Collectors for emeralds.",
-                    "&75 crops = 10 emeralds + 150 server currency"
-                ));
+        registerItemInfo("green_bd_crop", Material.WHEAT, "Green BD Crop", 
+                Arrays.asList("A rare green crop from BD Craft", "Can be sold to BD Collectors for more currency"), 
+                50, ChatColor.GREEN);
         
-        registerItemTemplate("purple_bd_crop", Material.LARGE_FERN, 
-                "&5Purple BD Crop", 
-                Arrays.asList(
-                    "&7Rare high-value BD crop, worth 10x more than regular.",
-                    "&7Sell to BD Collectors for emeralds.",
-                    "&73 crops = 20 emeralds + 400 server currency"
-                ));
+        registerItemInfo("purple_bd_crop", Material.WHEAT, "Purple BD Crop", 
+                Arrays.asList("An extremely rare purple crop from BD Craft", "Can be sold to BD Collectors for lots of currency"), 
+                200, ChatColor.LIGHT_PURPLE);
         
-        // BD Tools
-        registerItemTemplate("bd_stick", Material.BLAZE_ROD, 
-                "&6BD Stick", 
-                Arrays.asList(
-                    "&7A special enchanted blaze rod that can be used",
-                    "&7to craft BD Market Tokens and",
-                    "&7BD House Tokens.",
-                    "&7Has 5 uses before breaking."
-                ));
+        // Tokens
+        registerItemInfo("market_token", Material.EMERALD, "Market Token", 
+                Arrays.asList("Place this token to create a market", "Requires a 3x3 flat area", 
+                        "Must be at least Expert Farmer rank"), 
+                1000, ChatColor.GOLD, true);
         
-        registerItemTemplate("bd_harvester", Material.GOLDEN_HOE, 
-                "&eBD Harvester", 
-                Arrays.asList(
-                    "&7Special tool for harvesting BD crops.",
-                    "&7Increases yield by 25%.",
-                    "&7Has 20 uses before breaking.",
-                    "&7Requires Expert Farmer rank or higher."
-                ));
+        registerItemInfo("house_token", Material.EMERALD, "House Token", 
+                Arrays.asList("Place this token in your market to add a Collector", "Each market has a limit on houses based on level"), 
+                500, ChatColor.AQUA, true);
         
-        registerItemTemplate("ultimate_bd_harvester", Material.DIAMOND_HOE, 
-                "&bUltimate BD Harvester", 
-                Arrays.asList(
-                    "&7Premium tool for harvesting BD crops.",
-                    "&7Increases yield by 50%.",
-                    "&7Has 60 uses before breaking.",
-                    "&7Requires Agricultural Expert rank or higher."
-                ));
+        // Tools
+        registerItemInfo("bd_stick", Material.BLAZE_ROD, "BD Stick", 
+                Arrays.asList("A special stick with magical properties", "Right-click to use"), 
+                250, ChatColor.LIGHT_PURPLE, true);
         
-        // BD Tokens
-        registerItemTemplate("market_token", Material.EMERALD, 
-                "&2BD Market Token", 
-                Arrays.asList(
-                    "&7Place this token in the center of a 3x3",
-                    "&7platform to create a BD Market.",
-                    "&7Creates a 49x49 block market area.",
-                    "&7Spawns a Market Owner and BD Dealer."
-                ));
-                
-        registerItemTemplate("house_token", Material.DIAMOND, 
-                "&bBD House Token", 
-                Arrays.asList(
-                    "&7Place this token in your market to",
-                    "&7create a Collector House.",
-                    "&7Spawns a BD Collector who will buy crops.",
-                    "&7Multiple collectors can exist in one market."
-                ));
+        registerItemInfo("bd_hoe", Material.DIAMOND_HOE, "BD Hoe", 
+                Arrays.asList("A special hoe for BD farming", "Increased range when tilling soil"), 
+                750, ChatColor.AQUA, true);
     }
     
     /**
-     * Registers a new item template.
-     * @param id The item ID
-     * @param material The item material
-     * @param name The item name
-     * @param lore The item lore
+     * Registers item info.
+     * @param itemType The item type
+     * @param material The material
+     * @param displayName The display name
+     * @param lore The lore
+     * @param value The value
+     * @param color The color
      */
-    private void registerItemTemplate(String id, Material material, String name, List<String> lore) {
-        BDItemTemplate template = new BDItemTemplate(id, material, name, lore);
-        itemTemplates.put(id.toLowerCase(), template);
+    private void registerItemInfo(String itemType, Material material, String displayName, List<String> lore, 
+            int value, ChatColor color) {
+        registerItemInfo(itemType, material, displayName, lore, value, color, false);
     }
     
     /**
-     * Creates a BD item from a template.
-     * @param id The template ID
+     * Registers item info.
+     * @param itemType The item type
+     * @param material The material
+     * @param displayName The display name
+     * @param lore The lore
+     * @param value The value
+     * @param color The color
+     * @param glowing Whether the item should glow
+     */
+    private void registerItemInfo(String itemType, Material material, String displayName, List<String> lore, 
+            int value, ChatColor color, boolean glowing) {
+        BDItemInfo itemInfo = new BDItemInfo(itemType, material, displayName, lore, value, color, glowing);
+        itemInfoMap.put(itemType, itemInfo);
+    }
+    
+    /**
+     * Creates a BD item.
+     * @param itemType The item type
      * @param amount The amount
-     * @param value The value (optional)
-     * @return The created item, or null if the template doesn't exist
+     * @return The item
      */
-    public ItemStack createItem(String id, int amount, int value) {
-        BDItemTemplate template = itemTemplates.get(id.toLowerCase());
-        if (template == null) {
+    public ItemStack createItem(String itemType, int amount) {
+        // Check if item type exists
+        BDItemInfo itemInfo = itemInfoMap.get(itemType);
+        
+        if (itemInfo == null) {
             return null;
         }
         
-        ItemStack item = new ItemStack(template.getMaterial(), amount);
+        // Create the item
+        ItemStack item = new ItemStack(itemInfo.getMaterial(), amount);
         ItemMeta meta = item.getItemMeta();
         
-        if (meta != null) {
-            // Set display name
-            meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', template.getName()));
-            
-            // Set lore
-            List<String> lore = template.getLore().stream()
-                    .map(line -> ChatColor.translateAlternateColorCodes('&', line))
-                    .collect(Collectors.toList());
-            meta.setLore(lore);
-            
-            // Add enchant glow
+        // Set display name
+        meta.setDisplayName(itemInfo.getColor() + itemInfo.getDisplayName());
+        
+        // Set lore
+        List<String> lore = new ArrayList<>();
+        for (String loreLine : itemInfo.getLore()) {
+            lore.add(ChatColor.GRAY + loreLine);
+        }
+        
+        // Add value to lore
+        lore.add(ChatColor.GRAY + "Value: " + itemInfo.getValue() + " BD Currency");
+        
+        meta.setLore(lore);
+        
+        // Add persistent data
+        PersistentDataContainer container = meta.getPersistentDataContainer();
+        container.set(bdItemKey, PersistentDataType.STRING, "true");
+        container.set(bdItemTypeKey, PersistentDataType.STRING, itemType);
+        container.set(bdItemValueKey, PersistentDataType.INTEGER, itemInfo.getValue());
+        
+        // Add glow effect if needed
+        if (itemInfo.isGlowing()) {
             meta.addEnchant(Enchantment.DURABILITY, 1, true);
             meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            
-            // Store metadata
-            PersistentDataContainer pdc = meta.getPersistentDataContainer();
-            pdc.set(bdItemKey, PersistentDataType.BYTE, (byte) 1);
-            pdc.set(bdItemTypeKey, PersistentDataType.STRING, id.toLowerCase());
-            
-            if (value > 0) {
-                pdc.set(bdItemValueKey, PersistentDataType.INTEGER, value);
-            }
-            
-            item.setItemMeta(meta);
         }
+        
+        item.setItemMeta(meta);
         
         return item;
     }
     
     /**
-     * Creates a BD item from a template.
-     * @param id The template ID
-     * @param amount The amount
-     * @return The created item, or null if the template doesn't exist
-     */
-    public ItemStack createItem(String id, int amount) {
-        return createItem(id, amount, 0);
-    }
-    
-    /**
      * Checks if an item is a BD item.
-     * @param item The item to check
+     * @param item The item
      * @return Whether the item is a BD item
      */
     public boolean isBDItem(ItemStack item) {
@@ -233,13 +186,16 @@ public class BDItemManager {
         }
         
         ItemMeta meta = item.getItemMeta();
-        return meta != null && meta.getPersistentDataContainer().has(bdItemKey, PersistentDataType.BYTE);
+        PersistentDataContainer container = meta.getPersistentDataContainer();
+        
+        return container.has(bdItemKey, PersistentDataType.STRING) && 
+                container.get(bdItemKey, PersistentDataType.STRING).equals("true");
     }
     
     /**
      * Gets the BD item type of an item.
      * @param item The item
-     * @return The BD item type, or null if the item is not a BD item
+     * @return The BD item type, or null if not a BD item
      */
     public String getBDItemType(ItemStack item) {
         if (!isBDItem(item)) {
@@ -247,205 +203,83 @@ public class BDItemManager {
         }
         
         ItemMeta meta = item.getItemMeta();
-        if (meta == null) {
-            return null;
-        }
+        PersistentDataContainer container = meta.getPersistentDataContainer();
         
-        return meta.getPersistentDataContainer().get(bdItemTypeKey, PersistentDataType.STRING);
+        return container.get(bdItemTypeKey, PersistentDataType.STRING);
     }
     
     /**
-     * Gets the value of a BD item.
+     * Gets the BD item value of an item.
      * @param item The item
-     * @return The value, or 0 if not set
+     * @return The BD item value, or -1 if not a BD item
      */
     public int getBDItemValue(ItemStack item) {
         if (!isBDItem(item)) {
-            return 0;
+            return -1;
         }
         
         ItemMeta meta = item.getItemMeta();
-        if (meta == null) {
-            return 0;
-        }
+        PersistentDataContainer container = meta.getPersistentDataContainer();
         
-        PersistentDataContainer pdc = meta.getPersistentDataContainer();
-        return pdc.has(bdItemValueKey, PersistentDataType.INTEGER) ?
-                pdc.get(bdItemValueKey, PersistentDataType.INTEGER) : 0;
+        return container.get(bdItemValueKey, PersistentDataType.INTEGER);
     }
     
     /**
-     * Gives a BD item to a player.
-     * @param player The player
-     * @param id The BD item ID
-     * @param amount The amount
-     * @param value The value (optional)
-     * @return Whether the item was given
+     * Gets item info for a BD item type.
+     * @param itemType The item type
+     * @return The item info, or null if not found
      */
-    public boolean giveItem(Player player, String id, int amount, int value) {
-        ItemStack item = createItem(id, amount, value);
-        if (item == null) {
-            return false;
-        }
-        
-        Map<Integer, ItemStack> overflow = player.getInventory().addItem(item);
-        
-        // Drop overflow items
-        if (!overflow.isEmpty()) {
-            for (ItemStack overflowItem : overflow.values()) {
-                player.getWorld().dropItem(player.getLocation(), overflowItem);
-            }
-            
-            player.sendMessage(ChatColor.YELLOW + "Some items were dropped because your inventory is full.");
-        }
-        
-        return true;
+    public BDItemInfo getItemInfo(String itemType) {
+        return itemInfoMap.get(itemType);
     }
     
     /**
-     * Gives a BD item to a player.
-     * @param player The player
-     * @param id The BD item ID
-     * @param amount The amount
-     * @return Whether the item was given
+     * Gets all registered BD item types.
+     * @return The item types
      */
-    public boolean giveItem(Player player, String id, int amount) {
-        return giveItem(player, id, amount, 0);
-    }
-    
-    // Specialized BD item creation methods
-    
-    /**
-     * Creates regular BD seeds.
-     * @param amount The amount
-     * @return The BD seeds
-     */
-    public ItemStack createBDSeed(int amount) {
-        return createItem("bd_seed", amount);
+    public List<String> getAllItemTypes() {
+        return new ArrayList<>(itemInfoMap.keySet());
     }
     
     /**
-     * Creates green BD seeds.
-     * @param amount The amount
-     * @return The green BD seeds
+     * Inner class to hold BD item information.
      */
-    public ItemStack createGreenBDSeed(int amount) {
-        return createItem("green_bd_seed", amount);
-    }
-    
-    /**
-     * Creates purple BD seeds.
-     * @param amount The amount
-     * @return The purple BD seeds
-     */
-    public ItemStack createPurpleBDSeed(int amount) {
-        return createItem("purple_bd_seed", amount);
-    }
-    
-    /**
-     * Creates regular BD crops.
-     * @param amount The amount
-     * @return The BD crops
-     */
-    public ItemStack createBDCrop(int amount) {
-        return createItem("bd_crop", amount);
-    }
-    
-    /**
-     * Creates green BD crops.
-     * @param amount The amount
-     * @return The green BD crops
-     */
-    public ItemStack createGreenBDCrop(int amount) {
-        return createItem("green_bd_crop", amount);
-    }
-    
-    /**
-     * Creates purple BD crops.
-     * @param amount The amount
-     * @return The purple BD crops
-     */
-    public ItemStack createPurpleBDCrop(int amount) {
-        return createItem("purple_bd_crop", amount);
-    }
-    
-    /**
-     * Creates a BD stick.
-     * @return The BD stick
-     */
-    public ItemStack createBDStick() {
-        return createItem("bd_stick", 1, 5); // 5 uses
-    }
-    
-    /**
-     * Creates a BD harvester.
-     * @return The BD harvester
-     */
-    public ItemStack createBDHarvester() {
-        return createItem("bd_harvester", 1, 20); // 20 uses
-    }
-    
-    /**
-     * Creates an ultimate BD harvester.
-     * @return The ultimate BD harvester
-     */
-    public ItemStack createUltimateBDHarvester() {
-        return createItem("ultimate_bd_harvester", 1, 60); // 60 uses
-    }
-    
-    /**
-     * Creates a market token.
-     * @return The market token
-     */
-    public ItemStack createMarketToken() {
-        return createItem("market_token", 1);
-    }
-    
-    /**
-     * Creates a house token.
-     * @return The house token
-     */
-    public ItemStack createHouseToken() {
-        return createItem("house_token", 1);
-    }
-    
-    /**
-     * Gets the item factory for creating specialized BD items.
-     * @return The item factory
-     */
-    public BDItemFactory getItemFactory() {
-        return itemFactory;
-    }
-    
-    /**
-     * Inner class that represents a BD item template.
-     */
-    private static class BDItemTemplate {
-        private final String id;
+    public static class BDItemInfo {
+        private final String itemType;
         private final Material material;
-        private final String name;
+        private final String displayName;
         private final List<String> lore;
+        private final int value;
+        private final ChatColor color;
+        private final boolean glowing;
         
         /**
-         * Creates a new BD item template.
-         * @param id The template ID
+         * Creates a new BD item info.
+         * @param itemType The item type
          * @param material The material
-         * @param name The name
+         * @param displayName The display name
          * @param lore The lore
+         * @param value The value
+         * @param color The color
+         * @param glowing Whether the item should glow
          */
-        public BDItemTemplate(String id, Material material, String name, List<String> lore) {
-            this.id = id;
+        public BDItemInfo(String itemType, Material material, String displayName, List<String> lore, 
+                int value, ChatColor color, boolean glowing) {
+            this.itemType = itemType;
             this.material = material;
-            this.name = name;
-            this.lore = new ArrayList<>(lore);
+            this.displayName = displayName;
+            this.lore = lore;
+            this.value = value;
+            this.color = color;
+            this.glowing = glowing;
         }
         
         /**
-         * Gets the ID.
-         * @return The ID
+         * Gets the item type.
+         * @return The item type
          */
-        public String getId() {
-            return id;
+        public String getItemType() {
+            return itemType;
         }
         
         /**
@@ -457,11 +291,11 @@ public class BDItemManager {
         }
         
         /**
-         * Gets the name.
-         * @return The name
+         * Gets the display name.
+         * @return The display name
          */
-        public String getName() {
-            return name;
+        public String getDisplayName() {
+            return displayName;
         }
         
         /**
@@ -470,6 +304,30 @@ public class BDItemManager {
          */
         public List<String> getLore() {
             return lore;
+        }
+        
+        /**
+         * Gets the value.
+         * @return The value
+         */
+        public int getValue() {
+            return value;
+        }
+        
+        /**
+         * Gets the color.
+         * @return The color
+         */
+        public ChatColor getColor() {
+            return color;
+        }
+        
+        /**
+         * Checks if the item should glow.
+         * @return Whether the item should glow
+         */
+        public boolean isGlowing() {
+            return glowing;
         }
     }
 }

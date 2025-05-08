@@ -371,6 +371,15 @@ public class BDRankManager {
     }
     
     /**
+     * Gets the next rank's experience requirement.
+     * @param player The player
+     * @return The next rank's experience, or -1 if already at max rank
+     */
+    public int getNextRankExperience(Player player) {
+        return getExperienceForNextRank(player);
+    }
+    
+    /**
      * Gets the name of a rank.
      * @param rank The rank
      * @return The rank name
@@ -381,6 +390,67 @@ public class BDRankManager {
         }
         
         return rankNames[rank];
+    }
+    
+    /**
+     * Checks if a player has rebirth status.
+     * @param player The player
+     * @return Whether the player has rebirth status
+     */
+    public boolean hasRebirthStatus(Player player) {
+        return getPlayerRebirths(player) > 0;
+    }
+    
+    /**
+     * Gets a player's rebirth level.
+     * @param player The player
+     * @return The rebirth level
+     */
+    public int getRebirthLevel(Player player) {
+        return getPlayerRebirths(player);
+    }
+    
+    /**
+     * Checks if a player's rank is at least a certain rank.
+     * @param playerRank The player's rank
+     * @param requiredRank The required rank
+     * @return Whether the player's rank is at least the required rank
+     */
+    public boolean isRankAtLeast(String playerRank, String requiredRank) {
+        int playerRankValue = -1;
+        int requiredRankValue = -1;
+        
+        // Find player rank value
+        for (int i = 0; i < rankNames.length; i++) {
+            if (rankNames[i].equalsIgnoreCase(playerRank)) {
+                playerRankValue = i;
+                break;
+            }
+        }
+        
+        // Find required rank value
+        for (int i = 0; i < rankNames.length; i++) {
+            if (rankNames[i].equalsIgnoreCase(requiredRank)) {
+                requiredRankValue = i;
+                break;
+            }
+        }
+        
+        // If ranks not found, return false
+        if (playerRankValue == -1 || requiredRankValue == -1) {
+            return false;
+        }
+        
+        return playerRankValue >= requiredRankValue;
+    }
+    
+    /**
+     * Adds experience to a player.
+     * @param player The player
+     * @param experience The experience to add
+     */
+    public void addExperience(Player player, int experience) {
+        addPlayerExperience(player, experience);
     }
     
     /**

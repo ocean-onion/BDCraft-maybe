@@ -174,6 +174,10 @@ public class BDCraft extends JavaPlugin {
     private void registerCommands() {
         // Register admin commands
         new GiveItemCommand(this);
+        new com.bdcraft.plugin.commands.admin.MarketCommand(this);
+        
+        // Register player commands
+        new com.bdcraft.plugin.commands.player.BDCommand(this);
         
         logger.info("Commands registered successfully!");
     }

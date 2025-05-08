@@ -1,9 +1,6 @@
 package com.bdcraft.plugin.modules.economy.market;
 
-import com.bdcraft.plugin.BDCraft;
-import com.bdcraft.plugin.modules.economy.villager.BDVillager;
 import org.bukkit.Location;
-import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,37 +9,38 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Represents a BD Market in the game world.
+ * Represents a BD market.
  */
 public class BDMarket {
-    private final BDCraft plugin;
     private final UUID id;
     private final Location center;
+    private final UUID founderId;
     private final String founderName;
-    private final UUID founderUUID;
     private int level;
-    private final Map<UUID, BDVillager> traders;
-    private final Map<String, List<UUID>> tradersByType;
+    private double priceModifier;
+    
+    // Maps trader UUIDs to their types
+    private final Map<UUID, String> traders;
     
     /**
-     * Creates a new BD Market.
-     * @param plugin The plugin instance
-     * @param center The center location of the market
-     * @param founder The founder player
+     * Creates a new BD market.
+     * @param id The market ID
+     * @param center The center of the market
+     * @param founderId The founder's ID
+     * @param founderName The founder's name
      */
-    public BDMarket(BDCraft plugin, Location center, Player founder) {
-        this.plugin = plugin;
-        this.id = UUID.randomUUID();
+    public BDMarket(UUID id, Location center, UUID founderId, String founderName) {
+        this.id = id;
         this.center = center;
-        this.founderName = founder.getName();
-        this.founderUUID = founder.getUniqueId();
-        this.level = 1;
+        this.founderId = founderId;
+        this.founderName = founderName;
+        this.level = 1; // Start at level 1
+        this.priceModifier = 1.0; // Default price modifier
         this.traders = new HashMap<>();
-        this.tradersByType = new HashMap<>();
     }
     
     /**
-     * Gets the unique ID of this market.
+     * Gets the market ID.
      * @return The market ID
      */
     public UUID getId() {
@@ -50,15 +48,23 @@ public class BDMarket {
     }
     
     /**
-     * Gets the center location of this market.
-     * @return The center location
+     * Gets the center of the market.
+     * @return The center
      */
     public Location getCenter() {
         return center;
     }
     
     /**
-     * Gets the name of the player who founded this market.
+     * Gets the founder's ID.
+     * @return The founder's ID
+     */
+    public UUID getFounderId() {
+        return founderId;
+    }
+    
+    /**
+     * Gets the founder's name.
      * @return The founder's name
      */
     public String getFounderName() {
@@ -66,145 +72,130 @@ public class BDMarket {
     }
     
     /**
-     * Gets the UUID of the player who founded this market.
-     * @return The founder's UUID
-     */
-    public UUID getFounderUUID() {
-        return founderUUID;
-    }
-    
-    /**
-     * Gets the level of this market.
-     * @return The market level
+     * Gets the market level.
+     * @return The level
      */
     public int getLevel() {
         return level;
     }
     
     /**
-     * Sets the level of this market.
-     * @param level The new market level
+     * Sets the market level.
+     * @param level The new level
      */
     public void setLevel(int level) {
+        if (level < 1) {
+            level = 1;
+        } else if (level > 4) {
+            level = 4;
+        }
+        
         this.level = level;
+        
+        // Update price modifier with level
+        this.priceModifier = 1.0 + (0.1 * (level - 1)); // 10% increase per level
     }
     
     /**
-     * Adds a trader to this market.
-     * @param villager The trader to add
-     * @return Whether the trader was added
+     * Gets the price modifier.
+     * @return The price modifier
      */
-    public boolean addTrader(BDVillager villager) {
-        UUID traderUUID = villager.getUUID();
-        String traderType = villager.getType();
-        
-        // Add to traders map
-        traders.put(traderUUID, villager);
-        
-        // Add to traders by type map
-        if (!tradersByType.containsKey(traderType)) {
-            tradersByType.put(traderType, new ArrayList<>());
-        }
-        
-        tradersByType.get(traderType).add(traderUUID);
-        
-        return true;
+    public double getPriceModifier() {
+        return priceModifier;
     }
     
     /**
-     * Removes a trader from this market.
-     * @param traderUUID The UUID of the trader to remove
-     * @return Whether the trader was removed
+     * Sets the price modifier.
+     * @param priceModifier The new price modifier
      */
-    public boolean removeTrader(UUID traderUUID) {
-        if (!traders.containsKey(traderUUID)) {
-            return false;
+    public void setPriceModifier(double priceModifier) {
+        if (priceModifier < 0.5) {
+            priceModifier = 0.5;
+        } else if (priceModifier > 2.0) {
+            priceModifier = 2.0;
         }
         
-        BDVillager villager = traders.get(traderUUID);
-        String traderType = villager.getType();
-        
-        // Remove from traders map
-        traders.remove(traderUUID);
-        
-        // Remove from traders by type map
-        if (tradersByType.containsKey(traderType)) {
-            tradersByType.get(traderType).remove(traderUUID);
-        }
-        
-        return true;
+        this.priceModifier = priceModifier;
     }
     
     /**
-     * Gets all traders in this market.
-     * @return The traders
+     * Adds a trader to the market.
+     * @param traderId The trader's ID
+     * @param traderType The trader's type
      */
-    public Map<UUID, BDVillager> getTraders() {
-        return traders;
+    public void addTrader(UUID traderId, String traderType) {
+        traders.put(traderId, traderType);
     }
     
     /**
-     * Gets all traders of a specific type in this market.
-     * @param type The trader type
-     * @return The traders of that type
+     * Removes a trader from the market.
+     * @param traderId The trader's ID
      */
-    public List<BDVillager> getTradersByType(String type) {
-        if (!tradersByType.containsKey(type)) {
-            return new ArrayList<>();
-        }
+    public void removeTrader(UUID traderId) {
+        traders.remove(traderId);
+    }
+    
+    /**
+     * Gets all trader IDs in the market.
+     * @return The trader IDs
+     */
+    public List<UUID> getTraders() {
+        return new ArrayList<>(traders.keySet());
+    }
+    
+    /**
+     * Gets the type of a trader.
+     * @param traderId The trader's ID
+     * @return The trader's type, or null if not found
+     */
+    public String getTraderType(UUID traderId) {
+        return traders.get(traderId);
+    }
+    
+    /**
+     * Gets the number of traders of a specific type.
+     * @param traderType The trader type
+     * @return The number of traders
+     */
+    public int getTraderCount(String traderType) {
+        int count = 0;
         
-        List<BDVillager> result = new ArrayList<>();
-        for (UUID traderUUID : tradersByType.get(type)) {
-            if (traders.containsKey(traderUUID)) {
-                result.add(traders.get(traderUUID));
+        for (String type : traders.values()) {
+            if (type.equalsIgnoreCase(traderType)) {
+                count++;
             }
         }
         
-        return result;
+        return count;
     }
     
     /**
-     * Gets the count of traders of a specific type in this market.
-     * @param type The trader type
-     * @return The number of traders of that type
+     * Gets the total number of traders.
+     * @return The total number of traders
      */
-    public int getTraderCount(String type) {
-        if (!tradersByType.containsKey(type)) {
-            return 0;
-        }
-        
-        return tradersByType.get(type).size();
+    public int getTotalTraderCount() {
+        return traders.size();
     }
     
     /**
-     * Checks if a location is within this market's bounds.
+     * Gets the radius of the market.
+     * @return The radius
+     */
+    public int getRadius() {
+        return 20 + (level * 5); // Base radius + 5 per level
+    }
+    
+    /**
+     * Checks if a location is within the market radius.
      * @param location The location to check
-     * @return Whether the location is within this market
+     * @return Whether the location is within the radius
      */
-    public boolean isInMarket(Location location) {
+    public boolean isInRadius(Location location) {
         if (!center.getWorld().equals(location.getWorld())) {
             return false;
         }
         
-        // Market radius is 24 blocks (49x49 area)
         double distance = center.distance(location);
-        return distance <= 24;
-    }
-    
-    /**
-     * Gets the market radius.
-     * @return The market radius
-     */
-    public int getRadius() {
-        return 24; // 49x49 area
-    }
-    
-    /**
-     * Gets the price modifier for this market based on its level.
-     * @return The price modifier
-     */
-    public double getPriceModifier() {
-        // Each level increases prices by 5%
-        return 1.0 + ((level - 1) * 0.05);
+        return distance <= getRadius();
     }
 }

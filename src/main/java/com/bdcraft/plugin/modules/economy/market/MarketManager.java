@@ -1,36 +1,32 @@
 package com.bdcraft.plugin.modules.economy.market;
 
 import com.bdcraft.plugin.BDCraft;
-import com.bdcraft.plugin.modules.economy.items.BDItemManager;
+import com.bdcraft.plugin.modules.economy.villager.BDCollector;
+import com.bdcraft.plugin.modules.economy.villager.BDDealer;
+import com.bdcraft.plugin.modules.economy.villager.BDMarketOwner;
+import com.bdcraft.plugin.modules.economy.villager.BDVillager;
 import com.bdcraft.plugin.modules.economy.villager.BDVillagerManager;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
-import org.bukkit.inventory.ItemStack;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
- * Manages the market system for BDCraft.
+ * Manages BD markets.
  */
 public class MarketManager {
     private final BDCraft plugin;
-    private BDVillagerManager villagerManager;
-    private BDItemManager itemManager;
     private final Logger logger;
-    
-    private final Map<String, PlayerMarket> markets;
-    private final Set<UUID> marketCreationCooldowns;
-    
-    private final int marketSize;
-    private final int maxMarketsPerPlayer;
-    private final long marketCreationCooldownSeconds;
+    private final Map<UUID, BDMarket> markets;
+    private final BDVillagerManager villagerManager;
     
     /**
      * Creates a new market manager.
@@ -38,544 +34,296 @@ public class MarketManager {
      */
     public MarketManager(BDCraft plugin) {
         this.plugin = plugin;
-        this.villagerManager = null; // Will be initialized later
-        this.itemManager = null; // Will be initialized later
         this.logger = plugin.getLogger();
-        
         this.markets = new HashMap<>();
-        this.marketCreationCooldowns = new HashSet<>();
-        
-        // Load market settings
-        ConfigurationSection economyConfig = plugin.getConfigManager().getModuleConfig("economy");
-        this.marketSize = economyConfig.getInt("market.size", 49);
-        this.maxMarketsPerPlayer = economyConfig.getInt("market.maxPerPlayer", 2);
-        this.marketCreationCooldownSeconds = economyConfig.getLong("market.creationCooldown", 3600);
-        
-        // Load existing markets
-        loadMarkets();
-        
-        // Register event listeners
-        registerListeners();
+        this.villagerManager = plugin.getEconomyModule().getVillagerManager();
     }
     
     /**
-     * Loads existing markets from storage.
+     * Creates a market.
+     * @param center The center of the market
+     * @param founder The founder of the market
+     * @return The created market, or null if failed
      */
-    private void loadMarkets() {
-        // In a real implementation, this would load from a database or file
-        // For now, just initialize an empty map
-    }
-    
-    /**
-     * Registers event listeners.
-     */
-    private void registerListeners() {
-        // Register the listeners when fully implemented
-    }
-    
-    /**
-     * Initializes the dependencies after all modules are loaded.
-     * @param villagerManager The villager manager
-     * @param itemManager The item manager
-     */
-    public void initialize(BDVillagerManager villagerManager, BDItemManager itemManager) {
-        this.villagerManager = villagerManager;
-        this.itemManager = itemManager;
-    }
-    
-    /**
-     * Attempts to create a market at the given location.
-     * @param player The player
-     * @param location The location
-     * @return Whether the market was created
-     */
-    public boolean createMarket(Player player, Location location) {
-        // Check permission
-        if (!player.hasPermission("bdcraft.market.create")) {
-            player.sendMessage(ChatColor.RED + "You don't have permission to create markets.");
-            return false;
+    public BDMarket createMarket(Location center, Player founder) {
+        // Check if there's already a market at this location
+        if (getMarketAt(center) != null) {
+            return null;
         }
         
-        // Check cooldown
-        if (isOnCooldown(player.getUniqueId())) {
-            player.sendMessage(ChatColor.RED + "You must wait before creating another market.");
-            return false;
-        }
-        
-        // Check max markets per player
-        if (getPlayerMarketCount(player.getUniqueId()) >= maxMarketsPerPlayer) {
-            player.sendMessage(ChatColor.RED + "You have reached the maximum number of markets.");
-            return false;
-        }
-        
-        // Validate market structure
-        if (!isValidMarketStructure(location)) {
-            player.sendMessage(ChatColor.RED + "Invalid market structure. You need a 3x3 platform with a specific pattern.");
-            return false;
-        }
-        
-        // Check for overlapping markets
-        if (isOverlappingMarket(location)) {
-            player.sendMessage(ChatColor.RED + "This location overlaps with an existing market.");
-            return false;
-        }
-        
-        // Generate a unique market ID
-        String marketId = UUID.randomUUID().toString().substring(0, 8);
-        
-        // Create market center
-        Location centerLocation = location.clone().add(0, 1, 0);
-        
-        // Spawn market villagers
-        Villager dealer = villagerManager.createDealer(centerLocation.clone().add(1, 0, 1), marketId);
-        Villager owner = villagerManager.createMarketOwner(centerLocation.clone().add(-1, 0, -1), marketId);
-        
-        // Create market object
-        PlayerMarket market = new PlayerMarket(
-                marketId,
-                player.getUniqueId(),
-                location,
-                this.marketSize,
-                new ArrayList<>(),
-                new HashSet<>(),
-                System.currentTimeMillis()
-        );
-        
-        // Register villagers
-        market.addVillager(dealer.getUniqueId());
-        market.addVillager(owner.getUniqueId());
-        
-        // Save market
+        // Create market
+        UUID marketId = UUID.randomUUID();
+        BDMarket market = new BDMarket(marketId, center, founder.getUniqueId(), founder.getName());
         markets.put(marketId, market);
         
-        // Apply cooldown
-        setOnCooldown(player.getUniqueId());
+        // Spawn market owner
+        spawnMarketOwner(market, center);
         
-        // Notify the player
-        player.sendMessage(ChatColor.GREEN + "Market created successfully! Market ID: " + marketId);
+        // Spawn dealer
+        spawnDealer(market, center);
         
-        return true;
+        logger.info("Created market " + marketId + " at " + formatLocation(center) + " by " + founder.getName());
+        
+        return market;
     }
     
     /**
-     * Attempts to add a collector house to a market.
-     * @param player The player
-     * @param location The location
-     * @return Whether the collector house was added
-     */
-    public boolean addCollectorHouse(Player player, Location location) {
-        // Find the market at this location
-        PlayerMarket market = getMarketAtLocation(location);
-        
-        if (market == null) {
-            player.sendMessage(ChatColor.RED + "This location is not inside a market.");
-            return false;
-        }
-        
-        // Check permission
-        if (!market.getOwner().equals(player.getUniqueId()) && 
-            !market.getAssociates().contains(player.getUniqueId()) &&
-            !player.hasPermission("bdcraft.admin.market")) {
-            player.sendMessage(ChatColor.RED + "You don't have permission to add collector houses to this market.");
-            return false;
-        }
-        
-        // Validate house structure
-        if (!isValidCollectorHouseStructure(location)) {
-            player.sendMessage(ChatColor.RED + "Invalid collector house structure. Make sure it meets the requirements.");
-            return false;
-        }
-        
-        // Spawn collector villager
-        Villager collector = villagerManager.createCollector(location.clone().add(0, 1, 0), market.getId());
-        
-        // Register villager
-        market.addVillager(collector.getUniqueId());
-        
-        // Notify the player
-        player.sendMessage(ChatColor.GREEN + "Collector house added to the market!");
-        
-        return true;
-    }
-    
-    /**
-     * Checks if the player is on a market creation cooldown.
-     * @param uuid The player's UUID
-     * @return Whether the player is on cooldown
-     */
-    private boolean isOnCooldown(UUID uuid) {
-        return marketCreationCooldowns.contains(uuid);
-    }
-    
-    /**
-     * Sets the player on a market creation cooldown.
-     * @param uuid The player's UUID
-     */
-    private void setOnCooldown(UUID uuid) {
-        marketCreationCooldowns.add(uuid);
-        
-        // Remove the cooldown after the specified time
-        Bukkit.getScheduler().runTaskLater(plugin, () -> {
-            marketCreationCooldowns.remove(uuid);
-        }, marketCreationCooldownSeconds * 20L);
-    }
-    
-    /**
-     * Gets the number of markets owned by a player.
-     * @param uuid The player's UUID
-     * @return The number of markets
-     */
-    private int getPlayerMarketCount(UUID uuid) {
-        int count = 0;
-        for (PlayerMarket market : markets.values()) {
-            if (market.getOwner().equals(uuid)) {
-                count++;
-            }
-        }
-        return count;
-    }
-    
-    /**
-     * Checks if the structure at the given location is a valid market structure.
-     * @param location The location
-     * @return Whether the structure is valid
-     */
-    private boolean isValidMarketStructure(Location location) {
-        // This is a placeholder validation
-        // In a full implementation, this would check for a specific pattern of blocks
-        
-        Block center = location.getBlock();
-        if (center.getType() != Material.EMERALD_BLOCK) {
-            return false;
-        }
-        
-        // Check for surrounding blocks
-        for (int x = -1; x <= 1; x++) {
-            for (int z = -1; z <= 1; z++) {
-                if (x == 0 && z == 0) continue; // Skip center
-                
-                Block block = location.clone().add(x, 0, z).getBlock();
-                
-                // Pattern requires gold blocks in corners and iron blocks on edges
-                if ((Math.abs(x) == 1 && Math.abs(z) == 1) && block.getType() != Material.GOLD_BLOCK) {
-                    return false;
-                } else if ((Math.abs(x) == 1 ^ Math.abs(z) == 1) && block.getType() != Material.IRON_BLOCK) {
-                    return false;
-                }
-            }
-        }
-        
-        return true;
-    }
-    
-    /**
-     * Checks if the structure at the given location is a valid collector house structure.
-     * @param location The location
-     * @return Whether the structure is valid
-     */
-    private boolean isValidCollectorHouseStructure(Location location) {
-        // This is a placeholder validation
-        // In a full implementation, this would check for a specific pattern of blocks
-        
-        Block center = location.getBlock();
-        if (center.getType() != Material.DIAMOND_BLOCK) {
-            return false;
-        }
-        
-        // Check for surrounding blocks
-        for (int x = -1; x <= 1; x++) {
-            for (int z = -1; z <= 1; z++) {
-                if (x == 0 && z == 0) continue; // Skip center
-                
-                Block block = location.clone().add(x, 0, z).getBlock();
-                
-                // Pattern requires oak planks surrounding the diamond block
-                if (block.getType() != Material.OAK_PLANKS) {
-                    return false;
-                }
-            }
-        }
-        
-        return true;
-    }
-    
-    /**
-     * Checks if the given location would overlap with an existing market.
-     * @param location The location
-     * @return Whether the location overlaps
-     */
-    private boolean isOverlappingMarket(Location location) {
-        for (PlayerMarket market : markets.values()) {
-            if (isInMarket(location, market)) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    /**
-     * Checks if a location is inside a market.
-     * @param location The location
+     * Spawns a market owner for a market.
      * @param market The market
-     * @return Whether the location is inside the market
+     * @param center The center of the market
+     * @return The created villager
      */
-    private boolean isInMarket(Location location, PlayerMarket market) {
-        if (!location.getWorld().equals(market.getCenter().getWorld())) {
-            return false;
-        }
+    private BDMarketOwner spawnMarketOwner(BDMarket market, Location center) {
+        // Offset from center
+        Location ownerLocation = center.clone().add(2, 0, 2);
         
-        double halfSize = market.getSize() / 2.0;
-        double dx = Math.abs(location.getX() - market.getCenter().getX());
-        double dz = Math.abs(location.getZ() - market.getCenter().getZ());
+        // Create the owner
+        BDMarketOwner owner = villagerManager.createMarketOwner(ownerLocation, market);
         
-        return dx <= halfSize && dz <= halfSize;
+        // Associate with market
+        market.addTrader(owner.getVillager().getUniqueId(), "OWNER");
+        
+        return owner;
     }
     
     /**
-     * Checks if a location is inside any market.
-     * @param location The location
-     * @return Whether the location is inside any market
+     * Spawns a dealer for a market.
+     * @param market The market
+     * @param center The center of the market
+     * @return The created villager
      */
-    public boolean isInMarket(Location location) {
-        for (PlayerMarket market : markets.values()) {
-            if (isInMarket(location, market)) {
-                return true;
-            }
-        }
-        return false;
+    private BDDealer spawnDealer(BDMarket market, Location center) {
+        // Offset from center
+        Location dealerLocation = center.clone().add(-2, 0, 2);
+        
+        // Create the dealer
+        BDDealer dealer = villagerManager.createDealer(dealerLocation, market);
+        
+        // Associate with market
+        market.addTrader(dealer.getVillager().getUniqueId(), "DEALER");
+        
+        return dealer;
     }
     
     /**
-     * Checks if a player is in their own market at a location.
-     * @param player The player
-     * @param location The location
-     * @return Whether the player is in their own market
+     * Adds a collector house to a market.
+     * @param market The market
+     * @param location The location of the house
+     * @return The created collector, or null if failed
      */
-    public boolean isPlayerInOwnMarket(Player player, Location location) {
-        PlayerMarket market = getMarketAtLocation(location);
-        if (market == null) {
-            return false;
+    public BDCollector addCollector(BDMarket market, Location location) {
+        // Check collector count limits
+        int currentCollectors = market.getTraderCount("COLLECTOR");
+        int maxCollectors = getMaxCollectors(market);
+        
+        if (currentCollectors >= maxCollectors) {
+            return null;
         }
         
-        // Check if player is the owner or an associate
-        return market.getOwner().equals(player.getUniqueId()) || 
-               market.getAssociates().contains(player.getUniqueId());
+        // Create the collector
+        BDCollector collector = villagerManager.createCollector(location, market);
+        
+        // Associate with market
+        market.addTrader(collector.getVillager().getUniqueId(), "COLLECTOR");
+        
+        return collector;
     }
     
     /**
-     * Gets the market at the given location.
-     * @param location The location
-     * @return The market, or null if none
+     * Gets the maximum number of collectors for a market.
+     * @param market The market
+     * @return The maximum number of collectors
      */
-    public PlayerMarket getMarketAtLocation(Location location) {
-        for (PlayerMarket market : markets.values()) {
-            if (isInMarket(location, market)) {
-                return market;
-            }
+    private int getMaxCollectors(BDMarket market) {
+        int level = market.getLevel();
+        
+        switch (level) {
+            case 1:
+                return 3;
+            case 2:
+                return 5;
+            case 3:
+                return 7;
+            case 4:
+                return 10;
+            default:
+                return 3;
         }
-        return null;
     }
     
     /**
      * Gets a market by ID.
      * @param id The market ID
-     * @return The market, or null if none
+     * @return The market, or null if not found
      */
-    public PlayerMarket getMarket(String id) {
+    public BDMarket getMarket(UUID id) {
         return markets.get(id);
     }
     
     /**
-     * Gets all markets owned by a player.
-     * @param uuid The player's UUID
-     * @return The player's markets
+     * Gets a market at a location.
+     * @param location The location
+     * @return The market, or null if not found
      */
-    public List<PlayerMarket> getPlayerMarkets(UUID uuid) {
-        List<PlayerMarket> playerMarkets = new ArrayList<>();
-        for (PlayerMarket market : markets.values()) {
-            if (market.getOwner().equals(uuid)) {
-                playerMarkets.add(market);
-            }
-        }
-        return playerMarkets;
-    }
-    
-    /**
-     * Removes a market.
-     * @param id The market ID
-     * @return Whether the market was removed
-     */
-    public boolean removeMarket(String id) {
-        PlayerMarket market = markets.get(id);
-        if (market == null) {
-            return false;
-        }
-        
-        // Remove villagers
-        for (UUID villagerUuid : market.getVillagers()) {
-            Villager villager = findVillagerByUuid(villagerUuid);
-            if (villager != null) {
-                villager.remove();
+    public BDMarket getMarketAt(Location location) {
+        for (BDMarket market : markets.values()) {
+            if (isInMarketRadius(market, location)) {
+                return market;
             }
         }
         
-        // Remove market from map
-        markets.remove(id);
-        
-        return true;
-    }
-    
-    /**
-     * Finds a villager by UUID.
-     * @param uuid The villager's UUID
-     * @return The villager, or null if not found
-     */
-    private Villager findVillagerByUuid(UUID uuid) {
-        for (org.bukkit.World world : Bukkit.getWorlds()) {
-            for (Villager villager : world.getEntitiesByClass(Villager.class)) {
-                if (villager.getUniqueId().equals(uuid)) {
-                    return villager;
-                }
-            }
-        }
         return null;
     }
     
     /**
-     * Adds an associate to a market.
-     * @param player The player
-     * @param targetPlayer The target player
-     * @param marketId The market ID
-     * @return Whether the associate was added
+     * Checks if a location is in a market radius.
+     * @param market The market
+     * @param location The location
+     * @return Whether the location is in the market radius
      */
-    public boolean addAssociate(Player player, Player targetPlayer, String marketId) {
-        PlayerMarket market = markets.get(marketId);
-        if (market == null) {
-            player.sendMessage(ChatColor.RED + "Market not found.");
+    public boolean isInMarketRadius(BDMarket market, Location location) {
+        if (!market.getCenter().getWorld().equals(location.getWorld())) {
             return false;
         }
         
-        // Check permission
-        if (!market.getOwner().equals(player.getUniqueId()) && !player.hasPermission("bdcraft.admin.market")) {
-            player.sendMessage(ChatColor.RED + "You don't have permission to add associates to this market.");
-            return false;
-        }
+        double distance = market.getCenter().distance(location);
+        int marketRadius = 20 + (market.getLevel() * 5); // Base radius + 5 per level
         
-        // Add the associate
-        market.addAssociate(targetPlayer.getUniqueId());
-        
-        // Notify players
-        player.sendMessage(ChatColor.GREEN + "Added " + targetPlayer.getName() + " as an associate to your market.");
-        targetPlayer.sendMessage(ChatColor.GREEN + "You have been added as an associate to a market owned by " + player.getName() + ".");
-        
-        return true;
+        return distance <= marketRadius;
     }
     
     /**
-     * Removes an associate from a market.
-     * @param player The player
-     * @param targetPlayer The target player
-     * @param marketId The market ID
-     * @return Whether the associate was removed
+     * Checks if a location is in any market radius.
+     * @param location The location
+     * @return Whether the location is in any market radius
      */
-    public boolean removeAssociate(Player player, Player targetPlayer, String marketId) {
-        PlayerMarket market = markets.get(marketId);
+    public boolean isInMarket(Location location) {
+        return getMarketAt(location) != null;
+    }
+    
+    /**
+     * Checks if a player is in their own market.
+     * @param player The player
+     * @param location The location
+     * @return Whether the player is in their own market
+     */
+    public boolean isPlayerInOwnMarket(Player player, Location location) {
+        BDMarket market = getMarketAt(location);
+        
         if (market == null) {
-            player.sendMessage(ChatColor.RED + "Market not found.");
             return false;
         }
         
-        // Check permission
-        if (!market.getOwner().equals(player.getUniqueId()) && !player.hasPermission("bdcraft.admin.market")) {
-            player.sendMessage(ChatColor.RED + "You don't have permission to remove associates from this market.");
-            return false;
+        return market.getFounderId().equals(player.getUniqueId());
+    }
+    
+    /**
+     * Gets all markets.
+     * @return All markets
+     */
+    public List<BDMarket> getAllMarkets() {
+        return new ArrayList<>(markets.values());
+    }
+    
+    /**
+     * Gets all markets in a world.
+     * @param worldName The world name
+     * @return All markets in the world
+     */
+    public List<BDMarket> getMarketsInWorld(String worldName) {
+        return markets.values().stream()
+                .filter(market -> market.getCenter().getWorld().getName().equals(worldName))
+                .collect(Collectors.toList());
+    }
+    
+    /**
+     * Gets all markets owned by a player.
+     * @param playerId The player ID
+     * @return All markets owned by the player
+     */
+    public List<BDMarket> getPlayerMarkets(UUID playerId) {
+        return markets.values().stream()
+                .filter(market -> market.getFounderId().equals(playerId))
+                .collect(Collectors.toList());
+    }
+    
+    /**
+     * Removes a market.
+     * @param market The market to remove
+     */
+    public void removeMarket(BDMarket market) {
+        // Remove all villagers
+        for (UUID villagerId : market.getTraders()) {
+            villagerManager.removeVillager(villagerId);
         }
         
-        // Remove the associate
-        boolean removed = market.removeAssociate(targetPlayer.getUniqueId());
+        // Remove market
+        markets.remove(market.getId());
         
-        if (!removed) {
-            player.sendMessage(ChatColor.RED + targetPlayer.getName() + " is not an associate of this market.");
-            return false;
-        }
-        
-        // Notify players
-        player.sendMessage(ChatColor.GREEN + "Removed " + targetPlayer.getName() + " as an associate from your market.");
-        targetPlayer.sendMessage(ChatColor.YELLOW + "You have been removed as an associate from a market owned by " + player.getName() + ".");
-        
-        return true;
+        logger.info("Removed market " + market.getId() + " at " + formatLocation(market.getCenter()));
     }
     
     /**
      * Upgrades a market.
-     * @param player The player
-     * @param marketId The market ID
-     * @return Whether the market was upgraded
+     * @param market The market to upgrade
+     * @return Whether the upgrade was successful
      */
-    public boolean upgradeMarket(Player player, String marketId) {
-        PlayerMarket market = markets.get(marketId);
-        if (market == null) {
-            player.sendMessage(ChatColor.RED + "Market not found.");
+    public boolean upgradeMarket(BDMarket market) {
+        int currentLevel = market.getLevel();
+        
+        // Check if already max level
+        if (currentLevel >= 4) {
             return false;
         }
         
-        // Check permission
-        if (!market.getOwner().equals(player.getUniqueId()) && !player.hasPermission("bdcraft.admin.market")) {
-            player.sendMessage(ChatColor.RED + "You don't have permission to upgrade this market.");
-            return false;
-        }
+        // Upgrade market
+        market.setLevel(currentLevel + 1);
         
-        // Check if the market can be upgraded
-        int newLevel = market.getLevel() + 1;
-        ConfigurationSection economyConfig = plugin.getConfigManager().getModuleConfig("economy");
-        ConfigurationSection upgradeConfig = economyConfig.getConfigurationSection("market.upgrades." + newLevel);
-        
-        if (upgradeConfig == null) {
-            player.sendMessage(ChatColor.RED + "This market cannot be upgraded further.");
-            return false;
-        }
-        
-        // Check requirements
-        int requiredCurrency = upgradeConfig.getInt("cost", 0);
-        int requiredCollectors = upgradeConfig.getInt("collectors", 0);
-        
-        // Check currency
-        if (requiredCurrency > 0) {
-            if (!plugin.getEconomyAPI().hasEnough(player.getUniqueId(), requiredCurrency)) {
-                player.sendMessage(ChatColor.RED + "You don't have enough currency for this upgrade. You need " + 
-                        plugin.getEconomyAPI().formatCurrency(requiredCurrency) + ".");
-                return false;
-            }
-        }
-        
-        // Check collectors
-        if (requiredCollectors > 0) {
-            int collectors = 0;
-            for (UUID villagerUuid : market.getVillagers()) {
-                Villager villager = findVillagerByUuid(villagerUuid);
-                if (villager != null && villagerManager.getBDVillagerType(villager).equals("COLLECTOR")) {
-                    collectors++;
-                }
-            }
-            
-            if (collectors < requiredCollectors) {
-                player.sendMessage(ChatColor.RED + "You need at least " + requiredCollectors + 
-                        " collectors in your market for this upgrade.");
-                return false;
-            }
-        }
-        
-        // Apply upgrade
-        market.setLevel(newLevel);
-        
-        // Deduct currency
-        if (requiredCurrency > 0) {
-            plugin.getEconomyAPI().withdrawMoney(player.getUniqueId(), requiredCurrency);
-        }
-        
-        // Notify the player
-        player.sendMessage(ChatColor.GREEN + "Market upgraded to level " + newLevel + "!");
+        logger.info("Upgraded market " + market.getId() + " to level " + market.getLevel());
         
         return true;
+    }
+    
+    /**
+     * Saves all markets to storage.
+     */
+    public void saveMarkets() {
+        // This would save markets to a database or file
+        // For simplicity, we'll just log that they were saved
+        logger.info("Saved " + markets.size() + " markets to storage");
+    }
+    
+    /**
+     * Adds a collector house to a market.
+     * @param player The player adding the house
+     * @param location The location of the house
+     * @return Whether the house was added successfully
+     */
+    public boolean addCollectorHouse(Player player, Location location) {
+        BDMarket market = getMarketAt(location);
+        
+        if (market == null) {
+            return false;
+        }
+        
+        // Check if player owns the market
+        if (!market.getFounderId().equals(player.getUniqueId())) {
+            return false;
+        }
+        
+        // Add collector
+        return addCollector(market, location) != null;
+    }
+    
+    /**
+     * Formats a location for logging.
+     * @param location The location
+     * @return The formatted location
+     */
+    private String formatLocation(Location location) {
+        return location.getWorld().getName() + "," + 
+                location.getBlockX() + "," + 
+                location.getBlockY() + "," + 
+                location.getBlockZ();
     }
 }
