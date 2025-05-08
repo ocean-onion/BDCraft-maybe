@@ -89,26 +89,37 @@ public class BDProgressionModule implements BDModule, ProgressionAPI {
     // ProgressionAPI implementation
     
     @Override
-    public int getPlayerRank(UUID uuid) {
+    public Rank getPlayerRank(UUID uuid) {
         Player player = plugin.getServer().getPlayer(uuid);
         if (player != null) {
-            return rankManager.getPlayerRank(player);
+            int rankValue = rankManager.getPlayerRank(player);
+            return convertIntToRank(rankValue);
         }
         // For offline players, we would need to implement data storage
-        return 0; // Default to Newcomer
+        return Rank.NEWCOMER; // Default to Newcomer
     }
     
     @Override
-    public boolean hasRank(UUID uuid, int requiredRank) {
+    public boolean setPlayerRank(UUID uuid, Rank rank) {
         Player player = plugin.getServer().getPlayer(uuid);
         if (player != null) {
-            return rankManager.hasRank(player, requiredRank);
+            rankManager.setPlayerRank(player, convertRankToInt(rank));
+            return true;
         }
         return false;
     }
     
     @Override
-    public void addExperience(UUID uuid, int amount) {
+    public int getPlayerExperience(UUID uuid) {
+        Player player = plugin.getServer().getPlayer(uuid);
+        if (player != null) {
+            return rankManager.getPlayerExperience(player);
+        }
+        return 0;
+    }
+    
+    @Override
+    public int addPlayerExperience(UUID uuid, int amount) {
         Player player = plugin.getServer().getPlayer(uuid);
         if (player != null) {
             rankManager.addPlayerExperience(player, amount);
@@ -119,20 +130,41 @@ public class BDProgressionModule implements BDModule, ProgressionAPI {
                 player.sendMessage(ChatColor.GREEN + "You ranked up to " + 
                         rankManager.getPlayerColoredRankName(player) + ChatColor.GREEN + "!");
             }
+            
+            return rankManager.getPlayerExperience(player);
         }
+        return 0;
     }
     
     @Override
-    public double getExperienceMultiplier(UUID uuid) {
+    public int getRequiredExperience(Rank rank) {
+        return rankManager.getExperienceForRank(convertRankToInt(rank));
+    }
+    
+    @Override
+    public boolean canProgress(UUID uuid) {
         Player player = plugin.getServer().getPlayer(uuid);
         if (player != null) {
-            return rankManager.getExperienceMultiplier(player);
+            int currentRank = rankManager.getPlayerRank(player);
+            int currentExp = rankManager.getPlayerExperience(player);
+            int requiredExp = rankManager.getExperienceForNextRank(player);
+            
+            return currentRank < BDRankManager.RANK_MASTER_FARMER && currentExp >= requiredExp;
         }
-        return 1.0; // No bonus for offline players
+        return false;
     }
     
     @Override
-    public int getRebirths(UUID uuid) {
+    public boolean progressPlayer(UUID uuid) {
+        Player player = plugin.getServer().getPlayer(uuid);
+        if (player != null && canProgress(uuid)) {
+            return rankManager.checkRankUp(player);
+        }
+        return false;
+    }
+    
+    @Override
+    public int getRebirthCount(UUID uuid) {
         Player player = plugin.getServer().getPlayer(uuid);
         if (player != null) {
             return rankManager.getPlayerRebirths(player);
@@ -141,12 +173,112 @@ public class BDProgressionModule implements BDModule, ProgressionAPI {
     }
     
     @Override
-    public String getRankName(UUID uuid) {
+    public boolean performRebirth(Player player) {
+        if (player != null) {
+            int currentRank = rankManager.getPlayerRank(player);
+            
+            if (currentRank >= BDRankManager.RANK_MASTER_FARMER) {
+                rankManager.addPlayerRebirth(player);
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    @Override
+    public Map<String, Double> getRebirthBonuses(UUID uuid) {
+        Player player = plugin.getServer().getPlayer(uuid);
+        Map<String, Double> bonuses = new java.util.HashMap<>();
+        
+        if (player != null) {
+            int rebirths = rankManager.getPlayerRebirths(player);
+            bonuses.put("experience", (double) rebirths * 0.1); // 10% per rebirth
+        }
+        
+        return bonuses;
+    }
+    
+    @Override
+    public List<UUID> getTopPlayers(int limit) {
+        // This would require a proper database implementation
+        // Placeholder for now
+        return new java.util.ArrayList<>();
+    }
+    
+    @Override
+    public List<UUID> getPlayersByRank(Rank rank) {
+        // This would require a proper database implementation
+        // Placeholder for now
+        return new java.util.ArrayList<>();
+    }
+    
+    @Override
+    public String getRankDisplayName(Rank rank) {
+        int rankValue = convertRankToInt(rank);
+        return rankManager.getRankName(rankValue);
+    }
+    
+    @Override
+    public String getRankPrefix(Rank rank) {
+        int rankValue = convertRankToInt(rank);
+        // Assuming there's a method to get rank color - would need to implement this
+        return rankManager.getRankColor(rankValue) + getRankDisplayName(rank);
+    }
+    
+    @Override
+    public Rank getNextRank(UUID uuid) {
         Player player = plugin.getServer().getPlayer(uuid);
         if (player != null) {
-            return rankManager.getPlayerRankName(player);
+            int currentRank = rankManager.getPlayerRank(player);
+            if (currentRank < BDRankManager.RANK_REBORN) {
+                return convertIntToRank(currentRank + 1);
+            }
         }
-        return "Unknown";
+        return null; // No next rank if at max
+    }
+    
+    @Override
+    public double getProgressPercentage(UUID uuid) {
+        Player player = plugin.getServer().getPlayer(uuid);
+        if (player != null) {
+            int currentRank = rankManager.getPlayerRank(player);
+            if (currentRank >= BDRankManager.RANK_REBORN) {
+                return 100.0; // Already at max rank
+            }
+            
+            int currentExp = rankManager.getPlayerExperience(player);
+            int requiredExp = rankManager.getExperienceForNextRank(player);
+            
+            if (requiredExp <= 0) return 100.0;
+            
+            return (double) currentExp / requiredExp * 100.0;
+        }
+        return 0.0;
+    }
+    
+    // Helper methods for conversion between int rank and enum rank
+    private Rank convertIntToRank(int rankValue) {
+        switch (rankValue) {
+            case BDRankManager.RANK_NEWCOMER: return Rank.NEWCOMER;
+            case BDRankManager.RANK_FARMER: return Rank.FARMER;
+            case BDRankManager.RANK_EXPERT_FARMER: return Rank.EXPERT_FARMER;
+            case BDRankManager.RANK_MASTER_FARMER: return Rank.MASTER_FARMER;
+            case BDRankManager.RANK_AGRICULTURAL_EXPERT: return Rank.AGRICULTURAL_EXPERT;
+            case BDRankManager.RANK_REBORN: return Rank.REBORN;
+            default: return Rank.NEWCOMER;
+        }
+    }
+    
+    private int convertRankToInt(Rank rank) {
+        switch (rank) {
+            case NEWCOMER: return BDRankManager.RANK_NEWCOMER;
+            case FARMER: return BDRankManager.RANK_FARMER;
+            case EXPERT_FARMER: return BDRankManager.RANK_EXPERT_FARMER;
+            case MASTER_FARMER: return BDRankManager.RANK_MASTER_FARMER;
+            case AGRICULTURAL_EXPERT: return BDRankManager.RANK_AGRICULTURAL_EXPERT;
+            case REBORN: return BDRankManager.RANK_REBORN;
+            default: return BDRankManager.RANK_NEWCOMER;
+        }
     }
     
     /**
