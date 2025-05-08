@@ -3,6 +3,13 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
+// Configure use of JDK 21 with both compile and runtime
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
 group = 'com.bdcraft'
 version = '1.0.0'
 description = 'BDCraft - A comprehensive Minecraft server management plugin'
