@@ -41,6 +41,18 @@ public class BDMarket {
     // List of market associates (max 5 according to documentation)
     private final List<UUID> associates;
     
+    // Market settings
+    private boolean publicAccess = true;
+    private boolean openBuild = false;
+    private boolean openBreak = false;
+    private boolean particles = true;
+    private boolean sounds = true;
+    private boolean removed = false;
+    
+    // Market stats
+    private double netWorth = 0.0;
+    private int weeklyTradeCount = 0;
+    
     // Market owner and dealer villagers
     private UUID marketOwnerUuid;
     private UUID bdDealerUuid;
