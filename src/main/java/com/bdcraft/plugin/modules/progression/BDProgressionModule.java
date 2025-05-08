@@ -150,6 +150,13 @@ public class BDProgressionModule implements BDModule, ProgressionAPI {
     }
     
     /**
+     * Applies a blessing effect to a player.
+     * 
+     * @param player The player to bless
+     */
+    // Method removed to fix duplicate method declaration
+    
+    /**
      * Shows rank information to a player.
      * @param sender The command sender
      * @param player The player to show info for

@@ -1,6 +1,7 @@
 package com.bdcraft.plugin.modules.economy.crafting;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
@@ -74,24 +75,35 @@ public class BDRecipeManager {
      * Registers the market token recipe.
      * 
      * Pattern:
-     * EEE
-     * EBE
-     * EEE
+     * DDD
+     * ESE
+     * DDD
      * 
-     * Where E = Emerald, B = BD Crop
+     * Where D = Diamond, E = Emerald, S = BD Stick
      */
     private void registerMarketTokenRecipe() {
         ItemStack marketToken = itemManager.createBDToken(TokenType.MARKET, 1);
         NamespacedKey key = new NamespacedKey(plugin, "market_token");
         
         ShapedRecipe recipe = new ShapedRecipe(key, marketToken);
-        recipe.shape("EEE", "EBE", "EEE");
+        recipe.shape("DDD", "ESE", "DDD");
+        recipe.setIngredient('D', Material.DIAMOND);
         recipe.setIngredient('E', Material.EMERALD);
         
-        // Custom ingredient for BD Crop
-        RecipeChoice.ExactChoice bdCropChoice = new RecipeChoice.ExactChoice(
-                itemManager.createBDCrop(CropType.REGULAR, 1));
-        recipe.setIngredient('B', bdCropChoice);
+        // Custom ingredient for BD Stick
+        ItemStack bdStick = new ItemStack(Material.STICK);
+        ItemMeta stickMeta = bdStick.getItemMeta();
+        stickMeta.setDisplayName(ChatColor.GOLD + "BD Stick");
+        List<String> lore = new ArrayList<>();
+        lore.add(ChatColor.GRAY + "A special stick imbued with BD power");
+        stickMeta.setLore(lore);
+        stickMeta.getPersistentDataContainer().set(
+                new NamespacedKey(plugin, "bd_item"), 
+                PersistentDataType.STRING, "bd_stick");
+        bdStick.setItemMeta(stickMeta);
+        
+        RecipeChoice.ExactChoice bdStickChoice = new RecipeChoice.ExactChoice(bdStick);
+        recipe.setIngredient('S', bdStickChoice);
         
         Bukkit.addRecipe(recipe);
         registeredRecipes.add(key);
@@ -101,29 +113,33 @@ public class BDRecipeManager {
      * Registers the house token recipe.
      * 
      * Pattern:
-     * PPP
-     * PBP
-     * PPP
+     * WWW
+     * WBW
+     * WWW
      * 
-     * Where P = Planks (any type), B = Green BD Crop
+     * Where W = Wood Log (any type), B = BD Crop (any type)
      */
     private void registerHouseTokenRecipe() {
         ItemStack houseToken = itemManager.createBDToken(TokenType.HOUSE, 1);
         NamespacedKey key = new NamespacedKey(plugin, "house_token");
         
         ShapedRecipe recipe = new ShapedRecipe(key, houseToken);
-        recipe.shape("PPP", "PBP", "PPP");
+        recipe.shape("WWW", "WBW", "WWW");
         
-        // Accept any type of planks
-        RecipeChoice.MaterialChoice planksChoice = new RecipeChoice.MaterialChoice(
-                Material.OAK_PLANKS, Material.SPRUCE_PLANKS, Material.BIRCH_PLANKS,
-                Material.JUNGLE_PLANKS, Material.ACACIA_PLANKS, Material.DARK_OAK_PLANKS,
-                Material.CRIMSON_PLANKS, Material.WARPED_PLANKS);
-        recipe.setIngredient('P', planksChoice);
+        // Accept any type of logs
+        RecipeChoice.MaterialChoice logChoice = new RecipeChoice.MaterialChoice(
+                Material.OAK_LOG, Material.SPRUCE_LOG, Material.BIRCH_LOG,
+                Material.JUNGLE_LOG, Material.ACACIA_LOG, Material.DARK_OAK_LOG,
+                Material.CRIMSON_STEM, Material.WARPED_STEM);
+        recipe.setIngredient('W', logChoice);
         
-        // Custom ingredient for Green BD Crop
-        RecipeChoice.ExactChoice bdCropChoice = new RecipeChoice.ExactChoice(
-                itemManager.createBDCrop(CropType.GREEN, 1));
+        // Custom ingredient for any BD Crop
+        List<ItemStack> cropOptions = new ArrayList<>();
+        cropOptions.add(itemManager.createBDCrop(CropType.REGULAR, 1));
+        cropOptions.add(itemManager.createBDCrop(CropType.GREEN, 1));
+        cropOptions.add(itemManager.createBDCrop(CropType.PURPLE, 1));
+        
+        RecipeChoice.ExactChoice bdCropChoice = new RecipeChoice.ExactChoice(cropOptions);
         recipe.setIngredient('B', bdCropChoice);
         
         Bukkit.addRecipe(recipe);
@@ -134,19 +150,20 @@ public class BDRecipeManager {
      * Registers the trade token recipe.
      * 
      * Pattern:
-     * GGG
-     * GBG
-     * GGG
+     * GDG
+     * DBD
+     * GDG
      * 
-     * Where G = Gold Ingot, B = Purple BD Crop
+     * Where G = Gold Block, D = Diamond, B = Purple BD Crop
      */
     private void registerTradeTokenRecipe() {
         ItemStack tradeToken = itemManager.createBDToken(TokenType.TRADE, 1);
         NamespacedKey key = new NamespacedKey(plugin, "trade_token");
         
         ShapedRecipe recipe = new ShapedRecipe(key, tradeToken);
-        recipe.shape("GGG", "GBG", "GGG");
-        recipe.setIngredient('G', Material.GOLD_INGOT);
+        recipe.shape("GDG", "DBD", "GDG");
+        recipe.setIngredient('G', Material.GOLD_BLOCK);
+        recipe.setIngredient('D', Material.DIAMOND);
         
         // Custom ingredient for Purple BD Crop
         RecipeChoice.ExactChoice bdCropChoice = new RecipeChoice.ExactChoice(
@@ -161,25 +178,27 @@ public class BDRecipeManager {
      * Registers the harvester tool recipe.
      * 
      * Pattern:
-     * BB
-     * IS
-     *  S
+     * CCC
+     * IHI
+     * BSB
      * 
-     * Where B = BD Crop, I = Iron Ingot, S = Stick
+     * Where C = BD Crop, I = Iron Ingot, H = Iron Hoe, B = Iron Block, S = Stick
      */
     private void registerHarvesterRecipe() {
         ItemStack harvester = itemManager.createBDTool(ToolType.HARVESTER);
         NamespacedKey key = new NamespacedKey(plugin, "bd_harvester");
         
         ShapedRecipe recipe = new ShapedRecipe(key, harvester);
-        recipe.shape("BB ", "IS ", " S ");
+        recipe.shape("CCC", "IHI", "BSB");
         
         // Custom ingredient for BD Crop
         RecipeChoice.ExactChoice bdCropChoice = new RecipeChoice.ExactChoice(
                 itemManager.createBDCrop(CropType.REGULAR, 1));
-        recipe.setIngredient('B', bdCropChoice);
+        recipe.setIngredient('C', bdCropChoice);
         
         recipe.setIngredient('I', Material.IRON_INGOT);
+        recipe.setIngredient('H', Material.IRON_HOE);
+        recipe.setIngredient('B', Material.IRON_BLOCK);
         recipe.setIngredient('S', Material.STICK);
         
         Bukkit.addRecipe(recipe);
@@ -190,26 +209,27 @@ public class BDRecipeManager {
      * Registers the ultimate harvester tool recipe.
      * 
      * Pattern:
-     * BB
-     * DS
-     *  S
+     * PPP
+     * DHD
+     * DBD
      * 
-     * Where B = Green BD Crop, D = Diamond, S = Stick
+     * Where P = Purple BD Crop, D = Diamond, H = Diamond Hoe, B = Diamond Block
      */
     private void registerUltimateHarvesterRecipe() {
         ItemStack ultimateHarvester = itemManager.createBDTool(ToolType.ULTIMATE_HARVESTER);
         NamespacedKey key = new NamespacedKey(plugin, "bd_ultimate_harvester");
         
         ShapedRecipe recipe = new ShapedRecipe(key, ultimateHarvester);
-        recipe.shape("BB ", "DS ", " S ");
+        recipe.shape("PPP", "DHD", "DBD");
         
-        // Custom ingredient for Green BD Crop
+        // Custom ingredient for Purple BD Crop
         RecipeChoice.ExactChoice bdCropChoice = new RecipeChoice.ExactChoice(
-                itemManager.createBDCrop(CropType.GREEN, 1));
-        recipe.setIngredient('B', bdCropChoice);
+                itemManager.createBDCrop(CropType.PURPLE, 1));
+        recipe.setIngredient('P', bdCropChoice);
         
         recipe.setIngredient('D', Material.DIAMOND);
-        recipe.setIngredient('S', Material.STICK);
+        recipe.setIngredient('H', Material.DIAMOND_HOE);
+        recipe.setIngredient('B', Material.DIAMOND_BLOCK);
         
         Bukkit.addRecipe(recipe);
         registeredRecipes.add(key);

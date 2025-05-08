@@ -2,6 +2,7 @@ package com.bdcraft.plugin.modules.economy.listeners;
 
 import com.bdcraft.plugin.BDCraft;
 import com.bdcraft.plugin.modules.economy.items.BDItemManager;
+import com.bdcraft.plugin.modules.economy.items.tokens.BDToken;
 import com.bdcraft.plugin.modules.economy.market.MarketManager;
 import com.bdcraft.plugin.modules.progression.BDRankManager;
 
@@ -44,7 +45,7 @@ public class MarketTokenListener implements Listener {
         
         // Check if the item is a market token
         BDItemManager itemManager = plugin.getEconomyModule().getItemManager();
-        if (!itemManager.isBDItem(item) || !itemManager.getBDItemType(item).equals("market_token")) {
+        if (!itemManager.isBDItem(item) || !itemManager.getBDItemType(item).equals(BDToken.MARKET_TOKEN_KEY)) {
             return;
         }
         

@@ -279,4 +279,49 @@ public class BDEconomyModule implements Module {
     public AuctionHouseGUI getAuctionHouseGUI() {
         return auctionHouseGUI;
     }
+    
+    /**
+     * Checks if a player has enough coins.
+     * 
+     * @param player The player
+     * @param amount The amount to check
+     * @return True if the player has at least the specified amount
+     */
+    public boolean hasCoins(Player player, int amount) {
+        return getPlayerBalance(player) >= amount;
+    }
+    
+    /**
+     * Adds coins to a player.
+     * 
+     * @param player The player
+     * @param amount The amount to add
+     * @return The new balance
+     */
+    public int addCoins(Player player, int amount) {
+        return addPlayerBalance(player, amount);
+    }
+    
+    /**
+     * Removes coins from a player.
+     * 
+     * @param player The player
+     * @param amount The amount to remove
+     * @return The new balance, or -1 if the player doesn't have enough
+     */
+    public int removeCoins(Player player, int amount) {
+        return removePlayerBalance(player, amount);
+    }
+    
+    /**
+     * Adds coins to an offline player.
+     * 
+     * @param playerUUID The player's UUID
+     * @param amount The amount to add
+     */
+    public void addOfflinePlayerCoins(UUID playerUUID, int amount) {
+        int currentBalance = playerBalances.getOrDefault(playerUUID, 0);
+        playerBalances.put(playerUUID, currentBalance + amount);
+        savePlayerBalances();
+    }
 }

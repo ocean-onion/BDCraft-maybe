@@ -39,6 +39,149 @@ public class AuctionManager {
     
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     
+    // Track the last listing ID for method compatibility
+    private UUID lastListingId = null;
+    
+    /**
+     * Gets the ID of the last created listing.
+     * 
+     * @return The UUID of the last listing, or null if no listing has been created
+     */
+    public UUID getLastListingId() {
+        return lastListingId;
+    }
+    
+    /**
+     * Gets the number of active listings by a player.
+     * 
+     * @param playerUUID The player's UUID
+     * @return The number of active listings
+     */
+    public int getPlayerListingCount(UUID playerUUID) {
+        return (int) auctionItems.values().stream()
+                .filter(item -> item.getSellerUUID().equals(playerUUID))
+                .filter(item -> !item.isSold())
+                .count();
+    }
+    
+    /**
+     * Creates a new auction listing.
+     * 
+     * @param player The player listing the item
+     * @param item The item to list
+     * @param price The price in BD coins
+     * @return The UUID of the created listing, or null if creation failed
+     */
+    public UUID createListing(Player player, ItemStack item, int price) {
+        // Check if player has reached their listing limit
+        int playerListings = getPlayerListingCount(player.getUniqueId());
+        if (playerListings >= MAX_LISTINGS_PER_PLAYER) {
+            player.sendMessage(ChatColor.RED + "You can only have " + MAX_LISTINGS_PER_PLAYER + " active listings.");
+            return null;
+        }
+        
+        // Calculate listing fee
+        int listingFee = (int) Math.ceil(price * LISTING_FEE_PERCENTAGE);
+        if (listingFee < 1) listingFee = 1; // Minimum fee of 1 coin
+        
+        // Check if player can afford listing fee
+        if (!economyModule.hasCoins(player, listingFee)) {
+            player.sendMessage(ChatColor.RED + "You need " + listingFee + " BD coins to list this item.");
+            return null;
+        }
+        
+        // Charge listing fee
+        economyModule.removeCoins(player, listingFee);
+        
+        // Create the auction item
+        AuctionItem auctionItem = new AuctionItem(player, item, price);
+        auctionItems.put(auctionItem.getId(), auctionItem);
+        
+        // Log transaction
+        logger.info("Player " + player.getName() + " listed item " + 
+                item.getType() + " for " + price + " coins. Listing ID: " + auctionItem.getId());
+        
+        // Save to file
+        saveAuctionItems();
+        
+        player.sendMessage(ChatColor.YELLOW + "Listing fee: " + listingFee + " BD coins");
+        
+        return auctionItem.getId();
+    }
+    
+    /**
+     * Purchases an item from the auction house.
+     * 
+     * @param player The player purchasing the item
+     * @param itemId The ID of the item to purchase
+     * @return True if the purchase was successful
+     */
+    public boolean purchaseItem(Player player, UUID itemId) {
+        AuctionItem item = auctionItems.get(itemId);
+        
+        if (item == null) {
+            player.sendMessage(ChatColor.RED + "Item not found.");
+            return false;
+        }
+        
+        if (item.isSold()) {
+            player.sendMessage(ChatColor.RED + "This item has already been sold.");
+            return false;
+        }
+        
+        // Check if player is trying to buy their own item
+        if (item.getSellerUUID().equals(player.getUniqueId())) {
+            player.sendMessage(ChatColor.RED + "You cannot buy your own item.");
+            return false;
+        }
+        
+        // Check if player has enough coins
+        if (!economyModule.hasCoins(player, item.getPrice())) {
+            player.sendMessage(ChatColor.RED + "You don't have enough BD coins to buy this item.");
+            return false;
+        }
+        
+        // Calculate fees
+        int saleFee = (int) Math.ceil(item.getPrice() * SALE_FEE_PERCENTAGE);
+        int sellerProfit = item.getPrice() - saleFee;
+        
+        // Process the transaction
+        economyModule.removeCoins(player, item.getPrice());
+        
+        // Try to get the seller
+        Player seller = Bukkit.getPlayer(item.getSellerUUID());
+        if (seller != null && seller.isOnline()) {
+            economyModule.addCoins(seller, sellerProfit);
+            seller.sendMessage(ChatColor.GREEN + "Your auction item was sold to " + player.getName() + 
+                    " for " + item.getPrice() + " BD coins!");
+            seller.sendMessage(ChatColor.YELLOW + "Sale fee: " + saleFee + " BD coins. You received " + 
+                    sellerProfit + " BD coins.");
+        } else {
+            // Save the coins for offline player
+            economyModule.addOfflinePlayerCoins(item.getSellerUUID(), sellerProfit);
+        }
+        
+        // Mark as sold
+        item.markAsSold(player);
+        
+        // Give the item to the player
+        Map<Integer, ItemStack> remaining = player.getInventory().addItem(item.getItem());
+        if (!remaining.isEmpty()) {
+            // Drop the item at player's feet if inventory is full
+            player.getWorld().dropItemNaturally(player.getLocation(), remaining.get(0));
+            player.sendMessage(ChatColor.YELLOW + "Your inventory was full, so the item was dropped at your feet.");
+        }
+        
+        // Log transaction
+        logger.info("Player " + player.getName() + " purchased auction item " + 
+                item.getId() + " from " + item.getSellerName() + " for " + item.getPrice() + " coins.");
+        
+        // Save to file
+        saveAuctionItems();
+        
+        return true;
+    }
+    
     /**
      * Creates a new auction manager.
      * 
@@ -113,6 +256,9 @@ public class AuctionManager {
         // Create auction item
         AuctionItem auctionItem = new AuctionItem(player, item, price);
         auctionItems.put(auctionItem.getId(), auctionItem);
+        
+        // Store the listing ID for retrieval
+        this.lastListingId = auctionItem.getId();
         
         // Remove the item from player's inventory
         player.getInventory().removeItem(item);

@@ -579,29 +579,26 @@ public class BDRebirthManager {
             return false;
         }
         
-        long currentTime = System.currentTimeMillis();
-        long lastBlessing = playerBlessCooldowns.getOrDefault(sourcePlayer.getUniqueId(), 0L);
-        
-        // Check cooldown (24 hours)
-        if (currentTime - lastBlessing < 24 * 60 * 60 * 1000) {
-            long remainingHours = (24 * 60 * 60 * 1000 - (currentTime - lastBlessing)) / (60 * 60 * 1000);
-            sourcePlayer.sendMessage(ChatColor.RED + "You can bless another player in " + remainingHours + " hours.");
+        // Check if on cooldown
+        if (isOnBlessCooldown(sourcePlayer)) {
+            long cooldownRemaining = getBlessCooldownRemaining(sourcePlayer);
+            long hours = cooldownRemaining / 3600000;
+            long minutes = (cooldownRemaining % 3600000) / 60000;
+            
+            sourcePlayer.sendMessage(ChatColor.RED + "You can bless another player in " + 
+                    hours + "h " + minutes + "m.");
             return false;
         }
         
         // Apply blessing
-        ((BDProgressionModule)plugin.getModuleManager().getModule("Progression")).applyBlessingEffect(targetPlayer);
+        plugin.getProgressionModule().applyBlessingEffect(targetPlayer);
         
-        // Set cooldown
-        playerBlessCooldowns.put(sourcePlayer.getUniqueId(), currentTime);
+        // Set 24-hour cooldown
+        long cooldownTime = System.currentTimeMillis() + (24 * 60 * 60 * 1000);
+        playerBlessCooldowns.put(sourcePlayer.getUniqueId(), cooldownTime);
         saveData();
         
-        // Notify players
-        sourcePlayer.sendMessage(ChatColor.GREEN + "You have blessed " + targetPlayer.getName() + 
-                " with a temporary trading bonus!");
-        targetPlayer.sendMessage(ChatColor.GOLD + "You have been blessed by " + sourcePlayer.getName() + 
-                " with a temporary trading bonus for 30 minutes!");
-        
+        // Notify players already handled in applyBlessingEffect
         return true;
     }
     

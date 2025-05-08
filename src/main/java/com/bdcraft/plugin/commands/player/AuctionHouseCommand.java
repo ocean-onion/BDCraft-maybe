@@ -120,7 +120,8 @@ public class AuctionHouseCommand extends CommandBase {
                         return true;
                     }
                     
-                    UUID itemId = auctionManager.createListing(player, heldItem.clone(), price);
+                    UUID itemId = auctionManager.listItem(player, heldItem, price) ? 
+                            auctionManager.getLastListingId() : null;
                     
                     if (itemId != null) {
                         // Remove the item from player's hand
@@ -191,7 +192,7 @@ public class AuctionHouseCommand extends CommandBase {
                         return true;
                     }
                     
-                    if (item.getSellerId().equals(player.getUniqueId())) {
+                    if (item.getSellerUUID().equals(player.getUniqueId())) {
                         sender.sendMessage(ChatColor.RED + "You cannot buy your own listing.");
                         return true;
                     }
@@ -206,7 +207,7 @@ public class AuctionHouseCommand extends CommandBase {
                     }
                     
                     // Process the purchase
-                    boolean success = auctionManager.purchaseItem(player, itemId);
+                    boolean success = auctionManager.buyItem(player, itemId);
                     
                     if (success) {
                         sender.sendMessage(ChatColor.GREEN + "Purchase successful! The item has been added to your inventory.");
@@ -273,7 +274,7 @@ public class AuctionHouseCommand extends CommandBase {
                         return true;
                     }
                     
-                    if (!item.getSellerId().equals(player.getUniqueId())) {
+                    if (!item.getSellerUUID().equals(player.getUniqueId())) {
                         sender.sendMessage(ChatColor.RED + "You can only cancel your own listings.");
                         return true;
                     }
