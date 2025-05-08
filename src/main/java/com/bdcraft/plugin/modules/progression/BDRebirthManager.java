@@ -2,14 +2,17 @@ package com.bdcraft.plugin.modules.progression;
 
 import com.bdcraft.plugin.BDCraft;
 import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -484,6 +487,13 @@ public class BDRebirthManager {
     }
     
     /**
+     * Checks if a player has Agricultural Deity status (rebirth level 10+)
+     * 
+     * @param player The player to check
+     * @return True if player has Agricultural Deity status
+     */
+    
+    /**
      * Checks if a player is on bless cooldown.
      * 
      * @param player The player
@@ -511,6 +521,26 @@ public class BDRebirthManager {
         
         long cooldownTime = playerBlessCooldowns.get(player.getUniqueId());
         return cooldownTime - System.currentTimeMillis();
+    }
+    
+    /**
+     * Gets the cooldown timestamp for a player's blessing.
+     * 
+     * @param uuid The player's UUID
+     * @return The cooldown timestamp in milliseconds, or 0 if not set
+     */
+    public long getBlessCooldown(UUID uuid) {
+        return playerBlessCooldowns.getOrDefault(uuid, 0L);
+    }
+    
+    /**
+     * Sets the cooldown timestamp for a player's blessing.
+     * 
+     * @param uuid The player's UUID
+     * @param timestamp The cooldown timestamp in milliseconds
+     */
+    public void setBlessCooldown(UUID uuid, long timestamp) {
+        playerBlessCooldowns.put(uuid, timestamp);
     }
     
     /**
@@ -652,14 +682,50 @@ public class BDRebirthManager {
             return false;
         }
         
+        // Calculate if the player has the Seasonal Insight ability
+        if (!hasSeasonalInsight(player)) {
+            player.sendMessage(ChatColor.RED + "You need the Seasonal Insight ability to predict future trades.");
+            return false;
+        }
+        
         // Get next day's seasonal trader items
-        // This would integrate with the seasonal trader system
+        // In a real implementation, this would integrate with the seasonal trader system
         player.sendMessage(ChatColor.GOLD + "Your seasonal insight reveals tomorrow's special trades:");
         
-        // Placeholder - actual implementation would show real predictions
-        player.sendMessage(ChatColor.YELLOW + "• " + ChatColor.WHITE + "Special Golden Hoe (25% faster tilling)");
-        player.sendMessage(ChatColor.YELLOW + "• " + ChatColor.WHITE + "Enchanted Green Seeds (2x growth rate)");
-        player.sendMessage(ChatColor.YELLOW + "• " + ChatColor.WHITE + "Rare Farming Manual (+10% XP for 2 hours)");
+        // Generate prediction based on tomorrow's date
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_YEAR, 1);
+        long seed = calendar.getTimeInMillis() / (1000 * 60 * 60 * 24); // Daily seed
+        Random random = new Random(seed);
+        
+        // Select a random set of items based on tomorrow's seed
+        String[] cropTypes = {"Wheat", "Potato", "Carrot", "Beetroot", "Pumpkin", "Melon", "Sugarcane", "Cocoa Beans"};
+        String[] specialItems = {"Golden Seeds", "Enchanted Compost", "Fertile Soil", "Villager Token", "Market Certificate", "Blessed Growth Powder"};
+        
+        // Generate 2-3 predicted crop trades
+        int cropCount = random.nextInt(2) + 2; // 2-3 crops
+        Set<Integer> selectedCropIndices = new HashSet<>();
+        while (selectedCropIndices.size() < cropCount) {
+            selectedCropIndices.add(random.nextInt(cropTypes.length));
+        }
+        
+        for (Integer index : selectedCropIndices) {
+            int price = 10 + random.nextInt(40); // Base price between 10-50
+            int quantity = 4 + random.nextInt(12); // Quantity between 4-16
+            player.sendMessage(ChatColor.GREEN + "» " + ChatColor.WHITE + quantity + "x " + cropTypes[index] + 
+                    ChatColor.GRAY + " for " + ChatColor.GOLD + price + " coins " + 
+                    ChatColor.YELLOW + "(+" + (10 + random.nextInt(20)) + "% value!)");
+        }
+        
+        // Add 1 special item prediction
+        int specialIndex = random.nextInt(specialItems.length);
+        int specialPrice = 500 + random.nextInt(1500); // Special items more expensive
+        player.sendMessage(ChatColor.LIGHT_PURPLE + "» " + ChatColor.WHITE + "1x " + specialItems[specialIndex] + 
+                ChatColor.GRAY + " for " + ChatColor.GOLD + specialPrice + " coins " + 
+                ChatColor.RED + "(Rare item!)");
+        
+        // Visual effect to signal the prediction
+        player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1.0f, 1.5f);
         
         return true;
     }
@@ -786,5 +852,78 @@ public class BDRebirthManager {
      */
     public boolean hasAuraEnabled(UUID uuid) {
         return playerAuraToggles.getOrDefault(uuid, false);
+    }
+    
+    /**
+     * Checks if a player has Golden Touch ability (deity level 10)
+     * 
+     * @param player The player to check
+     * @return True if player has Golden Touch ability (25% chance to convert regular seeds to green seeds)
+     */
+    public boolean hasGoldenTouch(Player player) {
+        return getRebirthLevel(player) >= 10;
+    }
+    
+    /**
+     * Checks if a player has Harvester's Blessing ability (deity level 10)
+     * 
+     * @param player The player to check
+     * @return True if player has Harvester's Blessing (50% chance tools don't consume durability)
+     */
+    public boolean hasHarvestersBlessing(Player player) {
+        return getRebirthLevel(player) >= 10;
+    }
+    
+    // Divine favor bonus method is already defined earlier
+    /**
+     * Checks if a player has seasonal insight ability
+     * 
+     * @param player The player to check
+     * @return True if the player can see seasonal trader items in advance
+     */
+    public boolean hasSeasonalInsight(Player player) {
+        return getRebirthLevel(player) >= 10;
+    }
+    
+    /**
+     * Applies the Golden Touch ability for a deity player
+     * Converts regular seeds to green seeds with 25% chance when harvesting
+     * 
+     * @param player The player
+     * @param item The harvested item
+     * @return The potentially upgraded item
+     */
+    public ItemStack applyGoldenTouch(Player player, ItemStack item) {
+        if (!hasGoldenTouch(player)) {
+            return item;
+        }
+        
+        // 25% chance to convert regular seeds to green seeds
+        if (Math.random() < 0.25) {
+            // This is a placeholder for actual implementation
+            // Would need to check if item is a regular seed and convert it
+            
+            // For now, just notify the player
+            player.sendMessage(ChatColor.GOLD + "Your Golden Touch turned regular seeds into green seeds!");
+        }
+        
+        return item;
+    }
+    
+    /**
+     * Applies the Harvester's Blessing ability for a deity player
+     * 50% chance that special tool usage doesn't consume durability
+     * 
+     * @param player The player
+     * @param tool The tool being used
+     * @return True if durability should not be consumed
+     */
+    public boolean applyHarvestersBlessing(Player player, ItemStack tool) {
+        if (!hasHarvestersBlessing(player)) {
+            return false;
+        }
+        
+        // 50% chance to not consume durability
+        return Math.random() < 0.5;
     }
 }

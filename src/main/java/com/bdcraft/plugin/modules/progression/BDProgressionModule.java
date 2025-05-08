@@ -6,8 +6,13 @@ import com.bdcraft.plugin.commands.CommandBase;
 import com.bdcraft.plugin.commands.SubCommand;
 import com.bdcraft.plugin.modules.BDModule;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Sound;
+import org.bukkit.World;
+import org.bukkit.Particle;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -24,6 +29,9 @@ public class BDProgressionModule implements BDModule, ProgressionAPI {
     private final Logger logger;
     private BDRankManager rankManager;
     private BDRebirthManager rebirthManager;
+    
+    // Store active blessing effects with expiration times
+    private final Map<UUID, Long> activeBlessings = new HashMap<>();
     
     /**
      * Creates a new BD progression module.
@@ -830,6 +838,147 @@ public class BDProgressionModule implements BDModule, ProgressionAPI {
                     }
                 });
                 
+                // Predict seasonal items command
+                addSubCommand(new SubCommand() {
+                    @Override
+                    public String getName() {
+                        return "predict";
+                    }
+                    
+                    @Override
+                    public String getDescription() {
+                        return "Predicts next day's seasonal trader items (requires Agricultural Deity status)";
+                    }
+                    
+                    @Override
+                    public String getUsage() {
+                        return "";
+                    }
+                    
+                    @Override
+                    public String getPermission() {
+                        return "bdcraft.rank.predict";
+                    }
+                    
+                    @Override
+                    public boolean isPlayerOnly() {
+                        return true;
+                    }
+                    
+                    @Override
+                    public boolean execute(CommandSender sender, String[] args) {
+                        Player player = (Player) sender;
+                        
+                        // Check if player has deity status
+                        if (!rebirthManager.hasDeityStatus(player)) {
+                            player.sendMessage(ChatColor.RED + "You need Agricultural Deity status (Rebirth 10+) to use this command.");
+                            return true;
+                        }
+                        
+                        // Check if player has seasonal insight
+                        if (!rebirthManager.hasSeasonalInsight(player)) {
+                            player.sendMessage(ChatColor.RED + "You need the Seasonal Insight ability to predict seasonal trader items.");
+                            return true;
+                        }
+                        
+                        // Predict seasonal items
+                        boolean success = rebirthManager.predictSeasonalItems(player);
+                        
+                        if (!success) {
+                            player.sendMessage(ChatColor.RED + "Failed to predict seasonal items. Please try again later.");
+                        }
+                        
+                        return true;
+                    }
+                });
+                
+                // Aura command
+                addSubCommand(new SubCommand() {
+                    @Override
+                    public String getName() {
+                        return "aura";
+                    }
+                    
+                    @Override
+                    public String getDescription() {
+                        return "Toggles your rebirth aura visibility (requires rebirth level 3+)";
+                    }
+                    
+                    @Override
+                    public String getUsage() {
+                        return "[on|off]";
+                    }
+                    
+                    @Override
+                    public String getPermission() {
+                        return "bdcraft.rank.aura";
+                    }
+                    
+                    @Override
+                    public boolean isPlayerOnly() {
+                        return true;
+                    }
+                    
+                    @Override
+                    public boolean execute(CommandSender sender, String[] args) {
+                        Player player = (Player) sender;
+                        int rebirthLevel = rankManager.getPlayerRebirths(player);
+                        
+                        if (rebirthLevel < 3) {
+                            player.sendMessage(ChatColor.RED + "You need at least rebirth level 3 to use the aura command.");
+                            return true;
+                        }
+                        
+                        boolean newState;
+                        
+                        // Check if state specified
+                        if (args.length > 0) {
+                            if (args[0].equalsIgnoreCase("on")) {
+                                newState = true;
+                            } else if (args[0].equalsIgnoreCase("off")) {
+                                newState = false;
+                            } else {
+                                player.sendMessage(ChatColor.RED + "Usage: /bdrank aura [on|off]");
+                                return true;
+                            }
+                            
+                            rebirthManager.setAuraEnabled(player, newState);
+                        } else {
+                            // Toggle current state
+                            newState = rebirthManager.toggleAura(player);
+                        }
+                        
+                        // Notify player
+                        if (newState) {
+                            player.sendMessage(ChatColor.LIGHT_PURPLE + "Your rebirth aura is now visible to other players.");
+                            player.sendMessage(ChatColor.LIGHT_PURPLE + "Players within " + 
+                                    rebirthManager.getAbundanceAuraRadius(player) + " blocks will receive your aura bonus.");
+                            
+                            // Apply particle effect to show activation
+                            Location loc = player.getLocation();
+                            World world = player.getWorld();
+                            
+                            for (int i = 0; i < 3; i++) {
+                                final int iteration = i;
+                                plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+                                    for (double angle = 0; angle < Math.PI * 2; angle += Math.PI / 16) {
+                                        double radius = 1.5 + (iteration * 0.5);
+                                        double x = Math.cos(angle) * radius;
+                                        double z = Math.sin(angle) * radius;
+                                        
+                                        Location particleLoc = loc.clone().add(x, iteration * 0.5, z);
+                                        world.spawnParticle(Particle.END_ROD, particleLoc, 1, 0, 0, 0, 0);
+                                    }
+                                }, i * 5);
+                            }
+                        } else {
+                            player.sendMessage(ChatColor.GRAY + "Your rebirth aura is now hidden from other players.");
+                        }
+                        
+                        return true;
+                    }
+                });
+                
                 // The CommandBase class will automatically show help if no arguments are provided
             }
         };
@@ -860,16 +1009,90 @@ public class BDProgressionModule implements BDModule, ProgressionAPI {
      * @param player The player to bless
      */
     public void applyBlessingEffect(Player player) {
-        // Apply effect via particle system
+        UUID uuid = player.getUniqueId();
+        
+        // Store player in the blessed players list with expiration time
+        long expirationTime = System.currentTimeMillis() + (30 * 60 * 1000); // 30 minutes
+        activeBlessings.put(uuid, expirationTime);
+        
+        // Apply visual effect with particles
+        Location loc = player.getLocation();
+        World world = player.getWorld();
+        
+        // Create a helix of gold particles around the player
+        new BukkitRunnable() {
+            double y = 0;
+            int count = 0;
+            
+            @Override
+            public void run() {
+                if (count > 20) { // Run for 1 second (20 ticks)
+                    this.cancel();
+                    return;
+                }
+                
+                double radius = 1.5;
+                for (double i = 0; i < Math.PI * 2; i += Math.PI / 8) {
+                    double x = Math.cos(i + (count * 0.5)) * radius;
+                    double z = Math.sin(i + (count * 0.5)) * radius;
+                    
+                    Location particleLoc = loc.clone().add(x, y, z);
+                    world.spawnParticle(Particle.CRIT, particleLoc, 1, 0, 0, 0, 0); 
+                    world.spawnParticle(Particle.HEART, particleLoc, 1, 0, 0, 0, 0);
+                }
+                
+                y += 0.1;
+                count++;
+            }
+        }.runTaskTimer(plugin, 0L, 1L);
+        
+        // Apply sound effect
+        world.playSound(loc, Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 0.8f);
         
         // Add temporary bonus
-        // Implementation would depend on how trading bonuses are applied
-        player.sendMessage(ChatColor.GOLD + "You feel the blessing take effect! For the next 30 minutes, your trades will be more favorable.");
+        player.sendMessage(ChatColor.GOLD + "You feel the blessing take effect! For the next 30 minutes, your trades will be 20% more favorable.");
         
         // Schedule removal of the blessing
         plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
             // Remove bonus
+            activeBlessings.remove(uuid);
             player.sendMessage(ChatColor.GOLD + "Your trade blessing has worn off.");
+            // Play sound to indicate end of blessing
+            player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 0.5f);
         }, 20 * 60 * 30); // 30 minutes in ticks
+    }
+    
+    /**
+     * Checks if a player is currently blessed.
+     * 
+     * @param player The player to check
+     * @return True if the player has an active blessing
+     */
+    public boolean isPlayerBlessed(Player player) {
+        UUID uuid = player.getUniqueId();
+        if (!activeBlessings.containsKey(uuid)) {
+            return false;
+        }
+        
+        long expirationTime = activeBlessings.get(uuid);
+        long currentTime = System.currentTimeMillis();
+        
+        if (currentTime > expirationTime) {
+            // Blessing has expired, remove it
+            activeBlessings.remove(uuid);
+            return false;
+        }
+        
+        return true;
+    }
+    
+    /**
+     * Gets the blessing trade bonus percentage for a player.
+     * 
+     * @param player The player to check
+     * @return The bonus percentage (20 if blessed, 0 if not)
+     */
+    public int getBlessingTradeBonus(Player player) {
+        return isPlayerBlessed(player) ? 20 : 0;
     }
 }
