@@ -55,10 +55,10 @@ public class ModuleManager {
      * @param moduleClass The module class
      * @return The module
      */
-    public Module getModule(Class<? extends Module> moduleClass) {
+    public <T extends Module> T getModule(Class<T> moduleClass) {
         for (Module module : modules.values()) {
             if (moduleClass.isInstance(module)) {
-                return module;
+                return moduleClass.cast(module);
             }
         }
         

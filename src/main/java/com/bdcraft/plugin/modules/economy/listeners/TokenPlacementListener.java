@@ -114,7 +114,7 @@ public class TokenPlacementListener implements Listener {
         }
         
         // Create the market
-        boolean success = marketManager.createMarket(player, clickedBlock.getLocation());
+        boolean success = marketManager.createMarket(clickedBlock.getLocation(), player) != null;
         
         if (success) {
             // Consume the token

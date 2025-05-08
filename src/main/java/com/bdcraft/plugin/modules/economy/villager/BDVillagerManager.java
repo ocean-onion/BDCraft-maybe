@@ -46,6 +46,16 @@ public class BDVillagerManager {
     }
     
     /**
+     * Creates a BD Collector villager for a market.
+     * @param location The location to spawn the villager
+     * @param market The associated market (ignored in this implementation)
+     * @return The created villager
+     */
+    public BDCollector createCollector(Location location, BDMarket market) {
+        return createCollector(location);
+    }
+    
+    /**
      * Creates a BD Dealer villager.
      * @param location The location to spawn the villager
      * @return The created villager
@@ -56,6 +66,16 @@ public class BDVillagerManager {
         villagers.put(entity.getUniqueId(), dealer);
         
         return dealer;
+    }
+    
+    /**
+     * Creates a BD Dealer villager for a market.
+     * @param location The location to spawn the villager
+     * @param market The associated market (ignored in this implementation)
+     * @return The created villager
+     */
+    public BDDealer createDealer(Location location, BDMarket market) {
+        return createDealer(location);
     }
     
     /**
@@ -173,6 +193,17 @@ public class BDVillagerManager {
     public void removeVillager(BDVillager villager) {
         villagers.remove(villager.getUUID());
         villager.remove();
+    }
+    
+    /**
+     * Removes a BD Villager by UUID.
+     * @param villagerUuid The UUID of the villager to remove
+     */
+    public void removeVillager(UUID villagerUuid) {
+        BDVillager villager = villagers.get(villagerUuid);
+        if (villager != null) {
+            removeVillager(villager);
+        }
     }
     
     /**

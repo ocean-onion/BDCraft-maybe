@@ -242,6 +242,41 @@ public class BDItemManager {
     }
     
     /**
+     * Gives a BD item to a player.
+     * @param player The player
+     * @param itemType The item type
+     * @param amount The amount
+     * @param value The value override (if > 0)
+     * @return Whether the item was successfully given
+     */
+    public boolean giveItem(org.bukkit.entity.Player player, String itemType, int amount, int value) {
+        ItemStack item = createItem(itemType, amount);
+        
+        if (item == null) {
+            return false;
+        }
+        
+        // Set custom value if specified
+        if (value > 0) {
+            ItemMeta meta = item.getItemMeta();
+            PersistentDataContainer container = meta.getPersistentDataContainer();
+            container.set(bdItemValueKey, PersistentDataType.INTEGER, value);
+            item.setItemMeta(meta);
+        }
+        
+        player.getInventory().addItem(item);
+        return true;
+    }
+    
+    /**
+     * Returns an item factory for BD items.
+     * @return The item factory
+     */
+    public BDItemFactory getItemFactory() {
+        return new BDItemFactory(plugin);
+    }
+    
+    /**
      * Inner class to hold BD item information.
      */
     public static class BDItemInfo {

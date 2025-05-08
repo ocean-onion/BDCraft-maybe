@@ -183,11 +183,19 @@ public class BDCraft extends JavaPlugin {
     }
     
     /**
+     * Gets the permissions module.
+     * @return The permissions module
+     */
+    public BDPermsModule getPermsModule() {
+        return moduleManager.getModule(BDPermsModule.class);
+    }
+    
+    /**
      * Gets the economy module.
      * @return The economy module
      */
     public BDEconomyModule getEconomyModule() {
-        return (BDEconomyModule) moduleManager.getModule(BDEconomyModule.class);
+        return moduleManager.getModule(BDEconomyModule.class);
     }
     
     /**
@@ -195,6 +203,14 @@ public class BDCraft extends JavaPlugin {
      * @return The progression module
      */
     public BDProgressionModule getProgressionModule() {
-        return (BDProgressionModule) moduleManager.getModule(BDProgressionModule.class);
+        return moduleManager.getModule(BDProgressionModule.class);
+    }
+    
+    /**
+     * Gets the vital module.
+     * @return The vital module
+     */
+    public BDVitalModule getVitalModule() {
+        return moduleManager.getModule(BDVitalModule.class);
     }
 }

@@ -3,21 +3,27 @@ package com.bdcraft.plugin.modules.economy.items;
 import com.bdcraft.plugin.BDCraft;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 /**
- * Factory for creating specialized BD items with consistent formatting.
- * This ensures all items follow the same styling and metadata patterns.
+ * Factory for creating BD items.
  */
 public class BDItemFactory {
     private final BDCraft plugin;
+    private final NamespacedKey bdItemKey;
+    private final NamespacedKey bdItemTypeKey;
+    private final NamespacedKey bdItemDurabilityKey;
+    private final NamespacedKey bdItemValueKey;
     
     /**
      * Creates a new BD item factory.
@@ -25,252 +31,450 @@ public class BDItemFactory {
      */
     public BDItemFactory(BDCraft plugin) {
         this.plugin = plugin;
+        this.bdItemKey = new NamespacedKey(plugin, "bd_item");
+        this.bdItemTypeKey = new NamespacedKey(plugin, "bd_item_type");
+        this.bdItemDurabilityKey = new NamespacedKey(plugin, "bd_item_durability");
+        this.bdItemValueKey = new NamespacedKey(plugin, "bd_item_value");
     }
     
     /**
-     * Creates a custom item with the specified properties.
-     * @param material The item material
-     * @param name The display name
+     * Creates a regular BD seed item.
      * @param amount The amount
-     * @param lore The item lore
-     * @param glow Whether the item should have enchantment glow
-     * @return The created item
+     * @return The item
      */
-    private ItemStack createCustomItem(Material material, String name, int amount, List<String> lore, boolean glow) {
-        ItemStack item = new ItemStack(material, amount);
+    public ItemStack createRegularBDSeed(int amount) {
+        ItemStack item = new ItemStack(Material.WHEAT_SEEDS, amount);
         ItemMeta meta = item.getItemMeta();
         
-        if (meta != null) {
-            // Set name
-            meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', name));
-            
-            // Set lore
-            List<String> coloredLore = new ArrayList<>();
-            for (String line : lore) {
-                coloredLore.add(ChatColor.translateAlternateColorCodes('&', line));
-            }
-            meta.setLore(coloredLore);
-            
-            // Add glow effect if needed
-            if (glow) {
-                meta.addEnchant(Enchantment.DURABILITY, 1, true);
-                meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            }
-            
-            item.setItemMeta(meta);
-        }
+        meta.setDisplayName(ChatColor.GREEN + "Regular BD Seeds");
+        List<String> lore = new ArrayList<>();
+        lore.add(ChatColor.GRAY + "Plant these seeds to grow regular BD crops.");
+        lore.add(ChatColor.GRAY + "Can be sold to BD Collectors for emeralds.");
+        meta.setLore(lore);
+        
+        PersistentDataContainer container = meta.getPersistentDataContainer();
+        container.set(bdItemKey, PersistentDataType.STRING, "true");
+        container.set(bdItemTypeKey, PersistentDataType.STRING, "REGULAR_BD_SEED");
+        
+        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        item.setItemMeta(meta);
+        item.addUnsafeEnchantment(Enchantment.DURABILITY, 1); // Adds enchant glow
         
         return item;
     }
     
     /**
-     * Creates BD crops.
+     * Creates a green BD seed item.
      * @param amount The amount
-     * @return The BD crops
+     * @return The item
      */
-    public ItemStack createBDCrops(int amount) {
-        return createCustomItem(
-                Material.FERN,
-                "&6BD Crop",
-                amount,
-                Arrays.asList(
-                    "&7Standard BD crop harvested from BD Seeds.",
-                    "&7Sell to BD Collectors for emeralds.",
-                    "&710 crops = 2 emeralds + 50 server currency"
-                ),
-                true
-        );
+    public ItemStack createGreenBDSeed(int amount) {
+        ItemStack item = new ItemStack(Material.BEETROOT_SEEDS, amount);
+        ItemMeta meta = item.getItemMeta();
+        
+        meta.setDisplayName(ChatColor.GREEN + "Green BD Seeds");
+        List<String> lore = new ArrayList<>();
+        lore.add(ChatColor.GRAY + "Plant these seeds to grow green BD crops.");
+        lore.add(ChatColor.GRAY + "More valuable than regular BD crops.");
+        lore.add(ChatColor.GRAY + "Can be sold to BD Collectors for emeralds.");
+        meta.setLore(lore);
+        
+        PersistentDataContainer container = meta.getPersistentDataContainer();
+        container.set(bdItemKey, PersistentDataType.STRING, "true");
+        container.set(bdItemTypeKey, PersistentDataType.STRING, "GREEN_BD_SEED");
+        
+        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        item.setItemMeta(meta);
+        item.addUnsafeEnchantment(Enchantment.DURABILITY, 1); // Adds enchant glow
+        
+        return item;
     }
     
     /**
-     * Creates green BD crops.
+     * Creates a purple BD seed item.
      * @param amount The amount
-     * @return The green BD crops
+     * @return The item
      */
-    public ItemStack createGreenBDCrops(int amount) {
-        return createCustomItem(
-                Material.LARGE_FERN,
-                "&aGreen BD Crop",
-                amount,
-                Arrays.asList(
-                    "&7Premium BD crop, worth 5x more than regular.",
-                    "&7Sell to BD Collectors for emeralds.",
-                    "&75 crops = 10 emeralds + 150 server currency"
-                ),
-                true
-        );
+    public ItemStack createPurpleBDSeed(int amount) {
+        ItemStack item = new ItemStack(Material.PUMPKIN_SEEDS, amount);
+        ItemMeta meta = item.getItemMeta();
+        
+        meta.setDisplayName(ChatColor.DARK_PURPLE + "Purple BD Seeds");
+        List<String> lore = new ArrayList<>();
+        lore.add(ChatColor.GRAY + "Plant these seeds to grow purple BD crops.");
+        lore.add(ChatColor.GRAY + "The most valuable BD crop type.");
+        lore.add(ChatColor.GRAY + "Can be sold to BD Collectors for many emeralds.");
+        meta.setLore(lore);
+        
+        PersistentDataContainer container = meta.getPersistentDataContainer();
+        container.set(bdItemKey, PersistentDataType.STRING, "true");
+        container.set(bdItemTypeKey, PersistentDataType.STRING, "PURPLE_BD_SEED");
+        
+        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        item.setItemMeta(meta);
+        item.addUnsafeEnchantment(Enchantment.DURABILITY, 1); // Adds enchant glow
+        
+        return item;
     }
     
     /**
-     * Creates purple BD crops.
+     * Creates a regular BD crop item.
      * @param amount The amount
-     * @return The purple BD crops
+     * @return The item
      */
-    public ItemStack createPurpleBDCrops(int amount) {
-        return createCustomItem(
-                Material.LARGE_FERN,
-                "&5Purple BD Crop",
-                amount,
-                Arrays.asList(
-                    "&7Rare high-value BD crop, worth 10x more than regular.",
-                    "&7Sell to BD Collectors for emeralds.",
-                    "&73 crops = 20 emeralds + 400 server currency"
-                ),
-                true
-        );
+    public ItemStack createRegularBDCrop(int amount) {
+        ItemStack item = new ItemStack(Material.FERN, amount);
+        ItemMeta meta = item.getItemMeta();
+        
+        meta.setDisplayName(ChatColor.GREEN + "Regular BD Crop");
+        List<String> lore = new ArrayList<>();
+        lore.add(ChatColor.GRAY + "Harvested from regular BD seeds.");
+        lore.add(ChatColor.GRAY + "Can be sold to BD Collectors for emeralds.");
+        meta.setLore(lore);
+        
+        PersistentDataContainer container = meta.getPersistentDataContainer();
+        container.set(bdItemKey, PersistentDataType.STRING, "true");
+        container.set(bdItemTypeKey, PersistentDataType.STRING, "REGULAR_BD_CROP");
+        
+        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        item.setItemMeta(meta);
+        item.addUnsafeEnchantment(Enchantment.DURABILITY, 1); // Adds enchant glow
+        
+        return item;
     }
     
     /**
-     * Creates BD seeds.
+     * Creates a green BD crop item.
      * @param amount The amount
-     * @return The BD seeds
+     * @return The item
      */
-    public ItemStack createBDSeeds(int amount) {
-        return createCustomItem(
-                Material.WHEAT_SEEDS,
-                "&6BD Seed",
-                amount,
-                Arrays.asList(
-                    "&7Special seeds for growing BD crops.",
-                    "&7Plant like normal wheat seeds.",
-                    "&7Produces BD Crops when harvested."
-                ),
-                true
-        );
+    public ItemStack createGreenBDCrop(int amount) {
+        ItemStack item = new ItemStack(Material.LARGE_FERN, amount);
+        ItemMeta meta = item.getItemMeta();
+        
+        meta.setDisplayName(ChatColor.GREEN + "Green BD Crop");
+        List<String> lore = new ArrayList<>();
+        lore.add(ChatColor.GRAY + "Harvested from green BD seeds.");
+        lore.add(ChatColor.GRAY + "More valuable than regular BD crops.");
+        lore.add(ChatColor.GRAY + "Can be sold to BD Collectors for emeralds.");
+        meta.setLore(lore);
+        
+        PersistentDataContainer container = meta.getPersistentDataContainer();
+        container.set(bdItemKey, PersistentDataType.STRING, "true");
+        container.set(bdItemTypeKey, PersistentDataType.STRING, "GREEN_BD_CROP");
+        
+        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        item.setItemMeta(meta);
+        item.addUnsafeEnchantment(Enchantment.DURABILITY, 1); // Adds enchant glow
+        
+        return item;
     }
     
     /**
-     * Creates green BD seeds.
+     * Creates a purple BD crop item.
      * @param amount The amount
-     * @return The green BD seeds
+     * @return The item
      */
-    public ItemStack createGreenBDSeeds(int amount) {
-        return createCustomItem(
-                Material.BEETROOT_SEEDS,
-                "&aGreen BD Seed",
-                amount,
-                Arrays.asList(
-                    "&7Premium seeds that grow 30% faster.",
-                    "&7Plant like normal seeds.",
-                    "&7Produces Green BD Crops when harvested.",
-                    "&7Requires Farmer rank or higher."
-                ),
-                true
-        );
+    public ItemStack createPurpleBDCrop(int amount) {
+        ItemStack item = new ItemStack(Material.TALL_GRASS, amount);
+        ItemMeta meta = item.getItemMeta();
+        
+        meta.setDisplayName(ChatColor.DARK_PURPLE + "Purple BD Crop");
+        List<String> lore = new ArrayList<>();
+        lore.add(ChatColor.GRAY + "Harvested from purple BD seeds.");
+        lore.add(ChatColor.GRAY + "The most valuable BD crop type.");
+        lore.add(ChatColor.GRAY + "Can be sold to BD Collectors for many emeralds.");
+        meta.setLore(lore);
+        
+        PersistentDataContainer container = meta.getPersistentDataContainer();
+        container.set(bdItemKey, PersistentDataType.STRING, "true");
+        container.set(bdItemTypeKey, PersistentDataType.STRING, "PURPLE_BD_CROP");
+        
+        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        item.setItemMeta(meta);
+        item.addUnsafeEnchantment(Enchantment.DURABILITY, 1); // Adds enchant glow
+        
+        return item;
     }
     
     /**
-     * Creates purple BD seeds.
+     * Creates a BD stick item.
      * @param amount The amount
-     * @return The purple BD seeds
+     * @param durability The durability
+     * @return The item
      */
-    public ItemStack createPurpleBDSeeds(int amount) {
-        return createCustomItem(
-                Material.PUMPKIN_SEEDS,
-                "&5Purple BD Seed",
-                amount,
-                Arrays.asList(
-                    "&7Rare seeds that produce valuable crops.",
-                    "&7Plant like normal seeds.",
-                    "&7Produces Purple BD Crops when harvested.",
-                    "&7Requires Master Farmer rank or higher."
-                ),
-                true
-        );
+    public ItemStack createBDStick(int amount, int durability) {
+        ItemStack item = new ItemStack(Material.STICK, amount);
+        ItemMeta meta = item.getItemMeta();
+        
+        meta.setDisplayName(ChatColor.GOLD + "BD Stick");
+        List<String> lore = new ArrayList<>();
+        lore.add(ChatColor.GRAY + "A special stick used to harvest BD crops.");
+        lore.add(ChatColor.GRAY + "Durability: " + durability + "/5");
+        meta.setLore(lore);
+        
+        PersistentDataContainer container = meta.getPersistentDataContainer();
+        container.set(bdItemKey, PersistentDataType.STRING, "true");
+        container.set(bdItemTypeKey, PersistentDataType.STRING, "BD_STICK");
+        container.set(bdItemDurabilityKey, PersistentDataType.INTEGER, durability);
+        
+        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        item.setItemMeta(meta);
+        item.addUnsafeEnchantment(Enchantment.DURABILITY, 1); // Adds enchant glow
+        
+        return item;
     }
     
     /**
-     * Creates a BD Stick (special blaze rod).
-     * @return The BD stick
+     * Creates a BD harvester item.
+     * @param amount The amount
+     * @param durability The durability
+     * @return The item
      */
-    public ItemStack createBDStick() {
-        return createCustomItem(
-                Material.BLAZE_ROD,
-                "&6BD Stick",
-                1,
-                Arrays.asList(
-                    "&7A special enchanted blaze rod that can be used",
-                    "&7to craft BD Market Tokens and",
-                    "&7BD House Tokens.",
-                    "&7Has 5 uses before breaking."
-                ),
-                true
-        );
+    public ItemStack createBDHarvester(int amount, int durability) {
+        ItemStack item = new ItemStack(Material.SHEARS, amount);
+        ItemMeta meta = item.getItemMeta();
+        
+        meta.setDisplayName(ChatColor.GOLD + "BD Harvester");
+        List<String> lore = new ArrayList<>();
+        lore.add(ChatColor.GRAY + "A special tool for harvesting BD crops efficiently.");
+        lore.add(ChatColor.GRAY + "Durability: " + durability + "/20");
+        meta.setLore(lore);
+        
+        PersistentDataContainer container = meta.getPersistentDataContainer();
+        container.set(bdItemKey, PersistentDataType.STRING, "true");
+        container.set(bdItemTypeKey, PersistentDataType.STRING, "BD_HARVESTER");
+        container.set(bdItemDurabilityKey, PersistentDataType.INTEGER, durability);
+        
+        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        item.setItemMeta(meta);
+        item.addUnsafeEnchantment(Enchantment.DURABILITY, 1); // Adds enchant glow
+        
+        return item;
     }
     
     /**
-     * Creates a Market Token.
-     * @return The market token
+     * Creates an ultimate BD harvester item.
+     * @param amount The amount
+     * @param durability The durability
+     * @return The item
      */
-    public ItemStack createMarketToken() {
-        return createCustomItem(
-                Material.EMERALD,
-                "&2BD Market Token",
-                1,
-                Arrays.asList(
-                    "&7Place this token in the center of a 3x3",
-                    "&7platform to create a BD Market.",
-                    "&7Creates a 49x49 block market area.",
-                    "&7Spawns a Market Owner and BD Dealer."
-                ),
-                true
-        );
+    public ItemStack createUltimateBDHarvester(int amount, int durability) {
+        ItemStack item = new ItemStack(Material.GOLDEN_HOE, amount);
+        ItemMeta meta = item.getItemMeta();
+        
+        meta.setDisplayName(ChatColor.GOLD + "Ultimate BD Harvester");
+        List<String> lore = new ArrayList<>();
+        lore.add(ChatColor.GRAY + "The ultimate tool for harvesting BD crops.");
+        lore.add(ChatColor.GRAY + "25% chance to get extra crops when harvesting.");
+        lore.add(ChatColor.GRAY + "Durability: " + durability + "/60");
+        meta.setLore(lore);
+        
+        PersistentDataContainer container = meta.getPersistentDataContainer();
+        container.set(bdItemKey, PersistentDataType.STRING, "true");
+        container.set(bdItemTypeKey, PersistentDataType.STRING, "ULTIMATE_BD_HARVESTER");
+        container.set(bdItemDurabilityKey, PersistentDataType.INTEGER, durability);
+        
+        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        item.setItemMeta(meta);
+        item.addUnsafeEnchantment(Enchantment.DURABILITY, 1); // Adds enchant glow
+        
+        return item;
     }
     
     /**
-     * Creates a House Token.
-     * @return The house token
+     * Creates a market token item.
+     * @param amount The amount
+     * @return The item
      */
-    public ItemStack createHouseToken() {
-        return createCustomItem(
-                Material.DIAMOND,
-                "&bBD House Token",
-                1,
-                Arrays.asList(
-                    "&7Place this token in your market to",
-                    "&7create a Collector House.",
-                    "&7Spawns a BD Collector who will buy crops.",
-                    "&7Multiple collectors can exist in one market."
-                ),
-                true
+    public ItemStack createMarketToken(int amount) {
+        ItemStack item = new ItemStack(Material.ITEM_FRAME, amount);
+        ItemMeta meta = item.getItemMeta();
+        
+        meta.setDisplayName(ChatColor.GOLD + "Market Token");
+        List<String> lore = Arrays.asList(
+            ChatColor.GRAY + "Place this token in an item frame above a door",
+            ChatColor.GRAY + "to create a BD Market."
         );
+        meta.setLore(lore);
+        
+        PersistentDataContainer container = meta.getPersistentDataContainer();
+        container.set(bdItemKey, PersistentDataType.STRING, "true");
+        container.set(bdItemTypeKey, PersistentDataType.STRING, "MARKET_TOKEN");
+        
+        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        item.setItemMeta(meta);
+        item.addUnsafeEnchantment(Enchantment.DURABILITY, 1); // Adds enchant glow
+        
+        return item;
     }
     
     /**
-     * Creates a BD Harvester.
-     * @return The BD harvester
+     * Creates a house token item.
+     * @param amount The amount
+     * @return The item
      */
-    public ItemStack createBDHarvester() {
-        return createCustomItem(
-                Material.GOLDEN_HOE,
-                "&eBD Harvester",
-                1,
-                Arrays.asList(
-                    "&7Special tool for harvesting BD crops.",
-                    "&7Increases yield by 25%.",
-                    "&7Has 20 uses before breaking.",
-                    "&7Requires Expert Farmer rank or higher."
-                ),
-                true
+    public ItemStack createHouseToken(int amount) {
+        ItemStack item = new ItemStack(Material.ITEM_FRAME, amount);
+        ItemMeta meta = item.getItemMeta();
+        
+        meta.setDisplayName(ChatColor.AQUA + "House Token");
+        List<String> lore = Arrays.asList(
+            ChatColor.GRAY + "Place this token in an item frame above a door",
+            ChatColor.GRAY + "to create a BD Collector house."
         );
+        meta.setLore(lore);
+        
+        PersistentDataContainer container = meta.getPersistentDataContainer();
+        container.set(bdItemKey, PersistentDataType.STRING, "true");
+        container.set(bdItemTypeKey, PersistentDataType.STRING, "HOUSE_TOKEN");
+        
+        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        item.setItemMeta(meta);
+        item.addUnsafeEnchantment(Enchantment.DURABILITY, 1); // Adds enchant glow
+        
+        return item;
     }
     
     /**
-     * Creates an Ultimate BD Harvester.
-     * @return The ultimate BD harvester
+     * Checks if an item is a BD item.
+     * @param item The item
+     * @return True if the item is a BD item, false otherwise
      */
-    public ItemStack createUltimateBDHarvester() {
-        return createCustomItem(
-                Material.DIAMOND_HOE,
-                "&bUltimate BD Harvester",
-                1,
-                Arrays.asList(
-                    "&7Premium tool for harvesting BD crops.",
-                    "&7Increases yield by 50%.",
-                    "&7Has 60 uses before breaking.",
-                    "&7Requires Agricultural Expert rank or higher."
-                ),
-                true
-        );
+    public boolean isBDItem(ItemStack item) {
+        if (item == null || !item.hasItemMeta()) {
+            return false;
+        }
+        
+        ItemMeta meta = item.getItemMeta();
+        PersistentDataContainer container = meta.getPersistentDataContainer();
+        return container.has(bdItemKey, PersistentDataType.STRING);
+    }
+    
+    /**
+     * Gets the BD item type from an item.
+     * @param item The item
+     * @return The item type, or null if not a BD item
+     */
+    public String getBDItemType(ItemStack item) {
+        if (!isBDItem(item)) {
+            return null;
+        }
+        
+        ItemMeta meta = item.getItemMeta();
+        PersistentDataContainer container = meta.getPersistentDataContainer();
+        return container.get(bdItemTypeKey, PersistentDataType.STRING);
+    }
+    
+    /**
+     * Gets the BD item durability from an item.
+     * @param item The item
+     * @return The durability, or -1 if the item has no durability
+     */
+    public int getBDItemDurability(ItemStack item) {
+        if (!isBDItem(item)) {
+            return -1;
+        }
+        
+        ItemMeta meta = item.getItemMeta();
+        PersistentDataContainer container = meta.getPersistentDataContainer();
+        
+        if (!container.has(bdItemDurabilityKey, PersistentDataType.INTEGER)) {
+            return -1;
+        }
+        
+        return container.get(bdItemDurabilityKey, PersistentDataType.INTEGER);
+    }
+    
+    /**
+     * Sets the BD item durability on an item.
+     * @param item The item
+     * @param durability The durability
+     * @return The updated item
+     */
+    public ItemStack setBDItemDurability(ItemStack item, int durability) {
+        if (!isBDItem(item)) {
+            return item;
+        }
+        
+        ItemMeta meta = item.getItemMeta();
+        PersistentDataContainer container = meta.getPersistentDataContainer();
+        
+        if (!container.has(bdItemDurabilityKey, PersistentDataType.INTEGER)) {
+            return item;
+        }
+        
+        container.set(bdItemDurabilityKey, PersistentDataType.INTEGER, durability);
+        
+        // Update lore
+        List<String> lore = meta.getLore();
+        if (lore != null && !lore.isEmpty()) {
+            for (int i = 0; i < lore.size(); i++) {
+                String line = lore.get(i);
+                if (line.contains("Durability:")) {
+                    String itemType = container.get(bdItemTypeKey, PersistentDataType.STRING);
+                    int maxDurability;
+                    
+                    switch (itemType) {
+                        case "BD_STICK":
+                            maxDurability = 5;
+                            break;
+                        case "BD_HARVESTER":
+                            maxDurability = 20;
+                            break;
+                        case "ULTIMATE_BD_HARVESTER":
+                            maxDurability = 60;
+                            break;
+                        default:
+                            maxDurability = 0;
+                    }
+                    
+                    lore.set(i, ChatColor.GRAY + "Durability: " + durability + "/" + maxDurability);
+                    break;
+                }
+            }
+            meta.setLore(lore);
+        }
+        
+        item.setItemMeta(meta);
+        return item;
+    }
+    
+    /**
+     * Gets the BD item value from an item.
+     * @param item The item
+     * @return The value, or -1 if the item has no value
+     */
+    public int getBDItemValue(ItemStack item) {
+        if (!isBDItem(item)) {
+            return -1;
+        }
+        
+        ItemMeta meta = item.getItemMeta();
+        PersistentDataContainer container = meta.getPersistentDataContainer();
+        
+        if (!container.has(bdItemValueKey, PersistentDataType.INTEGER)) {
+            return -1;
+        }
+        
+        return container.get(bdItemValueKey, PersistentDataType.INTEGER);
+    }
+    
+    /**
+     * Sets the BD item value on an item.
+     * @param item The item
+     * @param value The value
+     * @return The updated item
+     */
+    public ItemStack setBDItemValue(ItemStack item, int value) {
+        if (!isBDItem(item)) {
+            return item;
+        }
+        
+        ItemMeta meta = item.getItemMeta();
+        PersistentDataContainer container = meta.getPersistentDataContainer();
+        container.set(bdItemValueKey, PersistentDataType.INTEGER, value);
+        item.setItemMeta(meta);
+        return item;
     }
 }

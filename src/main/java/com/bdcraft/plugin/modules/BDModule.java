@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * Interface for BDCraft modules.
  */
-public interface BDModule {
+public interface BDModule extends Module {
     /**
      * Called when the module is enabled.
      */
@@ -22,14 +22,24 @@ public interface BDModule {
     void onReload();
     
     /**
-     * Gets the name of the module.
-     * @return The module name
-     */
-    String getName();
-    
-    /**
      * Gets the module's dependencies.
      * @return The module dependencies
      */
     List<String> getDependencies();
+    
+    /**
+     * Default implementation of Module.enable()
+     */
+    @Override
+    default void enable() {
+        onEnable();
+    }
+    
+    /**
+     * Default implementation of Module.disable()
+     */
+    @Override
+    default void disable() {
+        onDisable();
+    }
 }

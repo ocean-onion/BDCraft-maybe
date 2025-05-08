@@ -1,146 +1,245 @@
 package com.bdcraft.plugin.modules.economy.villager;
 
 import com.bdcraft.plugin.BDCraft;
-import com.bdcraft.plugin.modules.economy.items.BDItemFactory;
 import com.bdcraft.plugin.modules.economy.market.BDMarket;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Villager;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.MerchantRecipe;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 /**
- * Represents a BD Market Owner villager.
+ * BD Market Owner villager type.
  */
 public class BDMarketOwner extends BDVillager {
-    private static final String TYPE = "MARKET_OWNER";
-    private final BDCraft plugin;
+    public static final String TYPE = "MARKET_OWNER";
+    private int marketLevel;
     private BDMarket market;
     
     /**
-     * Creates a new BD Market Owner.
+     * Creates a new BD market owner.
      * @param plugin The plugin instance
-     * @param entity The villager entity
+     * @param location The spawn location
+     */
+    public BDMarketOwner(BDCraft plugin, Location location) {
+        super(plugin, location, "Market Owner", Villager.Profession.CARTOGRAPHER, Villager.Type.PLAINS);
+        this.marketLevel = 1;
+    }
+    
+    /**
+     * Creates a new BD market owner associated with a market.
+     * @param plugin The plugin instance
+     * @param location The spawn location
      * @param market The associated market
      */
-    public BDMarketOwner(BDCraft plugin, Villager entity, BDMarket market) {
-        super(entity, TYPE);
-        this.plugin = plugin;
+    public BDMarketOwner(BDCraft plugin, Location location, BDMarket market) {
+        super(plugin, location, "Market Owner", Villager.Profession.CARTOGRAPHER, Villager.Type.PLAINS);
+        this.marketLevel = 1;
         this.market = market;
-        
-        // Set market owner appearance
-        entity.setProfession(Villager.Profession.CARTOGRAPHER);
-        entity.setVillagerType(Villager.Type.PLAINS);
-        entity.setVillagerLevel(4);
-        entity.setCustomName(ChatColor.GOLD + "Market Owner");
-        entity.setCustomNameVisible(true);
-        
-        // Set up trades
-        setupTrades();
     }
     
     /**
-     * Sets up the trades for this market owner.
+     * Creates a new BD market owner from an existing villager.
+     * @param plugin The plugin instance
+     * @param villager The villager
      */
-    private void setupTrades() {
-        BDItemFactory itemFactory = plugin.getEconomyModule().getItemManager().getItemFactory();
+    public BDMarketOwner(BDCraft plugin, Villager villager) {
+        super(plugin, villager);
+        this.marketLevel = 1;
+    }
+    
+    /**
+     * Creates a new BD market owner from an existing villager with a market.
+     * @param plugin The plugin instance
+     * @param villager The villager
+     * @param market The associated market
+     */
+    public BDMarketOwner(BDCraft plugin, Villager villager, BDMarket market) {
+        super(plugin, villager);
+        this.marketLevel = 1;
+        this.market = market;
+    }
+    
+    @Override
+    protected void initializeTrades() {
+        updateTrades();
+    }
+    
+    /**
+     * Updates trades based on the current market level.
+     */
+    @Override
+    public void updateTrades() {
         List<MerchantRecipe> recipes = new ArrayList<>();
         
-        // Market level determines available trades
-        int marketLevel = market.getLevel();
-        
-        // Market Information (1 emerald for current market status report)
-        ItemStack marketInfoPaper = new ItemStack(Material.PAPER);
-        ItemMeta marketInfoMeta = marketInfoPaper.getItemMeta();
-        if (marketInfoMeta != null) {
-            marketInfoMeta.setDisplayName(ChatColor.GOLD + "Market Status Report");
-            List<String> lore = new ArrayList<>();
-            lore.add(ChatColor.GRAY + "Contains information about this market.");
-            lore.add(ChatColor.GRAY + "Level: " + marketLevel);
-            lore.add(ChatColor.GRAY + "Founder: " + market.getFounderName());
-            lore.add(ChatColor.GRAY + "Collectors: " + market.getTraderCount("COLLECTOR") + "/" + getMaxCollectors());
-            marketInfoMeta.setLore(lore);
-            marketInfoPaper.setItemMeta(marketInfoMeta);
-        }
-        
-        MerchantRecipe marketInfoRecipe = new MerchantRecipe(marketInfoPaper, 0, 1000, true);
-        marketInfoRecipe.addIngredient(new ItemStack(Material.EMERALD, 1));
-        recipes.add(marketInfoRecipe);
-        
-        // Market Upgrade (diamonds + currency for next level)
+        // Market upgrade trade varies by current level
         if (marketLevel < 4) { // Max level is 4
-            int diamondsRequired = 5 * marketLevel; // 5, 10, 15 diamonds for levels 1, 2, 3
-            
-            ItemStack upgradeVoucher = new ItemStack(Material.MAP);
-            ItemMeta upgradeVoucherMeta = upgradeVoucher.getItemMeta();
-            if (upgradeVoucherMeta != null) {
-                upgradeVoucherMeta.setDisplayName(ChatColor.GOLD + "Market Upgrade Voucher");
-                List<String> upgradeLore = new ArrayList<>();
-                upgradeLore.add(ChatColor.GRAY + "Upgrades this market to level " + (marketLevel + 1));
-                upgradeLore.add(ChatColor.GRAY + "Current Level: " + marketLevel);
-                upgradeLore.add(ChatColor.GRAY + "New Level: " + (marketLevel + 1));
-                upgradeLore.add(ChatColor.GRAY + "Benefits:");
-                
-                if (marketLevel == 1) {
-                    upgradeLore.add(ChatColor.GRAY + "- Increased collector limit (5)");
-                    upgradeLore.add(ChatColor.GRAY + "- 5% better prices");
-                    upgradeLore.add(ChatColor.GRAY + "- House tokens available");
-                } else if (marketLevel == 2) {
-                    upgradeLore.add(ChatColor.GRAY + "- Increased collector limit (7)");
-                    upgradeLore.add(ChatColor.GRAY + "- 10% better prices");
-                    upgradeLore.add(ChatColor.GRAY + "- Seasonal trader visits");
-                } else if (marketLevel == 3) {
-                    upgradeLore.add(ChatColor.GRAY + "- Increased collector limit (10)");
-                    upgradeLore.add(ChatColor.GRAY + "- 15% better prices");
-                    upgradeLore.add(ChatColor.GRAY + "- Player buffs in market radius");
-                }
-                
-                upgradeVoucherMeta.setLore(upgradeLore);
-                upgradeVoucher.setItemMeta(upgradeVoucherMeta);
-            }
-            
-            MerchantRecipe upgradeRecipe = new MerchantRecipe(upgradeVoucher, 0, 1, true);
-            upgradeRecipe.addIngredient(new ItemStack(Material.DIAMOND, diamondsRequired));
-            recipes.add(upgradeRecipe);
+            recipes.add(createMarketUpgradeRecipe());
         }
         
-        // House Tokens (available at level 2+)
+        // Add market status report trade
+        recipes.add(createMarketStatusRecipe());
+        
+        // Add decoration items
+        recipes.add(createDecorationRecipe());
+        
+        // Add house token trade if level >= 2
         if (marketLevel >= 2) {
-            int emeraldsRequired = 10;
-            MerchantRecipe houseTokenRecipe = new MerchantRecipe(itemFactory.createHouseToken(), 0, 5, true);
-            houseTokenRecipe.addIngredient(new ItemStack(Material.EMERALD, emeraldsRequired));
-            recipes.add(houseTokenRecipe);
+            recipes.add(createHouseTokenRecipe());
         }
         
-        // Special Decorations (unique items for market decoration)
-        ItemStack marketBanner = new ItemStack(Material.BLUE_BANNER);
-        ItemMeta marketBannerMeta = marketBanner.getItemMeta();
-        if (marketBannerMeta != null) {
-            marketBannerMeta.setDisplayName(ChatColor.GOLD + "Market Banner");
-            marketBanner.setItemMeta(marketBannerMeta);
-        }
-        MerchantRecipe bannerRecipe = new MerchantRecipe(marketBanner, 0, 10, true);
-        bannerRecipe.addIngredient(new ItemStack(Material.EMERALD, 3));
-        recipes.add(bannerRecipe);
-        
-        entity.setRecipes(recipes);
+        // Set recipes
+        villager.setRecipes(recipes);
     }
     
     /**
-     * Gets the maximum number of collectors allowed based on market level.
-     * @return The maximum number of collectors
+     * Creates the market upgrade recipe based on current level.
+     * @return The recipe
      */
-    private int getMaxCollectors() {
-        int marketLevel = market.getLevel();
+    private MerchantRecipe createMarketUpgradeRecipe() {
+        int nextLevel = marketLevel + 1;
+        String upgradeName = "Market Upgrade to Level " + nextLevel;
         
+        // Create upgrade item
+        ItemStack upgradeItem = new ItemStack(Material.PAPER, 1);
+        var meta = upgradeItem.getItemMeta();
+        meta.setDisplayName(ChatColor.GOLD + upgradeName);
+        upgradeItem.setItemMeta(meta);
+        
+        // Create recipe
+        MerchantRecipe recipe = new MerchantRecipe(upgradeItem, 1);
+        
+        // Set ingredients based on current level
         switch (marketLevel) {
             case 1:
-                return 3; // Initial limit
+                recipe.addIngredient(new ItemStack(Material.DIAMOND, 3));
+                recipe.addIngredient(new ItemStack(Material.EMERALD, 16));
+                break;
+            case 2:
+                recipe.addIngredient(new ItemStack(Material.DIAMOND, 5));
+                recipe.addIngredient(new ItemStack(Material.EMERALD, 32));
+                break;
+            case 3:
+                recipe.addIngredient(new ItemStack(Material.DIAMOND, 10));
+                recipe.addIngredient(new ItemStack(Material.EMERALD, 64));
+                break;
+        }
+        
+        return recipe;
+    }
+    
+    /**
+     * Creates the market status report recipe.
+     * @return The recipe
+     */
+    private MerchantRecipe createMarketStatusRecipe() {
+        // Create status report item
+        ItemStack reportItem = new ItemStack(Material.MAP, 1);
+        var meta = reportItem.getItemMeta();
+        meta.setDisplayName(ChatColor.AQUA + "Market Status Report");
+        reportItem.setItemMeta(meta);
+        
+        // Create recipe
+        MerchantRecipe recipe = new MerchantRecipe(reportItem, Integer.MAX_VALUE);
+        
+        // Set ingredient
+        recipe.addIngredient(new ItemStack(Material.EMERALD, 1));
+        
+        return recipe;
+    }
+    
+    /**
+     * Creates a decoration item recipe.
+     * @return The recipe
+     */
+    private MerchantRecipe createDecorationRecipe() {
+        // Create decoration item
+        ItemStack decorationItem = new ItemStack(Material.LANTERN, 4);
+        var meta = decorationItem.getItemMeta();
+        meta.setDisplayName(ChatColor.YELLOW + "Market Decoration");
+        decorationItem.setItemMeta(meta);
+        
+        // Create recipe
+        MerchantRecipe recipe = new MerchantRecipe(decorationItem, Integer.MAX_VALUE);
+        
+        // Set ingredient
+        recipe.addIngredient(new ItemStack(Material.EMERALD, 2));
+        
+        return recipe;
+    }
+    
+    /**
+     * Creates a house token recipe.
+     * @return The recipe
+     */
+    private MerchantRecipe createHouseTokenRecipe() {
+        // Create house token item
+        ItemStack tokenItem = new ItemStack(Material.ITEM_FRAME, 1);
+        var meta = tokenItem.getItemMeta();
+        meta.setDisplayName(ChatColor.GOLD + "House Token");
+        tokenItem.setItemMeta(meta);
+        
+        // Create recipe
+        MerchantRecipe recipe = new MerchantRecipe(tokenItem, 3); // Limited to 3 uses
+        
+        // Set ingredients
+        recipe.addIngredient(new ItemStack(Material.DIAMOND, 1));
+        recipe.addIngredient(new ItemStack(Material.EMERALD, 10));
+        
+        return recipe;
+    }
+    
+    /**
+     * Gets the market level.
+     * @return The market level
+     */
+    public int getMarketLevel() {
+        return marketLevel;
+    }
+    
+    /**
+     * Sets the market level and updates trades.
+     * @param marketLevel The market level
+     */
+    public void setMarketLevel(int marketLevel) {
+        if (marketLevel < 1) {
+            marketLevel = 1;
+        } else if (marketLevel > 4) {
+            marketLevel = 4;
+        }
+        
+        this.marketLevel = marketLevel;
+        updateTrades();
+    }
+    
+    /**
+     * Gets the associated market.
+     * @return The market
+     */
+    public BDMarket getMarket() {
+        return market;
+    }
+    
+    /**
+     * Sets the associated market.
+     * @param market The market
+     */
+    public void setMarket(BDMarket market) {
+        this.market = market;
+    }
+    
+    /**
+     * Gets the collector limit based on market level.
+     * @return The collector limit
+     */
+    public int getCollectorLimit() {
+        switch (marketLevel) {
+            case 1:
+                return 3;
             case 2:
                 return 5;
             case 3:
@@ -153,39 +252,34 @@ public class BDMarketOwner extends BDVillager {
     }
     
     /**
-     * Updates trades based on the market level.
+     * Gets the price modifier based on market level.
+     * @return The price modifier (e.g., 0.05 for 5% better prices)
      */
-    public void updateTrades() {
-        setupTrades();
+    public double getPriceModifier() {
+        switch (marketLevel) {
+            case 1:
+                return 0.0;
+            case 2:
+                return 0.05;
+            case 3:
+                return 0.1;
+            case 4:
+                return 0.15;
+            default:
+                return 0.0;
+        }
     }
     
     /**
-     * Gets the associated market.
-     * @return The associated market
+     * Checks if the market can have seasonal traders.
+     * @return True if the market can have seasonal traders, false otherwise
      */
-    public BDMarket getMarket() {
-        return market;
-    }
-    
-    /**
-     * Sets the associated market.
-     * @param market The market to associate with this owner
-     */
-    public void setMarket(BDMarket market) {
-        this.market = market;
-        updateTrades();
+    public boolean canHaveSeasonalTraders() {
+        return marketLevel >= 3;
     }
     
     @Override
-    public int changeReputation(UUID playerUuid, int amount) {
-        // Market Owners give +2 reputation per trade
-        int newRep = super.changeReputation(playerUuid, amount);
-        
-        // Update trades if reputation changes significantly
-        if (amount != 0 && Math.abs(amount) >= 5) {
-            updateTrades();
-        }
-        
-        return newRep;
+    public String getVillagerType() {
+        return TYPE;
     }
 }
