@@ -188,15 +188,73 @@ public class BDProgressionModule implements BDModule, ProgressionAPI {
     
     @Override
     public boolean performRebirth(Player player) {
-        if (player != null) {
-            int currentRank = rankManager.getPlayerRank(player);
-            
-            if (currentRank >= BDRankManager.RANK_MASTER_FARMER) {
-                rankManager.addPlayerRebirth(player);
-                return true;
-            }
+        if (player == null) {
+            return false;
         }
-        return false;
+        
+        // Check if player meets the rebirth requirements
+        int currentRank = rankManager.getPlayerRank(player);
+        
+        // Player must be at least Agricultural Expert (rank 5)
+        if (currentRank < BDRankManager.RANK_AGRICULTURAL_EXPERT) {
+            player.sendMessage(ChatColor.RED + "You must be an Agricultural Expert to perform rebirth.");
+            return false;
+        }
+        
+        // Check if player has required currency
+        int minCurrency = plugin.getConfig().getInt("rebirth.requirements.min_currency", 100000);
+        double playerCurrencyDouble = plugin.getEconomyAPI().getBalance(player.getUniqueId());
+        int playerCurrency = (int) playerCurrencyDouble;
+        
+        if (playerCurrency < minCurrency) {
+            player.sendMessage(ChatColor.RED + "You need at least " + minCurrency + " BD currency to perform rebirth.");
+            player.sendMessage(ChatColor.RED + "Current balance: " + playerCurrency);
+            return false;
+        }
+        
+        // Check if player has required trades
+        int minTrades = plugin.getConfig().getInt("rebirth.requirements.min_trades", 500);
+        int playerTrades = rebirthManager.getPlayerTradeCount(player.getUniqueId());
+        
+        if (playerTrades < minTrades) {
+            player.sendMessage(ChatColor.RED + "You need to complete at least " + minTrades + " trades to perform rebirth.");
+            player.sendMessage(ChatColor.RED + "Current trades: " + playerTrades);
+            return false;
+        }
+        
+        // Perform the rebirth process
+        
+        // Take all their currency
+        plugin.getEconomyAPI().withdrawMoney(player.getUniqueId(), playerCurrency);
+        
+        // Reset their rank to Newcomer but increment rebirth counter
+        rankManager.setPlayerRank(player, BDRankManager.RANK_NEWCOMER);
+        rankManager.addPlayerRebirth(player);
+        
+        // Clear inventories of specific items (seeds and other BD items)
+        // This is a placeholder for more specific inventory management if desired
+        
+        // Send message and effects
+        int rebirthLevel = rankManager.getPlayerRebirths(player);
+        player.sendMessage(ChatColor.LIGHT_PURPLE + "✧✧✧ REBIRTH COMPLETE ✧✧✧");
+        player.sendMessage(ChatColor.GOLD + "You have been reborn! All progress has been reset.");
+        player.sendMessage(ChatColor.GOLD + "Your rebirth level is now " + rebirthLevel);
+        player.sendMessage(ChatColor.GOLD + "You now receive the following bonuses:");
+        player.sendMessage(ChatColor.YELLOW + "• +" + (rebirthLevel * 10) + "% experience gain");
+        player.sendMessage(ChatColor.YELLOW + "• +" + (rebirthLevel * 5) + "% crop yield");
+        player.sendMessage(ChatColor.YELLOW + "• +" + (rebirthLevel * 8) + "% better trades");
+        
+        // Apply visual effects
+        player.getWorld().strikeLightningEffect(player.getLocation());
+        
+        // Apply rebirth aura (if high enough level)
+        if (rebirthLevel >= 3) {
+            rebirthManager.togglePlayerAura(player, true);
+            player.sendMessage(ChatColor.LIGHT_PURPLE + "Your rebirth aura has been activated!");
+            player.sendMessage(ChatColor.LIGHT_PURPLE + "Use /bdrank aura to toggle it on or off.");
+        }
+        
+        return true;
     }
     
     @Override
@@ -206,7 +264,38 @@ public class BDProgressionModule implements BDModule, ProgressionAPI {
         
         if (player != null) {
             int rebirths = rankManager.getPlayerRebirths(player);
-            bonuses.put("experience", (double) rebirths * 0.1); // 10% per rebirth
+            
+            // Add all rebirth bonuses as per documentation
+            double expMultiplier = plugin.getConfig().getDouble("rebirth.bonuses.experience_multiplier", 0.1);
+            double cropYieldMultiplier = plugin.getConfig().getDouble("rebirth.bonuses.crop_yield_multiplier", 0.05);
+            double tradeValueMultiplier = plugin.getConfig().getDouble("rebirth.bonuses.trade_value_multiplier", 0.08);
+            
+            // Experience bonus (10% per rebirth level)
+            bonuses.put("experience", rebirths * expMultiplier);
+            
+            // Crop yield bonus (5% per rebirth level)
+            bonuses.put("crop_yield", rebirths * cropYieldMultiplier);
+            
+            // Trade value bonus (8% per rebirth level)
+            bonuses.put("trade_value", rebirths * tradeValueMultiplier);
+            
+            // Special bonuses based on rebirth level
+            if (rebirths >= 3) {
+                bonuses.put("aura_radius", 10.0); // 10 block radius aura effect
+            }
+            
+            if (rebirths >= 5) {
+                bonuses.put("reputation_gain", 0.05); // 5% bonus to reputation gain
+            }
+            
+            if (rebirths >= 7) {
+                bonuses.put("reduced_seed_cost_chance", 0.10); // 10% chance for reduced seed costs
+                bonuses.put("seed_cost_reduction", 0.25); // 25% reduction when triggered
+            }
+            
+            if (rebirths >= 10) {
+                bonuses.put("seasonal_insight", 1.0); // Ability to predict seasonal items
+            }
         }
         
         return bonuses;
@@ -404,6 +493,48 @@ public class BDProgressionModule implements BDModule, ProgressionAPI {
                     }
                 });
                 
+                // Aura toggle command
+                addSubCommand(new SubCommand() {
+                    @Override
+                    public String getName() {
+                        return "aura";
+                    }
+                    
+                    @Override
+                    public String getDescription() {
+                        return "Toggles your rebirth aura (requires rebirth level 3+)";
+                    }
+                    
+                    @Override
+                    public String getUsage() {
+                        return "";
+                    }
+                    
+                    @Override
+                    public String getPermission() {
+                        return "bdcraft.rank.aura";
+                    }
+                    
+                    @Override
+                    public boolean isPlayerOnly() {
+                        return true;
+                    }
+                    
+                    @Override
+                    public boolean execute(CommandSender sender, String[] args) {
+                        Player player = (Player) sender;
+                        int rebirthLevel = rankManager.getPlayerRebirths(player);
+                        
+                        if (rebirthLevel < 3) {
+                            player.sendMessage(ChatColor.RED + "You need at least rebirth level 3 to use auras.");
+                            return true;
+                        }
+                        
+                        boolean newState = rebirthManager.togglePlayerAura(player);
+                        return true;
+                    }
+                });
+                
                 // Rebirth command
                 addSubCommand(new SubCommand() {
                     @Override
@@ -593,6 +724,108 @@ public class BDProgressionModule implements BDModule, ProgressionAPI {
                         } catch (NumberFormatException e) {
                             sender.sendMessage(ChatColor.RED + "Invalid amount. Please use a positive number.");
                             return true;
+                        }
+                    }
+                });
+                
+                // Blessing command
+                addSubCommand(new SubCommand() {
+                    @Override
+                    public String getName() {
+                        return "bless";
+                    }
+                    
+                    @Override
+                    public String getDescription() {
+                        return "Blesses another player with temporary trading bonus (requires rebirth level 5+)";
+                    }
+                    
+                    @Override
+                    public String getUsage() {
+                        return "<player>";
+                    }
+                    
+                    @Override
+                    public String getPermission() {
+                        return "bdcraft.rank.bless";
+                    }
+                    
+                    @Override
+                    public boolean isPlayerOnly() {
+                        return true;
+                    }
+                    
+                    @Override
+                    public boolean execute(CommandSender sender, String[] args) {
+                        Player player = (Player) sender;
+                        int rebirthLevel = rankManager.getPlayerRebirths(player);
+                        
+                        if (rebirthLevel < 5) {
+                            player.sendMessage(ChatColor.RED + "You need at least rebirth level 5 to bless others.");
+                            return true;
+                        }
+                        
+                        if (args.length < 1) {
+                            player.sendMessage(ChatColor.RED + "Usage: /bdrank bless <player>");
+                            return true;
+                        }
+                        
+                        String targetName = args[0];
+                        Player target = plugin.getServer().getPlayer(targetName);
+                        
+                        if (target == null) {
+                            player.sendMessage(ChatColor.RED + "Player not found.");
+                            return true;
+                        }
+                        
+                        if (target.equals(player)) {
+                            player.sendMessage(ChatColor.RED + "You cannot bless yourself.");
+                            return true;
+                        }
+                        
+                        // Check cooldown
+                        long cooldownTime = rebirthManager.getBlessCooldown(player.getUniqueId());
+                        long currentTime = System.currentTimeMillis();
+                        
+                        if (cooldownTime > currentTime) {
+                            long remainingTime = (cooldownTime - currentTime) / 1000; // seconds
+                            player.sendMessage(ChatColor.RED + "You must wait " + formatTime(remainingTime) + 
+                                    " before blessing again.");
+                            return true;
+                        }
+                        
+                        // Apply blessing
+                        applyBlessingEffect(target);
+                        
+                        // Set cooldown
+                        int cooldownSeconds = plugin.getConfig().getInt("rebirth.bonuses.blessing_cooldown", 7200);
+                        rebirthManager.setBlessCooldown(player.getUniqueId(), currentTime + (cooldownSeconds * 1000));
+                        
+                        // Messages
+                        player.sendMessage(ChatColor.GREEN + "You have blessed " + target.getName() + " with improved trading for 30 minutes!");
+                        target.sendMessage(ChatColor.GOLD + "You have been blessed by " + player.getName() + "!");
+                        target.sendMessage(ChatColor.GOLD + "Your trading values are improved by 20% for 30 minutes!");
+                        
+                        // Effects
+                        player.getWorld().strikeLightningEffect(target.getLocation());
+                        
+                        return true;
+                    }
+                    
+                    /**
+                     * Formats time in seconds to a readable string.
+                     * 
+                     * @param seconds The time in seconds
+                     * @return The formatted time string
+                     */
+                    private String formatTime(long seconds) {
+                        long minutes = seconds / 60;
+                        long remainingSeconds = seconds % 60;
+                        
+                        if (minutes > 0) {
+                            return minutes + " minutes and " + remainingSeconds + " seconds";
+                        } else {
+                            return seconds + " seconds";
                         }
                     }
                 });

@@ -6,6 +6,7 @@ import com.bdcraft.plugin.commands.CommandBase;
 import com.bdcraft.plugin.commands.SubCommand;
 import com.bdcraft.plugin.modules.BDModule;
 import com.bdcraft.plugin.modules.ModuleManager;
+import com.bdcraft.plugin.modules.perms.BDPermissionAPI;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
@@ -49,199 +50,8 @@ public class BDPermsModule implements BDModule {
         // Load groups
         loadGroups();
         
-        // Initialize permission API
-        PermissionAPI permissionAPI = new PermissionAPI() {
-            @Override
-            public boolean hasPermission(Player player, String permission) {
-                return BDPermsModule.this.hasPermission(player.getUniqueId(), permission) || player.hasPermission(permission);
-            }
-            
-            @Override
-            public String getGroup(Player player) {
-                return getPlayerGroup(player.getUniqueId());
-            }
-            
-            @Override
-            public boolean setGroup(Player player, String group) {
-                if (!groups.containsKey(group.toLowerCase())) {
-                    return false;
-                }
-                setPlayerGroup(player.getUniqueId(), group);
-                return true;
-            }
-            
-            @Override
-            public boolean groupExists(String group) {
-                return groups.containsKey(group.toLowerCase());
-            }
-            
-            @Override
-            public boolean createGroup(String group, String parentGroup) {
-                if (groups.containsKey(group.toLowerCase())) {
-                    return false;
-                }
-                
-                PermissionGroup newGroup = new PermissionGroup(group, "", "", new ArrayList<>());
-                
-                if (parentGroup != null && !parentGroup.isEmpty()) {
-                    PermissionGroup parent = groups.get(parentGroup.toLowerCase());
-                    if (parent != null) {
-                        newGroup.setParent(parent);
-                    }
-                }
-                
-                groups.put(group.toLowerCase(), newGroup);
-                return true;
-            }
-            
-            @Override
-            public boolean addGroupPermission(String group, String permission) {
-                PermissionGroup permGroup = groups.get(group.toLowerCase());
-                if (permGroup == null) {
-                    return false;
-                }
-                
-                List<String> permissions = new ArrayList<>(permGroup.getPermissions());
-                if (!permissions.contains(permission)) {
-                    permissions.add(permission);
-                    groups.put(group.toLowerCase(), new PermissionGroup(
-                            permGroup.getName(),
-                            permGroup.getPrefix(),
-                            permGroup.getSuffix(),
-                            permissions
-                    ));
-                    
-                    PermissionGroup newGroup = groups.get(group.toLowerCase());
-                    newGroup.setParent(permGroup.getParent());
-                    
-                    // Copy metadata
-                    for (Map.Entry<String, String> entry : permGroup.getMetadata().entrySet()) {
-                        newGroup.setMetadata(entry.getKey(), entry.getValue());
-                    }
-                }
-                return true;
-            }
-            
-            @Override
-            public boolean removeGroupPermission(String group, String permission) {
-                PermissionGroup permGroup = groups.get(group.toLowerCase());
-                if (permGroup == null) {
-                    return false;
-                }
-                
-                List<String> permissions = new ArrayList<>(permGroup.getPermissions());
-                if (permissions.contains(permission)) {
-                    permissions.remove(permission);
-                    groups.put(group.toLowerCase(), new PermissionGroup(
-                            permGroup.getName(),
-                            permGroup.getPrefix(),
-                            permGroup.getSuffix(),
-                            permissions
-                    ));
-                    
-                    PermissionGroup newGroup = groups.get(group.toLowerCase());
-                    newGroup.setParent(permGroup.getParent());
-                    
-                    // Copy metadata
-                    for (Map.Entry<String, String> entry : permGroup.getMetadata().entrySet()) {
-                        newGroup.setMetadata(entry.getKey(), entry.getValue());
-                    }
-                }
-                return true;
-            }
-            
-            @Override
-            public List<String> getGroupPermissions(String group) {
-                PermissionGroup permGroup = groups.get(group.toLowerCase());
-                if (permGroup == null) {
-                    return new ArrayList<>();
-                }
-                return permGroup.getPermissions();
-            }
-            
-            @Override
-            public List<String> getPlayerPermissions(Player player) {
-                String groupName = getPlayerGroup(player.getUniqueId());
-                PermissionGroup group = groups.get(groupName.toLowerCase());
-                
-                if (group == null) {
-                    return new ArrayList<>();
-                }
-                
-                return group.getPermissions();
-            }
-            
-            @Override
-            public String getGroupPrefix(String group) {
-                PermissionGroup permGroup = groups.get(group.toLowerCase());
-                if (permGroup == null) {
-                    return "";
-                }
-                return permGroup.getPrefix();
-            }
-            
-            @Override
-            public boolean setGroupPrefix(String group, String prefix) {
-                PermissionGroup permGroup = groups.get(group.toLowerCase());
-                if (permGroup == null) {
-                    return false;
-                }
-                
-                groups.put(group.toLowerCase(), new PermissionGroup(
-                        permGroup.getName(),
-                        prefix,
-                        permGroup.getSuffix(),
-                        permGroup.getPermissions()
-                ));
-                
-                PermissionGroup newGroup = groups.get(group.toLowerCase());
-                newGroup.setParent(permGroup.getParent());
-                
-                // Copy metadata
-                for (Map.Entry<String, String> entry : permGroup.getMetadata().entrySet()) {
-                    newGroup.setMetadata(entry.getKey(), entry.getValue());
-                }
-                
-                return true;
-            }
-            
-            @Override
-            public String getGroupSuffix(String group) {
-                PermissionGroup permGroup = groups.get(group.toLowerCase());
-                if (permGroup == null) {
-                    return "";
-                }
-                return permGroup.getSuffix();
-            }
-            
-            @Override
-            public boolean setGroupSuffix(String group, String suffix) {
-                PermissionGroup permGroup = groups.get(group.toLowerCase());
-                if (permGroup == null) {
-                    return false;
-                }
-                
-                groups.put(group.toLowerCase(), new PermissionGroup(
-                        permGroup.getName(),
-                        permGroup.getPrefix(),
-                        suffix,
-                        permGroup.getPermissions()
-                ));
-                
-                PermissionGroup newGroup = groups.get(group.toLowerCase());
-                newGroup.setParent(permGroup.getParent());
-                
-                // Copy metadata
-                for (Map.Entry<String, String> entry : permGroup.getMetadata().entrySet()) {
-                    newGroup.setMetadata(entry.getKey(), entry.getValue());
-                }
-                
-                return true;
-            }
-        };
-        
-        // Register the permission API
-        plugin.setPermissionAPI(permissionAPI);
+        // Initialize permission API - using our implementation class
+        plugin.setPermissionAPI(new BDPermissionAPI(plugin, this));
         
         // Register commands
         registerCommands();
@@ -525,6 +335,251 @@ public class BDPermsModule implements BDModule {
     }
     
     /**
+     * Checks if a player has a permission.
+     * 
+     * @param playerUuid The player UUID
+     * @param permission The permission
+     * @return Whether the player has the permission
+     */
+    public boolean hasPermission(UUID playerUuid, String permission) {
+        String groupName = getGroupForPlayer(playerUuid);
+        PermissionGroup group = groups.get(groupName.toLowerCase());
+        
+        if (group == null) {
+            return false;
+        }
+        
+        return group.hasPermission(permission);
+    }
+    
+    /**
+     * Gets a player's group.
+     * 
+     * @param playerUuid The player UUID
+     * @return The group name, or "default" if none
+     */
+    private String getGroupForPlayer(UUID playerUuid) {
+        return playerGroups.getOrDefault(playerUuid, "default");
+    }
+    
+    /**
+     * Sets a player's group.
+     * 
+     * @param playerUuid The player UUID
+     * @param group The group name
+     */
+    public void setPlayerGroup(UUID playerUuid, String group) {
+        playerGroups.put(playerUuid, group);
+    }
+    
+    /**
+     * Checks if a group exists.
+     * 
+     * @param group The group name
+     * @return Whether the group exists
+     */
+    public boolean groupExists(String group) {
+        return groups.containsKey(group.toLowerCase());
+    }
+    
+    /**
+     * Creates a new group.
+     * 
+     * @param group The group name
+     * @param parentGroup The parent group (can be null)
+     * @return Whether the operation was successful
+     */
+    public boolean createGroup(String group, String parentGroup) {
+        if (groups.containsKey(group.toLowerCase())) {
+            return false;
+        }
+        
+        PermissionGroup newGroup = new PermissionGroup(group, "", "", new ArrayList<>());
+        
+        if (parentGroup != null && !parentGroup.isEmpty()) {
+            PermissionGroup parent = groups.get(parentGroup.toLowerCase());
+            if (parent != null) {
+                newGroup.setParent(parent);
+            }
+        }
+        
+        groups.put(group.toLowerCase(), newGroup);
+        return true;
+    }
+    
+    /**
+     * Adds a permission to a group.
+     * 
+     * @param group The group name
+     * @param permission The permission
+     * @return Whether the operation was successful
+     */
+    public boolean addGroupPermission(String group, String permission) {
+        PermissionGroup permGroup = groups.get(group.toLowerCase());
+        if (permGroup == null) {
+            return false;
+        }
+        
+        List<String> permissions = new ArrayList<>(permGroup.getPermissions());
+        if (!permissions.contains(permission)) {
+            permissions.add(permission);
+            groups.put(group.toLowerCase(), new PermissionGroup(
+                    permGroup.getName(),
+                    permGroup.getPrefix(),
+                    permGroup.getSuffix(),
+                    permissions
+            ));
+            
+            PermissionGroup newGroup = groups.get(group.toLowerCase());
+            newGroup.setParent(permGroup.getParent());
+            
+            // Copy metadata
+            for (Map.Entry<String, String> entry : permGroup.getMetadata().entrySet()) {
+                newGroup.setMetadata(entry.getKey(), entry.getValue());
+            }
+        }
+        return true;
+    }
+    
+    /**
+     * Removes a permission from a group.
+     * 
+     * @param group The group name
+     * @param permission The permission
+     * @return Whether the operation was successful
+     */
+    public boolean removeGroupPermission(String group, String permission) {
+        PermissionGroup permGroup = groups.get(group.toLowerCase());
+        if (permGroup == null) {
+            return false;
+        }
+        
+        List<String> permissions = new ArrayList<>(permGroup.getPermissions());
+        if (permissions.contains(permission)) {
+            permissions.remove(permission);
+            groups.put(group.toLowerCase(), new PermissionGroup(
+                    permGroup.getName(),
+                    permGroup.getPrefix(),
+                    permGroup.getSuffix(),
+                    permissions
+            ));
+            
+            PermissionGroup newGroup = groups.get(group.toLowerCase());
+            newGroup.setParent(permGroup.getParent());
+            
+            // Copy metadata
+            for (Map.Entry<String, String> entry : permGroup.getMetadata().entrySet()) {
+                newGroup.setMetadata(entry.getKey(), entry.getValue());
+            }
+        }
+        return true;
+    }
+    
+    /**
+     * Gets a group's permissions.
+     * 
+     * @param group The group name
+     * @return The permissions
+     */
+    public List<String> getGroupPermissions(String group) {
+        PermissionGroup permGroup = groups.get(group.toLowerCase());
+        if (permGroup == null) {
+            return new ArrayList<>();
+        }
+        return permGroup.getPermissions();
+    }
+    
+    /**
+     * Gets a group's prefix.
+     * 
+     * @param group The group name
+     * @return The prefix
+     */
+    public String getGroupPrefix(String group) {
+        PermissionGroup permGroup = groups.get(group.toLowerCase());
+        if (permGroup == null) {
+            return "";
+        }
+        return permGroup.getPrefix();
+    }
+    
+    /**
+     * Sets a group's prefix.
+     * 
+     * @param group The group name
+     * @param prefix The prefix
+     * @return Whether the operation was successful
+     */
+    public boolean setGroupPrefix(String group, String prefix) {
+        PermissionGroup permGroup = groups.get(group.toLowerCase());
+        if (permGroup == null) {
+            return false;
+        }
+        
+        groups.put(group.toLowerCase(), new PermissionGroup(
+                permGroup.getName(),
+                prefix,
+                permGroup.getSuffix(),
+                permGroup.getPermissions()
+        ));
+        
+        PermissionGroup newGroup = groups.get(group.toLowerCase());
+        newGroup.setParent(permGroup.getParent());
+        
+        // Copy metadata
+        for (Map.Entry<String, String> entry : permGroup.getMetadata().entrySet()) {
+            newGroup.setMetadata(entry.getKey(), entry.getValue());
+        }
+        
+        return true;
+    }
+    
+    /**
+     * Gets a group's suffix.
+     * 
+     * @param group The group name
+     * @return The suffix
+     */
+    public String getGroupSuffix(String group) {
+        PermissionGroup permGroup = groups.get(group.toLowerCase());
+        if (permGroup == null) {
+            return "";
+        }
+        return permGroup.getSuffix();
+    }
+    
+    /**
+     * Sets a group's suffix.
+     * 
+     * @param group The group name
+     * @param suffix The suffix
+     * @return Whether the operation was successful
+     */
+    public boolean setGroupSuffix(String group, String suffix) {
+        PermissionGroup permGroup = groups.get(group.toLowerCase());
+        if (permGroup == null) {
+            return false;
+        }
+        
+        groups.put(group.toLowerCase(), new PermissionGroup(
+                permGroup.getName(),
+                permGroup.getPrefix(),
+                suffix,
+                permGroup.getPermissions()
+        ));
+        
+        PermissionGroup newGroup = groups.get(group.toLowerCase());
+        newGroup.setParent(permGroup.getParent());
+        
+        // Copy metadata
+        for (Map.Entry<String, String> entry : permGroup.getMetadata().entrySet()) {
+            newGroup.setMetadata(entry.getKey(), entry.getValue());
+        }
+        
+        return true;
+    }
+    
+    /**
      * Sends information about a permission group to a sender.
      * @param sender The command sender
      * @param group The permission group
@@ -559,41 +614,13 @@ public class BDPermsModule implements BDModule {
     }
     
     /**
-     * Sets a player's permission group.
-     * @param uuid The player's UUID
-     * @param groupName The group name
-     */
-    public void setPlayerGroup(UUID uuid, String groupName) {
-        if (groups.containsKey(groupName.toLowerCase())) {
-            playerGroups.put(uuid, groupName.toLowerCase());
-        }
-    }
-    
-    /**
-     * Checks if a player has a permission.
-     * @param uuid The player's UUID
-     * @param permission The permission node
-     * @return Whether the player has the permission
-     */
-    public boolean hasPermission(UUID uuid, String permission) {
-        String groupName = getPlayerGroup(uuid);
-        PermissionGroup group = groups.get(groupName.toLowerCase());
-        
-        if (group == null) {
-            return false;
-        }
-        
-        return group.hasPermission(permission);
-    }
-    
-    /**
      * Gets a player's metadata value.
      * @param uuid The player's UUID
      * @param key The metadata key
      * @return The metadata value, or null if not found
      */
     public String getPlayerMetadata(UUID uuid, String key) {
-        String groupName = getPlayerGroup(uuid);
+        String groupName = getGroupForPlayer(uuid);
         PermissionGroup group = groups.get(groupName.toLowerCase());
         
         if (group == null) {

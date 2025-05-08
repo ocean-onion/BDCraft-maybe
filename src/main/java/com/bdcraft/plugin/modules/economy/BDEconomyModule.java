@@ -17,6 +17,8 @@ import com.bdcraft.plugin.modules.economy.auction.AuctionListener;
 import com.bdcraft.plugin.modules.economy.market.MarketManager;
 import com.bdcraft.plugin.modules.economy.market.gui.MarketManagementGUI;
 import com.bdcraft.plugin.modules.economy.villager.BDVillagerManager;
+import com.bdcraft.plugin.modules.economy.villager.BDVillagerAPI;
+import com.bdcraft.plugin.modules.economy.BDEconomyAPI;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -95,6 +97,10 @@ public class BDEconomyModule implements Module {
         this.recipeManager = new BDRecipeManager(plugin);
         this.auctionManager = new AuctionManager(plugin);
         this.auctionHouseGUI = new AuctionHouseGUI(plugin, auctionManager);
+        
+        // Register API implementations
+        plugin.setEconomyAPI(new BDEconomyAPI(plugin, this));
+        plugin.setVillagerAPI(new BDVillagerAPI(plugin, villagerManager, marketManager));
         
         // Register listeners
         plugin.getServer().getPluginManager().registerEvents(new MarketTokenListener(plugin), plugin);

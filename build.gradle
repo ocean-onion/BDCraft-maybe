@@ -1,13 +1,6 @@
 plugins {
     id 'java'
-    id 'com.github.johnrengelman.shadow' version '7.1.2'
-}
-
-// Configure use of JDK 21 with both compile and runtime
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
-    }
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
 group = 'com.bdcraft'
@@ -64,6 +57,8 @@ shadowJar {
     archiveClassifier.set('')
     relocate 'com.google.gson', 'com.bdcraft.plugin.lib.gson'
     relocate 'com.google.guava', 'com.bdcraft.plugin.lib.guava'
+    // Set Java compatibility for shadow JAR
+    javaVersion = JavaVersion.VERSION_21
 }
 
 jar {

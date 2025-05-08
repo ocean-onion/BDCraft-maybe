@@ -705,4 +705,86 @@ public class BDRebirthManager {
         // Limit to specified number
         return entries.subList(0, Math.min(limit, entries.size()));
     }
+    
+    /**
+     * Gets the player's trade count.
+     * 
+     * @param uuid The player UUID
+     * @return The trade count
+     */
+    public int getPlayerTradeCount(UUID uuid) {
+        return playerTradeCounters.getOrDefault(uuid, 0);
+    }
+    
+    /**
+     * Increments the player's trade count.
+     * 
+     * @param uuid The player UUID
+     * @return The new trade count
+     */
+    public int incrementPlayerTradeCount(UUID uuid) {
+        int currentCount = getPlayerTradeCount(uuid);
+        playerTradeCounters.put(uuid, currentCount + 1);
+        return currentCount + 1;
+    }
+    
+    /**
+     * Sets the player's trade count.
+     * 
+     * @param uuid The player UUID
+     * @param count The new trade count
+     */
+    public void setPlayerTradeCount(UUID uuid, int count) {
+        playerTradeCounters.put(uuid, count);
+    }
+    
+    /**
+     * Toggles the player's aura effect.
+     * 
+     * @param player The player
+     * @param state The aura state (true = on, false = off)
+     * @return The new aura state
+     */
+    public boolean togglePlayerAura(Player player, boolean state) {
+        UUID uuid = player.getUniqueId();
+        
+        // Only allow aura for players with rebirth level 3+
+        if (getRebirthLevel(player) < 3) {
+            player.sendMessage(ChatColor.RED + "You need at least rebirth level 3 to use aura effects.");
+            playerAuraToggles.put(uuid, false);
+            return false;
+        }
+        
+        playerAuraToggles.put(uuid, state);
+        
+        if (state) {
+            player.sendMessage(ChatColor.LIGHT_PURPLE + "Your rebirth aura has been activated!");
+        } else {
+            player.sendMessage(ChatColor.GRAY + "Your rebirth aura has been deactivated.");
+        }
+        
+        return state;
+    }
+    
+    /**
+     * Toggles the player's aura effect.
+     * 
+     * @param player The player
+     * @return The new aura state
+     */
+    public boolean togglePlayerAura(Player player) {
+        UUID uuid = player.getUniqueId();
+        boolean currentState = playerAuraToggles.getOrDefault(uuid, false);
+        return togglePlayerAura(player, !currentState);
+    }
+    
+    /**
+     * Checks if a player has their aura enabled.
+     * 
+     * @param uuid The player UUID
+     * @return Whether the aura is enabled
+     */
+    public boolean hasAuraEnabled(UUID uuid) {
+        return playerAuraToggles.getOrDefault(uuid, false);
+    }
 }

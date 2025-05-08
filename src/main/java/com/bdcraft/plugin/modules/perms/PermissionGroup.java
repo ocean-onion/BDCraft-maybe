@@ -1,17 +1,20 @@
 package com.bdcraft.plugin.modules.perms;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
- * Represents a permission group with permissions, inheritance, and metadata.
+ * Represents a permission group in the BDCraft permission system.
  */
 public class PermissionGroup {
     private final String name;
     private final String prefix;
     private final String suffix;
     private final List<String> permissions;
-    private final Map<String, String> metadata;
     private PermissionGroup parent;
+    private final Map<String, String> metadata;
     
     /**
      * Creates a new permission group.
@@ -57,9 +60,18 @@ public class PermissionGroup {
     }
     
     /**
+     * Gets the group permissions.
+     * 
+     * @return The group permissions
+     */
+    public List<String> getPermissions() {
+        return new ArrayList<>(permissions);
+    }
+    
+    /**
      * Gets the parent group.
      * 
-     * @return The parent group, or null if none
+     * @return The parent group
      */
     public PermissionGroup getParent() {
         return parent;
@@ -75,32 +87,30 @@ public class PermissionGroup {
     }
     
     /**
-     * Gets the group permissions.
+     * Checks if the group has a permission.
      * 
-     * @return The permissions
-     */
-    public List<String> getPermissions() {
-        return new ArrayList<>(permissions);
-    }
-    
-    /**
-     * Checks if the group has a permission, including inherited permissions.
-     * 
-     * @param permission The permission to check
+     * @param permission The permission
      * @return Whether the group has the permission
      */
     public boolean hasPermission(String permission) {
+        // Check if this group has the permission
         if (permissions.contains(permission)) {
             return true;
         }
         
-        // Check for wildcards
-        for (String perm : permissions) {
-            if (perm.endsWith(".*")) {
-                String base = perm.substring(0, perm.length() - 2);
-                if (permission.startsWith(base)) {
-                    return true;
-                }
+        // Check for wildcard
+        if (permissions.contains("*")) {
+            return true;
+        }
+        
+        // Check for node wildcard
+        String[] parts = permission.split("\\.");
+        StringBuilder builder = new StringBuilder();
+        
+        for (int i = 0; i < parts.length - 1; i++) {
+            builder.append(parts[i]).append(".");
+            if (permissions.contains(builder.toString() + "*")) {
+                return true;
             }
         }
         
@@ -111,20 +121,10 @@ public class PermissionGroup {
     /**
      * Gets the group metadata.
      * 
-     * @return The metadata
+     * @return The group metadata
      */
     public Map<String, String> getMetadata() {
         return new HashMap<>(metadata);
-    }
-    
-    /**
-     * Sets a metadata value.
-     * 
-     * @param key The metadata key
-     * @param value The metadata value
-     */
-    public void setMetadata(String key, String value) {
-        metadata.put(key, value);
     }
     
     /**
@@ -140,5 +140,19 @@ public class PermissionGroup {
         
         // Check parent
         return parent != null ? parent.getMetadata(key) : null;
+    }
+    
+    /**
+     * Sets a metadata value.
+     * 
+     * @param key The metadata key
+     * @param value The metadata value
+     */
+    public void setMetadata(String key, String value) {
+        if (value == null) {
+            metadata.remove(key);
+        } else {
+            metadata.put(key, value);
+        }
     }
 }

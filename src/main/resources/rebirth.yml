@@ -1,6 +1,25 @@
 # BDCraft Rebirth Configuration
 # Contains player rebirth data and settings
 
+# Rebirth requirements
+requirements:
+  min_currency: 100000  # Minimum BD currency required for rebirth
+  min_trades: 500       # Minimum trades required for rebirth
+  min_rank: 5           # Minimum rank required (5 = AGRICULTURAL_EXPERT)
+
+# Rebirth bonuses
+bonuses:
+  experience_multiplier: 0.1    # 10% additional experience per rebirth level
+  crop_yield_multiplier: 0.05   # 5% additional crop yield per rebirth level
+  trade_value_multiplier: 0.08  # 8% better trade values per rebirth level
+  blessing_cooldown: 7200       # Blessing cooldown in seconds (2 hours)
+
+# Aura settings
+aura:
+  radius: 10            # Aura effect radius in blocks
+  update_interval: 100  # Aura update interval in ticks (5 seconds)
+  particle_count: 15    # Number of particles to display
+
 # Player rebirth levels
 levels:
   # Format: player-uuid: rebirth-level
