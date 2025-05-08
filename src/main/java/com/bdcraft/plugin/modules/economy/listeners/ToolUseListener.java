@@ -29,7 +29,7 @@ public class ToolUseListener implements Listener {
      */
     public ToolUseListener(BDCraft plugin) {
         this.plugin = plugin;
-        this.itemManager = plugin.getModuleManager().getEconomyModule().getItemManager();
+        this.itemManager = plugin.getEconomyModule().getItemManager();
         this.stickHandler = new BDStickHandler(plugin);
     }
     

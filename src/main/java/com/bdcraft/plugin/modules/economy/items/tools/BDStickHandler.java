@@ -19,9 +19,9 @@ public class BDStickHandler {
     private static final Random RANDOM = new Random();
     private static final PotionEffectType[] POTION_EFFECTS = {
         PotionEffectType.SPEED,
-        PotionEffectType.JUMP,
+        PotionEffectType.JUMP_BOOST,
         PotionEffectType.NIGHT_VISION,
-        PotionEffectType.INCREASE_DAMAGE, // Strength
+        PotionEffectType.STRENGTH, // Strength (formerly INCREASE_DAMAGE)
         PotionEffectType.FIRE_RESISTANCE,
         PotionEffectType.ABSORPTION
     };
