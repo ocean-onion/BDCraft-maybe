@@ -11,6 +11,7 @@ import com.bdcraft.plugin.modules.economy.BDEconomyModule;
 import com.bdcraft.plugin.modules.perms.BDPermsModule;
 import com.bdcraft.plugin.modules.progression.BDProgressionModule;
 import com.bdcraft.plugin.modules.vital.BDVitalModule;
+import com.bdcraft.plugin.util.PluginBlocker;
 
 import org.bukkit.NamespacedKey;
 import org.bukkit.plugin.PluginDescriptionFile;
@@ -27,6 +28,7 @@ public class BDCraft extends JavaPlugin {
     private Logger logger;
     private ConfigManager configManager;
     private ModuleManager moduleManager;
+    private PluginBlocker pluginBlocker;
     
     // APIs
     private EconomyAPI economyAPI;
@@ -52,6 +54,10 @@ public class BDCraft extends JavaPlugin {
     public void onEnable() {
         logger = getLogger();
         logger.info("Enabling BDCraft...");
+        
+        // Initialize plugin blocker to disable conflicting plugins
+        pluginBlocker = new PluginBlocker(this);
+        pluginBlocker.checkAndDisableConflictingPlugins();
         
         // Initialize managers
         configManager = new ConfigManager(this);

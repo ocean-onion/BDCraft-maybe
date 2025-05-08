@@ -6,6 +6,7 @@ import java.util.List;
 
 /**
  * API for permission operations.
+ * This implementation overrides and blocks other permission plugins such as LuckPerms.
  */
 public interface PermissionAPI {
     /**

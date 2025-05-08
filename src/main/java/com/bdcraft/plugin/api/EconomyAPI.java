@@ -4,6 +4,7 @@ import java.util.UUID;
 
 /**
  * API for economy operations.
+ * This implementation overrides and blocks other economy plugins such as Vault.
  */
 public interface EconomyAPI {
     /**
