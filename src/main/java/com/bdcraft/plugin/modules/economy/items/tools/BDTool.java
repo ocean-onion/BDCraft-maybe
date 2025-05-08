@@ -199,8 +199,8 @@ public class BDTool extends BDItem {
         ItemMeta meta = item.getItemMeta();
         PersistentDataContainer container = meta.getPersistentDataContainer();
         
-        return container.has(BDItem.getNamespacedKey(HARVESTER_KEY), PersistentDataType.STRING) ||
-               container.has(BDItem.getNamespacedKey(ULTIMATE_HARVESTER_KEY), PersistentDataType.STRING);
+        return container.has(BDItem.getStaticNamespacedKey(HARVESTER_KEY), PersistentDataType.STRING) ||
+               container.has(BDItem.getStaticNamespacedKey(ULTIMATE_HARVESTER_KEY), PersistentDataType.STRING);
     }
     
     /**
@@ -217,9 +217,9 @@ public class BDTool extends BDItem {
         ItemMeta meta = item.getItemMeta();
         PersistentDataContainer container = meta.getPersistentDataContainer();
         
-        if (container.has(BDItem.getNamespacedKey(HARVESTER_KEY), PersistentDataType.STRING)) {
+        if (container.has(BDItem.getStaticNamespacedKey(HARVESTER_KEY), PersistentDataType.STRING)) {
             return ToolType.HARVESTER;
-        } else if (container.has(BDItem.getNamespacedKey(ULTIMATE_HARVESTER_KEY), PersistentDataType.STRING)) {
+        } else if (container.has(BDItem.getStaticNamespacedKey(ULTIMATE_HARVESTER_KEY), PersistentDataType.STRING)) {
             return ToolType.ULTIMATE_HARVESTER;
         }
         
@@ -247,7 +247,7 @@ public class BDTool extends BDItem {
         
         String key = type == ToolType.HARVESTER ? HARVESTER_KEY : ULTIMATE_HARVESTER_KEY;
         
-        return container.getOrDefault(BDItem.getNamespacedKey(key + "_durability"), PersistentDataType.INTEGER, 0);
+        return container.getOrDefault(BDItem.getStaticNamespacedKey(key + "_durability"), PersistentDataType.INTEGER, 0);
     }
     
     /**
@@ -279,7 +279,7 @@ public class BDTool extends BDItem {
         
         String key = type == ToolType.HARVESTER ? HARVESTER_KEY : ULTIMATE_HARVESTER_KEY;
         
-        container.set(BDItem.getNamespacedKey(key + "_durability"), PersistentDataType.INTEGER, newDurability);
+        container.set(BDItem.getStaticNamespacedKey(key + "_durability"), PersistentDataType.INTEGER, newDurability);
         
         // Update lore
         List<String> lore = meta.getLore();

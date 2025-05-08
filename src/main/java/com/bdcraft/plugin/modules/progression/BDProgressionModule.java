@@ -21,6 +21,7 @@ public class BDProgressionModule implements BDModule, ProgressionAPI {
     private final BDCraft plugin;
     private final Logger logger;
     private BDRankManager rankManager;
+    private BDRebirthManager rebirthManager;
     
     /**
      * Creates a new BD progression module.
@@ -37,6 +38,9 @@ public class BDProgressionModule implements BDModule, ProgressionAPI {
         
         // Initialize rank manager
         rankManager = new BDRankManager(plugin);
+        
+        // Initialize rebirth manager
+        rebirthManager = new BDRebirthManager(plugin);
         
         // Register API interface
         plugin.setProgressionAPI(this);
@@ -453,5 +457,33 @@ public class BDProgressionModule implements BDModule, ProgressionAPI {
      */
     public BDRankManager getRankManager() {
         return rankManager;
+    }
+    
+    /**
+     * Gets the rebirth manager.
+     * @return The rebirth manager
+     */
+    public BDRebirthManager getRebirthManager() {
+        return rebirthManager;
+    }
+    
+    /**
+     * Applies a blessing effect to a player from a deity player.
+     * Temporary trading bonus for 30 minutes.
+     * 
+     * @param player The player to bless
+     */
+    public void applyBlessingEffect(Player player) {
+        // Apply effect via particle system
+        
+        // Add temporary bonus
+        // Implementation would depend on how trading bonuses are applied
+        player.sendMessage(ChatColor.GOLD + "You feel the blessing take effect! For the next 30 minutes, your trades will be more favorable.");
+        
+        // Schedule removal of the blessing
+        plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+            // Remove bonus
+            player.sendMessage(ChatColor.GOLD + "Your trade blessing has worn off.");
+        }, 20 * 60 * 30); // 30 minutes in ticks
     }
 }

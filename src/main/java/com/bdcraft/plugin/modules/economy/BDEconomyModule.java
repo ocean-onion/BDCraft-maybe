@@ -8,6 +8,11 @@ import com.bdcraft.plugin.modules.economy.listeners.CropGrowthListener;
 import com.bdcraft.plugin.modules.economy.listeners.HouseTokenListener;
 import com.bdcraft.plugin.modules.economy.listeners.MarketTokenListener;
 import com.bdcraft.plugin.modules.economy.listeners.VillagerTradeListener;
+import com.bdcraft.plugin.modules.economy.crafting.BDRecipeManager;
+import com.bdcraft.plugin.modules.economy.crafting.BDRecipeListener;
+import com.bdcraft.plugin.modules.economy.auction.AuctionManager;
+import com.bdcraft.plugin.modules.economy.auction.AuctionHouseGUI;
+import com.bdcraft.plugin.modules.economy.auction.AuctionListener;
 import com.bdcraft.plugin.modules.economy.market.MarketManager;
 import com.bdcraft.plugin.modules.economy.villager.BDVillagerManager;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -34,6 +39,9 @@ public class BDEconomyModule implements Module {
     private BDVillagerManager villagerManager;
     private MarketManager marketManager;
     private BDCropManager cropManager;
+    private BDRecipeManager recipeManager;
+    private AuctionManager auctionManager;
+    private AuctionHouseGUI auctionHouseGUI;
     
     private final Map<UUID, Integer> playerBalances = new HashMap<>();
     private final File economyFile;
@@ -81,12 +89,20 @@ public class BDEconomyModule implements Module {
         this.villagerManager = new BDVillagerManager(plugin);
         this.marketManager = new MarketManager(plugin);
         this.cropManager = new BDCropManager(plugin);
+        this.recipeManager = new BDRecipeManager(plugin);
+        this.auctionManager = new AuctionManager(plugin);
+        this.auctionHouseGUI = new AuctionHouseGUI(plugin, auctionManager);
         
         // Register listeners
         plugin.getServer().getPluginManager().registerEvents(new MarketTokenListener(plugin), plugin);
         plugin.getServer().getPluginManager().registerEvents(new HouseTokenListener(plugin), plugin);
         plugin.getServer().getPluginManager().registerEvents(new CropGrowthListener(plugin), plugin);
         plugin.getServer().getPluginManager().registerEvents(new VillagerTradeListener(plugin), plugin);
+        plugin.getServer().getPluginManager().registerEvents(new BDRecipeListener(plugin, recipeManager), plugin);
+        plugin.getServer().getPluginManager().registerEvents(new AuctionListener(plugin, auctionHouseGUI), plugin);
+        
+        // Register recipes
+        recipeManager.registerRecipes();
         
         // Load player balances
         loadPlayerBalances();
@@ -107,6 +123,9 @@ public class BDEconomyModule implements Module {
         
         // Save markets
         marketManager.saveMarkets();
+        
+        // Unregister recipes
+        recipeManager.unregisterRecipes();
         
         enabled = false;
     }
@@ -198,6 +217,14 @@ public class BDEconomyModule implements Module {
     }
     
     /**
+     * Resets a player's balance (used for rebirth).
+     * @param player The player
+     */
+    public void resetPlayerBalance(Player player) {
+        playerBalances.put(player.getUniqueId(), 0);
+    }
+    
+    /**
      * Gets the item manager.
      * @return The item manager
      */
@@ -227,5 +254,29 @@ public class BDEconomyModule implements Module {
      */
     public BDCropManager getCropManager() {
         return cropManager;
+    }
+    
+    /**
+     * Gets the recipe manager.
+     * @return The recipe manager
+     */
+    public BDRecipeManager getRecipeManager() {
+        return recipeManager;
+    }
+    
+    /**
+     * Gets the auction manager.
+     * @return The auction manager
+     */
+    public AuctionManager getAuctionManager() {
+        return auctionManager;
+    }
+    
+    /**
+     * Gets the auction house GUI.
+     * @return The auction house GUI
+     */
+    public AuctionHouseGUI getAuctionHouseGUI() {
+        return auctionHouseGUI;
     }
 }

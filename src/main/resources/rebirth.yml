@@ -1,0 +1,18 @@
+# BDCraft Rebirth Configuration
+# Contains player rebirth data and settings
+
+# Player rebirth levels
+levels:
+  # Format: player-uuid: rebirth-level
+
+# Player trade counters
+trades:
+  # Format: player-uuid: trade-count
+
+# Player blessing cooldowns
+bless_cooldowns:
+  # Format: player-uuid: timestamp
+
+# Player aura toggles
+aura_toggles:
+  # Format: player-uuid: true/false

@@ -93,7 +93,7 @@ public class BDCropManager implements Listener {
         
         // Check player rank for seed type
         BDRankManager rankManager = plugin.getProgressionModule().getRankManager();
-        int playerRank = rankManager.getPlayerRank(player.getUniqueId());
+        int playerRank = rankManager.getPlayerRank(player);
         
         if (new BDSeed(plugin, seedType).getRequiredRank() > playerRank) {
             player.sendMessage("§cYou need to be at least rank " + new BDSeed(plugin, seedType).getRequiredRankName() + 

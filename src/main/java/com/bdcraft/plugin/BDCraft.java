@@ -178,6 +178,11 @@ public class BDCraft extends JavaPlugin {
         
         // Register player commands
         new com.bdcraft.plugin.commands.player.BDCommand(this);
+        new com.bdcraft.plugin.commands.player.RebirthCommand(this);
+        new com.bdcraft.plugin.commands.player.AuctionHouseCommand(
+            this, 
+            getEconomyModule().getAuctionManager(),
+            getEconomyModule().getAuctionHouseGUI());
         
         logger.info("Commands registered successfully!");
     }
