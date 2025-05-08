@@ -406,6 +406,32 @@ public class BDRankManager {
     }
     
     /**
+     * Gets the experience required for a specific rank.
+     * @param rank The rank
+     * @return The experience required for this rank
+     */
+    public int getExperienceForRank(int rank) {
+        if (rank < RANK_NEWCOMER || rank > RANK_REBORN) {
+            return 0;
+        }
+        
+        return rankExperienceRequirements[rank];
+    }
+    
+    /**
+     * Gets the color for a specific rank.
+     * @param rank The rank
+     * @return The ChatColor for this rank
+     */
+    public ChatColor getRankColor(int rank) {
+        if (rank < RANK_NEWCOMER || rank > RANK_REBORN) {
+            return ChatColor.WHITE;
+        }
+        
+        return rankColors[rank];
+    }
+    
+    /**
      * Checks if a player has rebirth status.
      * @param player The player
      * @return Whether the player has rebirth status

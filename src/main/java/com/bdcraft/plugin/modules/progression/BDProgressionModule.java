@@ -10,7 +10,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Logger;
 
@@ -134,6 +136,18 @@ public class BDProgressionModule implements BDModule, ProgressionAPI {
             return rankManager.getPlayerExperience(player);
         }
         return 0;
+    }
+    
+    /**
+     * Adds experience to a player and checks for rank up.
+     * This method provides compatibility with the listener classes.
+     * 
+     * @param uuid The player UUID
+     * @param amount The amount of experience to add
+     * @return The player's new experience total
+     */
+    public int addExperience(UUID uuid, int amount) {
+        return addPlayerExperience(uuid, amount);
     }
     
     @Override

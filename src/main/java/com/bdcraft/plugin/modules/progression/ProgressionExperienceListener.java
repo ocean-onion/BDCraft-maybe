@@ -84,7 +84,7 @@ public class ProgressionExperienceListener implements Listener {
                     }
                     
                     if (expAmount > 0) {
-                        progressionModule.addExperience(player.getUniqueId(), expAmount);
+                        progressionModule.addPlayerExperience(player.getUniqueId(), expAmount);
                         player.sendMessage(ChatColor.GREEN + "+" + expAmount + " farming experience!");
                     }
                 }
@@ -146,7 +146,7 @@ public class ProgressionExperienceListener implements Listener {
                         
                         if (expAmount > 0) {
                             // Add experience
-                            progressionModule.addExperience(player.getUniqueId(), expAmount);
+                            progressionModule.addPlayerExperience(player.getUniqueId(), expAmount);
                             player.sendMessage(ChatColor.GREEN + "+" + expAmount + " trading experience!");
                             
                             // Possibly improve reputation with this villager
