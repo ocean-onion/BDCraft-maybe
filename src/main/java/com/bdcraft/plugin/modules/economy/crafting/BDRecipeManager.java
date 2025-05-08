@@ -113,25 +113,18 @@ public class BDRecipeManager {
      * Registers the house token recipe.
      * 
      * Pattern:
-     * WWW
-     * WBW
-     * WWW
+     * CCC
+     * CBC
+     * CCC
      * 
-     * Where W = Wood Log (any type), B = BD Crop (any type)
+     * Where C = BD Crop (Fern), B = Bed (any color)
      */
     private void registerHouseTokenRecipe() {
         ItemStack houseToken = itemManager.createBDToken(TokenType.HOUSE, 1);
         NamespacedKey key = new NamespacedKey(plugin, "house_token");
         
         ShapedRecipe recipe = new ShapedRecipe(key, houseToken);
-        recipe.shape("WWW", "WBW", "WWW");
-        
-        // Accept any type of logs
-        RecipeChoice.MaterialChoice logChoice = new RecipeChoice.MaterialChoice(
-                Material.OAK_LOG, Material.SPRUCE_LOG, Material.BIRCH_LOG,
-                Material.JUNGLE_LOG, Material.ACACIA_LOG, Material.DARK_OAK_LOG,
-                Material.CRIMSON_STEM, Material.WARPED_STEM);
-        recipe.setIngredient('W', logChoice);
+        recipe.shape("CCC", "CBC", "CCC");
         
         // Custom ingredient for any BD Crop
         List<ItemStack> cropOptions = new ArrayList<>();
@@ -140,7 +133,16 @@ public class BDRecipeManager {
         cropOptions.add(itemManager.createBDCrop(CropType.PURPLE, 1));
         
         RecipeChoice.ExactChoice bdCropChoice = new RecipeChoice.ExactChoice(cropOptions);
-        recipe.setIngredient('B', bdCropChoice);
+        recipe.setIngredient('C', bdCropChoice);
+        
+        // Accept any type of bed
+        RecipeChoice.MaterialChoice bedChoice = new RecipeChoice.MaterialChoice(
+                Material.WHITE_BED, Material.ORANGE_BED, Material.MAGENTA_BED,
+                Material.LIGHT_BLUE_BED, Material.YELLOW_BED, Material.LIME_BED,
+                Material.PINK_BED, Material.GRAY_BED, Material.LIGHT_GRAY_BED,
+                Material.CYAN_BED, Material.PURPLE_BED, Material.BLUE_BED,
+                Material.BROWN_BED, Material.GREEN_BED, Material.RED_BED, Material.BLACK_BED);
+        recipe.setIngredient('B', bedChoice);
         
         Bukkit.addRecipe(recipe);
         registeredRecipes.add(key);
