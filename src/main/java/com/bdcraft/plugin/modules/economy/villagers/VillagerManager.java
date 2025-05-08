@@ -54,11 +54,9 @@ public class VillagerManager implements Listener {
      * @return The created villager
      */
     public MarketOwnerVillager createMarketOwner(BDMarket market, Location location) {
-        UUID uuid = UUID.randomUUID();
-        MarketOwnerVillager villager = new MarketOwnerVillager(plugin, uuid, market, null);
-        villager.spawn(location);
+        MarketOwnerVillager villager = new MarketOwnerVillager(plugin, location, market);
         
-        villagers.put(uuid, villager);
+        villagers.put(villager.getUuid(), villager);
         return villager;
     }
     

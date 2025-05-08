@@ -374,10 +374,10 @@ public class MarketManagementGUI {
             
             List<String> requirements = getUpgradeRequirements(market.getLevel());
             
+            String requirementsDescription = ChatColor.YELLOW + "Requirements:";
             ItemStack upgradeItem = createGuiItem(Material.EMERALD_BLOCK, 
                     ChatColor.GREEN + "Upgrade to Level " + nextLevel,
-                    ChatColor.YELLOW + "Requirements:",
-                    requirements.toArray(new String[0]));
+                    requirementsDescription, requirements.toArray(new String[0]));
             menu.setItem(25, upgradeItem);
         } else {
             ItemStack maxLevelItem = createGuiItem(Material.GOLDEN_APPLE, 

@@ -494,4 +494,172 @@ public class BDMarket {
         double distance = center.distance(location);
         return distance <= getRadius();
     }
+    
+    /**
+     * Gets the net worth of the market.
+     * This is used for market leaderboard ranking.
+     * 
+     * @return The net worth
+     */
+    public double getNetWorth() {
+        return netWorth;
+    }
+    
+    /**
+     * Sets the net worth of the market.
+     * 
+     * @param netWorth The new net worth
+     */
+    public void setNetWorth(double netWorth) {
+        this.netWorth = netWorth;
+    }
+    
+    /**
+     * Adds to the market's net worth.
+     * 
+     * @param value The value to add
+     */
+    public void addNetWorth(double value) {
+        this.netWorth += value;
+    }
+    
+    /**
+     * Gets the weekly trade count of the market.
+     * This is used for market leaderboard ranking.
+     * 
+     * @return The weekly trade count
+     */
+    public int getWeeklyTradeCount() {
+        return weeklyTradeCount;
+    }
+    
+    /**
+     * Sets the weekly trade count of the market.
+     * 
+     * @param weeklyTradeCount The new weekly trade count
+     */
+    public void setWeeklyTradeCount(int weeklyTradeCount) {
+        this.weeklyTradeCount = weeklyTradeCount;
+    }
+    
+    /**
+     * Increments the weekly trade count by one.
+     */
+    public void incrementWeeklyTradeCount() {
+        this.weeklyTradeCount++;
+    }
+    
+    /**
+     * Checks if the market has been marked for removal.
+     * 
+     * @return True if the market has been removed
+     */
+    public boolean isRemoved() {
+        return removed;
+    }
+    
+    /**
+     * Sets whether the market has been removed.
+     * 
+     * @param removed Whether the market has been removed
+     */
+    public void setRemoved(boolean removed) {
+        this.removed = removed;
+    }
+    
+    /**
+     * Checks if the market allows public access.
+     * When true, anyone can trade with collectors.
+     * When false, only the founder and associates can trade.
+     * 
+     * @return True if public access is allowed
+     */
+    public boolean isPublicAccess() {
+        return publicAccess;
+    }
+    
+    /**
+     * Sets whether the market allows public access.
+     * 
+     * @param publicAccess Whether public access is allowed
+     */
+    public void setPublicAccess(boolean publicAccess) {
+        this.publicAccess = publicAccess;
+    }
+    
+    /**
+     * Checks if the market allows open building.
+     * When true, anyone can place blocks in the market.
+     * When false, only the founder and associates can place blocks.
+     * 
+     * @return True if open building is allowed
+     */
+    public boolean isOpenBuild() {
+        return openBuild;
+    }
+    
+    /**
+     * Sets whether the market allows open building.
+     * 
+     * @param openBuild Whether open building is allowed
+     */
+    public void setOpenBuild(boolean openBuild) {
+        this.openBuild = openBuild;
+    }
+    
+    /**
+     * Checks if the market allows open breaking.
+     * When true, anyone can break blocks in the market.
+     * When false, only the founder and associates can break blocks.
+     * 
+     * @return True if open breaking is allowed
+     */
+    public boolean isOpenBreak() {
+        return openBreak;
+    }
+    
+    /**
+     * Sets whether the market allows open breaking.
+     * 
+     * @param openBreak Whether open breaking is allowed
+     */
+    public void setOpenBreak(boolean openBreak) {
+        this.openBreak = openBreak;
+    }
+    
+    /**
+     * Checks if the market has particles enabled.
+     * 
+     * @return True if particles are enabled
+     */
+    public boolean hasParticles() {
+        return particles;
+    }
+    
+    /**
+     * Sets whether the market has particles enabled.
+     * 
+     * @param particles Whether particles are enabled
+     */
+    public void setParticles(boolean particles) {
+        this.particles = particles;
+    }
+    
+    /**
+     * Checks if the market has sounds enabled.
+     * 
+     * @return True if sounds are enabled
+     */
+    public boolean hasSounds() {
+        return sounds;
+    }
+    
+    /**
+     * Sets whether the market has sounds enabled.
+     * 
+     * @param sounds Whether sounds are enabled
+     */
+    public void setSounds(boolean sounds) {
+        this.sounds = sounds;
+    }
 }

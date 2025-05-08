@@ -180,11 +180,11 @@ public class MarketOwnerVillager extends BDVillager {
     private void addLevel2UpgradeTrade() {
         ItemStack result = createUpgradeResult(2);
         
-        // Required items
-        ItemStack emeralds = new ItemStack(Material.EMERALD, 16);
-        ItemStack wheat = new ItemStack(Material.WHEAT, 64);
+        // Required items - BD Currency note (representing BD currency)
+        ItemStack bdCurrency = createBDCurrencyItem(5000);
+        ItemStack diamonds = new ItemStack(Material.DIAMOND, 16);
         
-        addTrade(emeralds, wheat, result);
+        addTrade(bdCurrency, diamonds, result);
     }
     
     /**
@@ -193,17 +193,11 @@ public class MarketOwnerVillager extends BDVillager {
     private void addLevel3UpgradeTrade() {
         ItemStack result = createUpgradeResult(3);
         
-        // Required items
-        ItemStack emeralds = new ItemStack(Material.EMERALD, 32);
-        ItemStack goldIngots = new ItemStack(Material.GOLD_INGOT, 16);
+        // Required items - according to documentation
+        ItemStack bdCurrency = createBDCurrencyItem(10000);
+        ItemStack diamonds = new ItemStack(Material.DIAMOND, 32);
         
-        addTrade(emeralds, goldIngots, result);
-        
-        // Additional wheat requirement (separate trade)
-        ItemStack wheat = new ItemStack(Material.WHEAT, 64);
-        ItemStack wheatTicket = createWheatTicket();
-        
-        addTrade(wheat, new ItemStack(Material.WHEAT, 64), wheatTicket);
+        addTrade(bdCurrency, diamonds, result);
     }
     
     /**
@@ -212,39 +206,41 @@ public class MarketOwnerVillager extends BDVillager {
     private void addLevel4UpgradeTrade() {
         ItemStack result = createUpgradeResult(4);
         
-        // Required items
-        ItemStack emeralds = new ItemStack(Material.EMERALD, 64);
-        ItemStack diamonds = new ItemStack(Material.DIAMOND, 8);
+        // Required items - according to documentation
+        ItemStack bdCurrency = createBDCurrencyItem(25000);
+        ItemStack diamonds = new ItemStack(Material.DIAMOND, 64);
         
-        addTrade(emeralds, diamonds, result);
-        
-        // Additional wheat requirement (separate trade)
-        ItemStack wheat = new ItemStack(Material.WHEAT, 64);
-        ItemStack wheatTicket = createWheatTicket();
-        
-        addTrade(wheat, new ItemStack(Material.WHEAT, 64), wheatTicket);
-        addTrade(wheat, new ItemStack(Material.WHEAT, 64), wheatTicket);
+        addTrade(bdCurrency, diamonds, result);
     }
     
     /**
-     * Creates a wheat contribution ticket.
+     * Creates a BD Currency item representing a certain amount of BD currency.
      * 
-     * @return The wheat ticket item
+     * @param amount The amount of BD currency
+     * @return The BD currency item
      */
-    private ItemStack createWheatTicket() {
-        ItemStack ticket = new ItemStack(Material.PAPER);
-        ItemMeta meta = ticket.getItemMeta();
+    private ItemStack createBDCurrencyItem(int amount) {
+        ItemStack currency = new ItemStack(Material.PAPER);
+        ItemMeta meta = currency.getItemMeta();
         if (meta != null) {
-            meta.setDisplayName(ChatColor.GOLD + "Wheat Contribution Receipt");
+            meta.setDisplayName(ChatColor.GOLD + "BD Currency Note: " + amount);
             meta.setLore(Arrays.asList(
-                ChatColor.YELLOW + "Thank you for contributing wheat",
-                ChatColor.YELLOW + "to your market's upgrade!",
+                ChatColor.YELLOW + "Value: " + amount + " BD",
                 "",
-                ChatColor.GRAY + "This receipt is proof of your contribution."
+                ChatColor.GRAY + "This note represents BD currency",
+                ChatColor.GRAY + "used for market transactions."
             ));
-            ticket.setItemMeta(meta);
+            
+            // Add persistent data to identify this as a BD currency note
+            meta.getPersistentDataContainer().set(
+                plugin.getNamespacedKey("bd_currency"),
+                PersistentDataType.INTEGER,
+                amount
+            );
+            
+            currency.setItemMeta(meta);
         }
-        return ticket;
+        return currency;
     }
     
     /**
@@ -362,6 +358,18 @@ public class MarketOwnerVillager extends BDVillager {
     @Override
     public void onRemove() {
         // Nothing special to do
+    }
+    
+    /**
+     * Updates the trades for this villager based on the current market level.
+     * This method should be called when the market level changes.
+     */
+    public void updateTrades() {
+        // Clear current trades
+        getVillager().setRecipes(new ArrayList<>());
+        
+        // Add appropriate upgrade trades based on current market level
+        addUpgradeTrades();
     }
     
     /**

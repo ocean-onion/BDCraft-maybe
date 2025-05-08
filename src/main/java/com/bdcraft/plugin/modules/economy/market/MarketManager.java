@@ -212,6 +212,23 @@ public class MarketManager {
     }
     
     /**
+     * Gets all world names that have markets in them.
+     * @return A list of world names with markets
+     */
+    public List<String> getMarketWorlds() {
+        List<String> worlds = new ArrayList<>();
+        
+        for (BDMarket market : markets.values()) {
+            String worldName = market.getCenter().getWorld().getName();
+            if (!worlds.contains(worldName)) {
+                worlds.add(worldName);
+            }
+        }
+        
+        return worlds;
+    }
+    
+    /**
      * Checks if a location is in a market radius.
      * @param market The market
      * @param location The location
