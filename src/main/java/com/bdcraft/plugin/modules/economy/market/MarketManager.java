@@ -39,6 +39,9 @@ public class MarketManager {
         this.villagerManager = plugin.getEconomyModule().getVillagerManager();
     }
     
+    // Minimum distance between markets (in blocks) according to docs
+    private static final int MIN_MARKET_DISTANCE = 30;
+    
     /**
      * Creates a market.
      * @param center The center of the market
@@ -48,6 +51,12 @@ public class MarketManager {
     public BDMarket createMarket(Location center, Player founder) {
         // Check if there's already a market at this location
         if (getMarketAt(center) != null) {
+            return null;
+        }
+        
+        // Check if this location is too close to another market
+        if (isTooCloseToOtherMarkets(center)) {
+            founder.sendMessage("§cYou cannot create a market here. It's too close to another market.");
             return null;
         }
         
@@ -65,6 +74,33 @@ public class MarketManager {
         logger.info("Created market " + marketId + " at " + formatLocation(center) + " by " + founder.getName());
         
         return market;
+    }
+    
+    /**
+     * Checks if a location is too close to existing markets.
+     * According to documentation, markets need to be at least 30 blocks apart.
+     * 
+     * @param location The location to check
+     * @return True if the location is too close to an existing market
+     */
+    public boolean isTooCloseToOtherMarkets(Location location) {
+        World world = location.getWorld();
+        
+        for (BDMarket market : markets.values()) {
+            // Skip markets in different worlds
+            if (!market.getCenter().getWorld().equals(world)) {
+                continue;
+            }
+            
+            double distance = market.getCenter().distance(location);
+            
+            // Markets must be at least MIN_MARKET_DISTANCE blocks apart
+            if (distance < MIN_MARKET_DISTANCE) {
+                return true;
+            }
+        }
+        
+        return false;
     }
     
     /**
@@ -187,7 +223,10 @@ public class MarketManager {
         }
         
         double distance = market.getCenter().distance(location);
-        int marketRadius = 20 + (market.getLevel() * 5); // Base radius + 5 per level
+        
+        // Per documentation: Market is 49x49 blocks (24 block radius from center)
+        // This is fixed, not dependent on market level
+        int marketRadius = 24;
         
         return distance <= marketRadius;
     }

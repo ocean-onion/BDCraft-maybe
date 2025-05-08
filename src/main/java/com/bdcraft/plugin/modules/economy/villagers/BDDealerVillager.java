@@ -13,6 +13,7 @@ import com.bdcraft.plugin.modules.economy.items.crops.BDCrop;
 import com.bdcraft.plugin.modules.economy.items.crops.BDCrop.CropType;
 import com.bdcraft.plugin.modules.economy.items.seeds.BDSeed;
 import com.bdcraft.plugin.modules.economy.items.seeds.BDSeed.SeedType;
+import com.bdcraft.plugin.modules.economy.items.tools.ToolType;
 import com.bdcraft.plugin.modules.economy.market.BDMarket;
 
 import java.util.ArrayList;
@@ -59,23 +60,25 @@ public class BDDealerVillager extends BDVillager {
         // Clear existing trades
         entity.setRecipes(new ArrayList<>());
         
-        // Add trades based on market level
+        // Add trades based on market level and according to documentation
         List<MerchantRecipe> trades = new ArrayList<>();
         
-        // Basic trades available at all levels
+        // Regular BD Seeds: Always available
         trades.add(createRegularSeedBuyTrade());
-        trades.add(createRegularCropSellTrade());
         
-        // Level 2+ trades
+        // Green BD Seeds: Available to Farmer rank (or market level 2+)
         if (market.getLevel() >= 2) {
             trades.add(createGreenSeedBuyTrade());
-            trades.add(createGreenCropSellTrade());
         }
         
-        // Level 4+ trades
+        // Purple BD Seeds: Available to Master Farmer rank (or market level 4+)
         if (market.getLevel() >= 4) {
             trades.add(createPurpleSeedBuyTrade());
-            trades.add(createPurpleCropSellTrade());
+        }
+        
+        // BD Harvester: Available to Expert Farmer rank (or market level 3+)
+        if (market.getLevel() >= 3) {
+            trades.add(createBDHarvesterTrade());
         }
         
         // Apply trades to villager
@@ -88,24 +91,11 @@ public class BDDealerVillager extends BDVillager {
      * @return The trade recipe
      */
     private MerchantRecipe createRegularSeedBuyTrade() {
-        ItemStack seeds = plugin.getEconomyModule().getItemManager().createBDSeed(SeedType.REGULAR, 1);
+        // Per documentation: Regular BD Seeds: 5 seeds for 1 emerald
+        ItemStack seeds = plugin.getEconomyModule().getItemManager().createBDSeed(SeedType.REGULAR, 5);
         
         MerchantRecipe recipe = new MerchantRecipe(seeds, 0, 12, true);
         recipe.addIngredient(new ItemStack(Material.EMERALD, 1));
-        
-        return recipe;
-    }
-    
-    /**
-     * Creates a trade for selling regular crops.
-     * 
-     * @return The trade recipe
-     */
-    private MerchantRecipe createRegularCropSellTrade() {
-        ItemStack emeralds = new ItemStack(Material.EMERALD, 1);
-        
-        MerchantRecipe recipe = new MerchantRecipe(emeralds, 0, 16, true);
-        recipe.addIngredient(plugin.getEconomyModule().getItemManager().createBDCrop(CropType.REGULAR, 2));
         
         return recipe;
     }
@@ -116,24 +106,11 @@ public class BDDealerVillager extends BDVillager {
      * @return The trade recipe
      */
     private MerchantRecipe createGreenSeedBuyTrade() {
+        // Per documentation: Green BD Seeds: 9 emeralds each
         ItemStack seeds = plugin.getEconomyModule().getItemManager().createBDSeed(SeedType.GREEN, 1);
         
         MerchantRecipe recipe = new MerchantRecipe(seeds, 0, 8, true);
-        recipe.addIngredient(new ItemStack(Material.EMERALD, 3));
-        
-        return recipe;
-    }
-    
-    /**
-     * Creates a trade for selling green crops.
-     * 
-     * @return The trade recipe
-     */
-    private MerchantRecipe createGreenCropSellTrade() {
-        ItemStack emeralds = new ItemStack(Material.EMERALD, 3);
-        
-        MerchantRecipe recipe = new MerchantRecipe(emeralds, 0, 12, true);
-        recipe.addIngredient(plugin.getEconomyModule().getItemManager().createBDCrop(CropType.GREEN, 1));
+        recipe.addIngredient(new ItemStack(Material.EMERALD, 9));
         
         return recipe;
     }
@@ -144,24 +121,26 @@ public class BDDealerVillager extends BDVillager {
      * @return The trade recipe
      */
     private MerchantRecipe createPurpleSeedBuyTrade() {
+        // Per documentation: Purple BD Seeds: 25 emeralds each
         ItemStack seeds = plugin.getEconomyModule().getItemManager().createBDSeed(SeedType.PURPLE, 1);
         
         MerchantRecipe recipe = new MerchantRecipe(seeds, 0, 5, true);
-        recipe.addIngredient(new ItemStack(Material.EMERALD, 8));
+        recipe.addIngredient(new ItemStack(Material.EMERALD, 25));
         
         return recipe;
     }
     
     /**
-     * Creates a trade for selling purple crops.
+     * Creates a trade for the BD Harvester tool.
      * 
      * @return The trade recipe
      */
-    private MerchantRecipe createPurpleCropSellTrade() {
-        ItemStack emeralds = new ItemStack(Material.EMERALD, 10);
+    private MerchantRecipe createBDHarvesterTrade() {
+        // Per documentation: BD Harvester: 16 diamonds
+        ItemStack harvester = plugin.getEconomyModule().getItemManager().createBDTool(ToolType.HARVESTER);
         
-        MerchantRecipe recipe = new MerchantRecipe(emeralds, 0, 8, true);
-        recipe.addIngredient(plugin.getEconomyModule().getItemManager().createBDCrop(CropType.PURPLE, 1));
+        MerchantRecipe recipe = new MerchantRecipe(harvester, 0, 3, true);
+        recipe.addIngredient(new ItemStack(Material.DIAMOND, 16));
         
         return recipe;
     }

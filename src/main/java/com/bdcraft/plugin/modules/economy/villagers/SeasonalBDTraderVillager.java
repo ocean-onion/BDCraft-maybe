@@ -251,16 +251,15 @@ public class SeasonalBDTraderVillager extends BDVillager {
      */
     private Season determineSeason() {
         if (entity != null && entity.getWorld() != null) {
+            // Get current day number - 20000 days is a full cycle
             long worldDays = entity.getWorld().getFullTime() / 24000L;
+            long cycleDays = worldDays % 20000;
             
-            if (worldDays % 20000 < 5000) {
-                return Season.SPRING;
-            } else if (worldDays % 20000 < 10000) {
-                return Season.SUMMER;
-            } else if (worldDays % 20000 < 15000) {
-                return Season.FALL;
-            } else {
-                return Season.WINTER;
+            // Use season range from documentation
+            for (Season season : Season.values()) {
+                if (cycleDays >= season.getStartDay() && cycleDays <= season.getEndDay()) {
+                    return season;
+                }
             }
         }
         
@@ -280,10 +279,49 @@ public class SeasonalBDTraderVillager extends BDVillager {
     /**
      * Enum for Minecraft seasons.
      */
+    /**
+     * Enum representing Minecraft seasons according to documentation.
+     * These align with the Trading Calendar days from the documentation.
+     */
     public enum Season {
-        SPRING,
-        SUMMER,
-        FALL,
-        WINTER
+        /**
+         * Spring season (Days 0-5000).
+         * Special items: Faster-growing seed variants, more favorable green seed trades.
+         */
+        SPRING(0, 5000),
+        
+        /**
+         * Summer season (Days 5001-10000).
+         * Special items: Heat-resistant seeds that don't require water, BD Harvester with bonus durability.
+         */
+        SUMMER(5001, 10000),
+        
+        /**
+         * Fall season (Days 10001-15000).
+         * Special items: Purple seed discount, special autumn-themed items.
+         */
+        FALL(10001, 15000),
+        
+        /**
+         * Winter season (Days 15001-20000).
+         * Special items: Cold-resistant seeds, special winter-themed items, end-of-year special offers.
+         */
+        WINTER(15001, 20000);
+        
+        private final int startDay;
+        private final int endDay;
+        
+        Season(int startDay, int endDay) {
+            this.startDay = startDay;
+            this.endDay = endDay;
+        }
+        
+        public int getStartDay() {
+            return startDay;
+        }
+        
+        public int getEndDay() {
+            return endDay;
+        }
     }
 }

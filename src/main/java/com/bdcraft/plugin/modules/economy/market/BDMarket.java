@@ -3,8 +3,11 @@ package com.bdcraft.plugin.modules.economy.market;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
+import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
 import com.bdcraft.plugin.BDCraft;
@@ -23,7 +26,7 @@ import java.util.UUID;
  */
 public class BDMarket {
     public static final int MAX_MARKET_LEVEL = 5;
-    private static final int MARKET_RADIUS = 49; // Documentation specifies 49x49 block radius
+    private static final int MARKET_AREA_SIZE = 49; // Documentation specifies 49x49 block area
     
     private final UUID id;
     private final Location center;
@@ -34,6 +37,9 @@ public class BDMarket {
     
     // Maps trader UUIDs to their types
     private final Map<UUID, String> traders;
+    
+    // List of market associates (max 5 according to documentation)
+    private final List<UUID> associates;
     
     // Market owner and dealer villagers
     private UUID marketOwnerUuid;
@@ -54,6 +60,7 @@ public class BDMarket {
         this.level = 1; // Start at level 1
         this.priceModifier = 1.0; // Default price modifier
         this.traders = new HashMap<>();
+        this.associates = new ArrayList<>();
     }
     
     /**
@@ -266,39 +273,89 @@ public class BDMarket {
      * @return The radius
      */
     public int getRadius() {
-        return MARKET_RADIUS / 2; // 49x49 area, so radius is half of 49
+        return 24; // Documentation specifies a 49x49 area (24 blocks from center in each direction)
     }
     
     /**
-     * Shows the market boundary to a player.
+     * Shows the market boundary to a player using wool blocks according to documentation.
+     * - Top layer blocks within boundary become red wool for 10 seconds
+     * - Corner blocks become black wool for 10 seconds
+     * - All changed blocks automatically revert to original state
+     * - Temporary blocks are unbreakable during visualization
+     * 
      * @param player The player to show the boundary to
      * @param plugin The plugin instance
      */
     public void showBoundary(Player player, BDCraft plugin) {
         int radius = getRadius();
-        int particlesPerCircle = 80; // Number of particles to create a complete circle
+        World world = center.getWorld();
         
-        // Schedule a series of tasks to show particles for 30 seconds (600 ticks)
-        int taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
-            // Create a circle of particles at player's height
-            for (int i = 0; i < particlesPerCircle; i++) {
-                double angle = 2 * Math.PI * i / particlesPerCircle;
-                double x = center.getX() + radius * Math.cos(angle);
-                double z = center.getZ() + radius * Math.sin(angle);
+        // Store original blocks to restore them later
+        Map<Location, org.bukkit.block.BlockState> originalBlocks = new HashMap<>();
+        
+        // Create a task to visualize the boundary with wool blocks
+        Bukkit.getScheduler().runTask(plugin, () -> {
+            try {
+                // Get the highest block Y at player location for visualization height
+                int visualY = world.getHighestBlockYAt(player.getLocation()) + 1;
                 
-                Location particleLoc = new Location(center.getWorld(), x, player.getLocation().getY(), z);
-                player.spawnParticle(Particle.REDSTONE, particleLoc, 1, 
-                        new org.bukkit.Particle.DustOptions(org.bukkit.Color.fromRGB(255, 215, 0), 1.0f));
+                // Mark boundary with red wool (14 is the data value for red wool)
+                // Top and bottom edges
+                for (int x = -radius; x <= radius; x++) {
+                    // Top edge
+                    markBoundaryBlock(world, originalBlocks, center.getBlockX() + x, visualY, center.getBlockZ() - radius, 14);
+                    markBoundaryBlock(world, originalBlocks, center.getBlockX() + x, visualY, center.getBlockZ() + radius, 14);
+                    
+                    // Left and right edges
+                    markBoundaryBlock(world, originalBlocks, center.getBlockX() - radius, visualY, center.getBlockZ() + x, 14);
+                    markBoundaryBlock(world, originalBlocks, center.getBlockX() + radius, visualY, center.getBlockZ() + x, 14);
+                }
+                
+                // Mark corners with black wool (15 is the data value for black wool)
+                markBoundaryBlock(world, originalBlocks, center.getBlockX() - radius, visualY, center.getBlockZ() - radius, 15);
+                markBoundaryBlock(world, originalBlocks, center.getBlockX() + radius, visualY, center.getBlockZ() - radius, 15);
+                markBoundaryBlock(world, originalBlocks, center.getBlockX() - radius, visualY, center.getBlockZ() + radius, 15);
+                markBoundaryBlock(world, originalBlocks, center.getBlockX() + radius, visualY, center.getBlockZ() + radius, 15);
+                
+                player.sendMessage(ChatColor.GOLD + "Showing market boundary with radius " + radius + " blocks for 10 seconds.");
+                
+                // Schedule a task to restore the original blocks after 10 seconds
+                Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+                    for (Map.Entry<Location, org.bukkit.block.BlockState> entry : originalBlocks.entrySet()) {
+                        entry.getValue().update(true, false);
+                    }
+                    player.sendMessage(ChatColor.GOLD + "Market boundary display has ended. Original blocks restored.");
+                }, 10 * 20L); // 10 seconds
+            } catch (Exception e) {
+                plugin.getLogger().severe("Error showing market boundary: " + e.getMessage());
+                e.printStackTrace();
+                player.sendMessage(ChatColor.RED + "An error occurred while showing the market boundary.");
             }
-        }, 0L, 20L); // Run every second
+        });
+    }
+    
+    /**
+     * Helper method to mark a boundary block with wool
+     * @param world The world
+     * @param originalBlocks Map to store original block states
+     * @param x X coordinate
+     * @param y Y coordinate
+     * @param z Z coordinate
+     * @param woolData The wool color data value (14 for red, 15 for black)
+     */
+    private void markBoundaryBlock(World world, Map<Location, org.bukkit.block.BlockState> originalBlocks, int x, int y, int z, int woolData) {
+        Location loc = new Location(world, x, y, z);
+        Block block = world.getBlockAt(loc);
         
-        // Schedule task to stop after 30 seconds
-        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-            Bukkit.getScheduler().cancelTask(taskId);
-            player.sendMessage(ChatColor.GOLD + "Market boundary display has ended.");
-        }, 30 * 20L); // 30 seconds
+        // Store the original block state before changing it
+        originalBlocks.put(loc, block.getState());
         
-        player.sendMessage(ChatColor.GOLD + "Showing market boundary with radius " + radius + " for 30 seconds.");
+        // In Paper 1.21, we can use the material names directly for colored wool
+        if (woolData == 15) { // Black wool
+            block.setType(Material.BLACK_WOOL);
+        } else { // Red wool (default)
+            block.setType(Material.RED_WOOL);
+        }
     }
     
     /**
@@ -313,6 +370,103 @@ public class BDMarket {
         player.sendMessage(ChatColor.YELLOW + "Price Modifier: " + ChatColor.WHITE + 
                 String.format("%.2f", priceModifier) + "x");
         player.sendMessage(ChatColor.YELLOW + "Traders: " + ChatColor.WHITE + getTotalTraderCount());
+        
+        // Show associates info
+        player.sendMessage(ChatColor.YELLOW + "Associates: " + ChatColor.WHITE + associates.size() + "/5");
+        if (!associates.isEmpty()) {
+            StringBuilder associateNames = new StringBuilder();
+            for (UUID associateId : associates) {
+                Player associatePlayer = Bukkit.getPlayer(associateId);
+                if (associatePlayer != null) {
+                    if (associateNames.length() > 0) {
+                        associateNames.append(", ");
+                    }
+                    associateNames.append(associatePlayer.getName());
+                }
+            }
+            player.sendMessage(ChatColor.YELLOW + "Associate Names: " + ChatColor.WHITE + associateNames.toString());
+        }
+    }
+    
+    /**
+     * Adds an associate to the market.
+     * Maximum 5 associates per market according to documentation.
+     * 
+     * @param playerId The UUID of the player to add as an associate
+     * @param playerName The name of the player to add as an associate
+     * @return True if the player was added, false if already an associate or max associates reached
+     */
+    public boolean addAssociate(UUID playerId, String playerName) {
+        // Check if player is already an associate
+        if (associates.contains(playerId)) {
+            return false;
+        }
+        
+        // Max 5 associates as specified in documentation
+        if (associates.size() >= 5) {
+            return false;
+        }
+        
+        associates.add(playerId);
+        
+        // Notify nearby players of the new associate
+        center.getWorld().getPlayers().stream()
+                .filter(p -> center.distance(p.getLocation()) <= getRadius())
+                .forEach(p -> p.sendMessage(ChatColor.GREEN + playerName + 
+                        " has been added as an associate to " + founderName + "'s market!"));
+        
+        return true;
+    }
+    
+    /**
+     * Removes an associate from the market.
+     * 
+     * @param playerId The UUID of the player to remove as an associate
+     * @param playerName The name of the player to remove as an associate
+     * @return True if the player was removed, false if not an associate
+     */
+    public boolean removeAssociate(UUID playerId, String playerName) {
+        if (!associates.contains(playerId)) {
+            return false;
+        }
+        
+        associates.remove(playerId);
+        
+        // Notify nearby players of the associate removal
+        center.getWorld().getPlayers().stream()
+                .filter(p -> center.distance(p.getLocation()) <= getRadius())
+                .forEach(p -> p.sendMessage(ChatColor.YELLOW + playerName + 
+                        " is no longer an associate of " + founderName + "'s market."));
+        
+        return true;
+    }
+    
+    /**
+     * Checks if a player is an associate of the market.
+     * 
+     * @param playerId The UUID of the player to check
+     * @return True if the player is an associate, false otherwise
+     */
+    public boolean isAssociate(UUID playerId) {
+        return associates.contains(playerId);
+    }
+    
+    /**
+     * Gets all associates of the market.
+     * 
+     * @return A list of associate UUIDs
+     */
+    public List<UUID> getAssociates() {
+        return new ArrayList<>(associates);
+    }
+    
+    /**
+     * Gets the number of associates in the market.
+     * 
+     * @return The number of associates
+     */
+    public int getAssociateCount() {
+        return associates.size();
     }
     
     /**

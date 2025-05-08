@@ -81,7 +81,8 @@ public class BDCollectorVillager extends BDVillager {
      * @return The trade recipe
      */
     private MerchantRecipe createRegularCropTrade() {
-        // Result: 2 emeralds (server currency is handled separately)
+        // Per documentation: Regular BD Crops: 10 crops for 2 emeralds + 50 server currency
+        // The server currency will be handled separately in the InventoryClickEvent
         ItemStack result = new ItemStack(Material.EMERALD, 2);
         
         MerchantRecipe recipe = new MerchantRecipe(result, 0, 16, true);
@@ -96,7 +97,8 @@ public class BDCollectorVillager extends BDVillager {
      * @return The trade recipe
      */
     private MerchantRecipe createGreenCropTrade() {
-        // Result: 10 emeralds (server currency is handled separately)
+        // Per documentation: Green BD Crops: 5 crops for 10 emeralds + 150 server currency
+        // The server currency will be handled separately in the InventoryClickEvent
         ItemStack result = new ItemStack(Material.EMERALD, 10);
         
         MerchantRecipe recipe = new MerchantRecipe(result, 0, 12, true);
@@ -111,7 +113,8 @@ public class BDCollectorVillager extends BDVillager {
      * @return The trade recipe
      */
     private MerchantRecipe createPurpleCropTrade() {
-        // Result: 20 emeralds (server currency is handled separately)
+        // Per documentation: Purple BD Crops: 3 crops for 20 emeralds + 400 server currency
+        // The server currency will be handled separately in the InventoryClickEvent
         ItemStack result = new ItemStack(Material.EMERALD, 20);
         
         MerchantRecipe recipe = new MerchantRecipe(result, 0, 8, true);
@@ -126,7 +129,7 @@ public class BDCollectorVillager extends BDVillager {
      * @return The trade recipe
      */
     private MerchantRecipe createBulkRegularCropTrade() {
-        // Result: 1 diamond
+        // Per documentation: Bulk Trade: 50 regular BD crops for 1 diamond
         ItemStack result = new ItemStack(Material.DIAMOND, 1);
         
         MerchantRecipe recipe = new MerchantRecipe(result, 0, 5, true);
