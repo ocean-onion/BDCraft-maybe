@@ -102,6 +102,12 @@ commands:
     usage: /bddeathinfo
     permission: bdvital.deathinfo
     
+  bdmarketwarp:
+    description: Market warp system commands
+    usage: /bdmarketwarp <n|set|remove|list>
+    aliases: [bdmw]
+    permission: bdvital.market.warp
+    
   # Rebirth Command
   bdrebirth:
     description: Manage player rebirth and prestige

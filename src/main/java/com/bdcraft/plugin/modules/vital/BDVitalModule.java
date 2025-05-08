@@ -5,12 +5,14 @@ import com.bdcraft.plugin.modules.Module;
 import com.bdcraft.plugin.modules.ModuleManager;
 import com.bdcraft.plugin.modules.vital.commands.DeathInfoCommand;
 import com.bdcraft.plugin.modules.vital.commands.HomeCommand;
+import com.bdcraft.plugin.modules.vital.commands.MarketWarpCommand;
 import com.bdcraft.plugin.modules.vital.commands.MessageCommands;
 import com.bdcraft.plugin.modules.vital.commands.TeleportCommands;
 import com.bdcraft.plugin.modules.vital.home.HomeManager;
 import com.bdcraft.plugin.modules.vital.listeners.PlayerListener;
 import com.bdcraft.plugin.modules.vital.message.MessageManager;
 import com.bdcraft.plugin.modules.vital.teleport.TeleportManager;
+import com.bdcraft.plugin.modules.vital.warp.MarketWarpManager;
 
 import java.util.logging.Logger;
 
@@ -26,11 +28,13 @@ public class BDVitalModule implements Module {
     private HomeManager homeManager;
     private TeleportManager teleportManager;
     private MessageManager messageManager;
+    private MarketWarpManager marketWarpManager;
     
     private HomeCommand homeCommand;
     private TeleportCommands teleportCommands;
     private MessageCommands messageCommands;
     private DeathInfoCommand deathInfoCommand;
+    private MarketWarpCommand marketWarpCommand;
     
     private PlayerListener playerListener;
     
@@ -62,12 +66,14 @@ public class BDVitalModule implements Module {
         this.homeManager = new HomeManager(plugin);
         this.teleportManager = new TeleportManager(plugin);
         this.messageManager = new MessageManager(plugin);
+        this.marketWarpManager = new MarketWarpManager(plugin);
         
         // Register commands
         this.homeCommand = new HomeCommand(plugin, this);
         this.teleportCommands = new TeleportCommands(plugin, this);
         this.messageCommands = new MessageCommands(plugin, this);
         this.deathInfoCommand = new DeathInfoCommand(plugin, this);
+        this.marketWarpCommand = new MarketWarpCommand(plugin, this, marketWarpManager);
         
         // Register listeners
         this.playerListener = new PlayerListener(plugin, this);
@@ -87,6 +93,7 @@ public class BDVitalModule implements Module {
         // Save data
         homeManager.saveHomes();
         messageManager.saveMail();
+        marketWarpManager.saveWarps();
         
         enabled = false;
     }
@@ -113,5 +120,13 @@ public class BDVitalModule implements Module {
      */
     public MessageManager getMessageManager() {
         return messageManager;
+    }
+    
+    /**
+     * Gets the market warp manager.
+     * @return The market warp manager
+     */
+    public MarketWarpManager getMarketWarpManager() {
+        return marketWarpManager;
     }
 }
