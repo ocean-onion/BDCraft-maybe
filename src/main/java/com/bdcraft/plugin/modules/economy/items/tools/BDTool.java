@@ -19,6 +19,7 @@ import java.util.List;
  * Represents a BD tool item.
  */
 public class BDTool extends BDItem {
+    public static final String BDSTICK_KEY = "bd_stick";
     public static final String HARVESTER_KEY = "bd_harvester";
     public static final String ULTIMATE_HARVESTER_KEY = "bd_ultimate_harvester";
     
@@ -37,13 +38,17 @@ public class BDTool extends BDItem {
         this.toolType = toolType;
         
         switch (toolType) {
+            case BDSTICK:
+                this.requiredRank = 0; // No rank requirement
+                this.durability = 5; // 5 uses before breaking
+                break;
             case HARVESTER:
-                this.requiredRank = 2; // Farmer rank
-                this.durability = 64;
+                this.requiredRank = 3; // Expert Farmer rank (3rd rank)
+                this.durability = 20; // 20 uses before breaking
                 break;
             case ULTIMATE_HARVESTER:
-                this.requiredRank = 4; // Master Farmer rank
-                this.durability = 128;
+                this.requiredRank = 5; // Agricultural Expert rank (5th rank)
+                this.durability = 60; // 60 uses before breaking
                 break;
             default:
                 this.requiredRank = 0;
@@ -61,24 +66,32 @@ public class BDTool extends BDItem {
         List<String> loreLines = new ArrayList<>();
         
         switch (toolType) {
+            case BDSTICK:
+                material = Material.BLAZE_ROD;
+                displayName = "BD Stick";
+                itemKey = BDSTICK_KEY;
+                color = ChatColor.GOLD;
+                loreLines.add(ChatColor.GRAY + "Applies random potion effects when used");
+                loreLines.add(ChatColor.GRAY + "Required for market creation");
+                loreLines.add(ChatColor.GRAY + "Durability: " + durability + " uses");
+                break;
             case HARVESTER:
                 material = Material.IRON_HOE;
                 displayName = "BD Harvester";
                 itemKey = HARVESTER_KEY;
                 color = ChatColor.AQUA;
-                loreLines.add(ChatColor.GRAY + "Increased BD crop yields");
-                loreLines.add(ChatColor.GRAY + "25% chance for double crops");
-                loreLines.add(ChatColor.GRAY + "Durability: " + durability);
+                loreLines.add(ChatColor.GRAY + "+50% bonus yield when harvesting BD crops");
+                loreLines.add(ChatColor.GRAY + "Creates blue particles when harvesting");
+                loreLines.add(ChatColor.GRAY + "Durability: " + durability + " uses");
                 break;
             case ULTIMATE_HARVESTER:
                 material = Material.DIAMOND_HOE;
                 displayName = "Ultimate BD Harvester";
                 itemKey = ULTIMATE_HARVESTER_KEY;
                 color = ChatColor.LIGHT_PURPLE;
-                loreLines.add(ChatColor.GRAY + "Significantly increased BD crop yields");
-                loreLines.add(ChatColor.GRAY + "50% chance for double crops");
-                loreLines.add(ChatColor.GRAY + "10% chance for triple crops");
-                loreLines.add(ChatColor.GRAY + "Durability: " + durability);
+                loreLines.add(ChatColor.GRAY + "+100% bonus yield when harvesting BD crops");
+                loreLines.add(ChatColor.GRAY + "Creates purple particles when harvesting");
+                loreLines.add(ChatColor.GRAY + "Durability: " + durability + " uses");
                 break;
             default:
                 material = Material.WOODEN_HOE;
@@ -162,11 +175,11 @@ public class BDTool extends BDItem {
             case 2:
                 return "Farmer";
             case 3:
-                return "Experienced Farmer";
+                return "Expert Farmer";
             case 4:
                 return "Master Farmer";
             case 5:
-                return "BD Expert";
+                return "Agricultural Expert";
             default:
                 return "Unknown";
         }
@@ -180,9 +193,9 @@ public class BDTool extends BDItem {
     public double getYieldMultiplier() {
         switch (toolType) {
             case HARVESTER:
-                return 1.25; // 25% increase
+                return 1.5; // 50% increase (from documentation)
             case ULTIMATE_HARVESTER:
-                return 1.6; // 60% increase
+                return 2.0; // 100% increase (from documentation)
             default:
                 return 1.0;
         }
@@ -202,7 +215,8 @@ public class BDTool extends BDItem {
         ItemMeta meta = item.getItemMeta();
         PersistentDataContainer container = meta.getPersistentDataContainer();
         
-        return container.has(BDItem.getStaticNamespacedKey(HARVESTER_KEY), PersistentDataType.STRING) ||
+        return container.has(BDItem.getStaticNamespacedKey(BDSTICK_KEY), PersistentDataType.STRING) ||
+               container.has(BDItem.getStaticNamespacedKey(HARVESTER_KEY), PersistentDataType.STRING) ||
                container.has(BDItem.getStaticNamespacedKey(ULTIMATE_HARVESTER_KEY), PersistentDataType.STRING);
     }
     
@@ -220,7 +234,9 @@ public class BDTool extends BDItem {
         ItemMeta meta = item.getItemMeta();
         PersistentDataContainer container = meta.getPersistentDataContainer();
         
-        if (container.has(BDItem.getStaticNamespacedKey(HARVESTER_KEY), PersistentDataType.STRING)) {
+        if (container.has(BDItem.getStaticNamespacedKey(BDSTICK_KEY), PersistentDataType.STRING)) {
+            return ToolType.BDSTICK;
+        } else if (container.has(BDItem.getStaticNamespacedKey(HARVESTER_KEY), PersistentDataType.STRING)) {
             return ToolType.HARVESTER;
         } else if (container.has(BDItem.getStaticNamespacedKey(ULTIMATE_HARVESTER_KEY), PersistentDataType.STRING)) {
             return ToolType.ULTIMATE_HARVESTER;
@@ -248,7 +264,20 @@ public class BDTool extends BDItem {
             return 0;
         }
         
-        String key = type == ToolType.HARVESTER ? HARVESTER_KEY : ULTIMATE_HARVESTER_KEY;
+        String key;
+        switch (type) {
+            case BDSTICK:
+                key = BDSTICK_KEY;
+                break;
+            case HARVESTER:
+                key = HARVESTER_KEY;
+                break;
+            case ULTIMATE_HARVESTER:
+                key = ULTIMATE_HARVESTER_KEY;
+                break;
+            default:
+                return 0;
+        }
         
         return container.getOrDefault(BDItem.getStaticNamespacedKey(key + "_durability"), PersistentDataType.INTEGER, 0);
     }
@@ -280,7 +309,20 @@ public class BDTool extends BDItem {
             return false;
         }
         
-        String key = type == ToolType.HARVESTER ? HARVESTER_KEY : ULTIMATE_HARVESTER_KEY;
+        String key;
+        switch (type) {
+            case BDSTICK:
+                key = BDSTICK_KEY;
+                break;
+            case HARVESTER:
+                key = HARVESTER_KEY;
+                break;
+            case ULTIMATE_HARVESTER:
+                key = ULTIMATE_HARVESTER_KEY;
+                break;
+            default:
+                return false;
+        }
         
         container.set(BDItem.getStaticNamespacedKey(key + "_durability"), PersistentDataType.INTEGER, newDurability);
         

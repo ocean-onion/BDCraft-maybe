@@ -5,6 +5,11 @@ package com.bdcraft.plugin.modules.economy.items.tools;
  */
 public enum ToolType {
     /**
+     * BD Stick - applies random potion effects and used for market creation.
+     */
+    BDSTICK,
+    
+    /**
      * BD Harvester - increases crop yield.
      */
     HARVESTER,

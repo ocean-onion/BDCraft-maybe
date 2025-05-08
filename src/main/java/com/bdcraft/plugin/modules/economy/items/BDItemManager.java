@@ -54,7 +54,14 @@ public class BDItemManager {
             itemRegistry.put(key, crop);
         }
         
-        // TODO: Register tokens and tools when they're implemented
+        // Register tools
+        for (ToolType toolType : ToolType.values()) {
+            BDTool tool = new BDTool(plugin, toolType);
+            String key = getKeyForToolType(toolType);
+            itemRegistry.put(key, tool);
+        }
+        
+        // TODO: Register tokens when they're implemented
     }
     
     /**
@@ -89,7 +96,16 @@ public class BDItemManager {
             return createBDCrop(CropType.PURPLE, amount);
         }
         
-        // TODO: Handle token and tool types
+        // Handle tool types
+        if (itemType.equals("bd_stick")) {
+            return createBDTool(ToolType.BDSTICK);
+        } else if (itemType.equals("bd_harvester")) {
+            return createBDTool(ToolType.HARVESTER);
+        } else if (itemType.equals("bd_ultimate_harvester")) {
+            return createBDTool(ToolType.ULTIMATE_HARVESTER);
+        }
+        
+        // TODO: Handle token types
         
         return null;
     }
@@ -353,6 +369,8 @@ public class BDItemManager {
         }
         
         switch (toolType) {
+            case BDSTICK:
+                return "bd_stick";
             case HARVESTER:
                 return "bd_harvester";
             case ULTIMATE_HARVESTER:

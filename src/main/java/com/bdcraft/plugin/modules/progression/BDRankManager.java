@@ -16,41 +16,54 @@ public class BDRankManager {
     private final BDCraft plugin;
     private final Logger logger;
     
-    // Rank progression levels
-    public static final int RANK_NEWCOMER = 0;
-    public static final int RANK_FARMER = 1;
-    public static final int RANK_EXPERT_FARMER = 2;
-    public static final int RANK_AGRICULTURAL_EXPERT = 3;
+    // Rank progression levels (as per documentation - do not modify)
+    public static final int RANK_NEWCOMER = 1;
+    public static final int RANK_FARMER = 2;
+    public static final int RANK_EXPERT_FARMER = 3;
     public static final int RANK_MASTER_FARMER = 4;
-    public static final int RANK_REBORN = 5;
+    public static final int RANK_AGRICULTURAL_EXPERT = 5;
+    public static final int RANK_REBORN = 6; // Special rebirthable state
     
-    // Experience points required for each rank
-    private final int[] rankExperienceRequirements = new int[]{
+    // Currency costs for each rank as per documentation
+    private final int[] rankCosts = new int[]{
         0,      // Newcomer (starting rank)
-        1000,   // Farmer
-        5000,   // Expert Farmer
-        15000,  // Agricultural Expert
-        50000,  // Master Farmer
+        5000,   // Farmer
+        15000,  // Expert Farmer
+        30000,  // Master Farmer
+        60000,  // Agricultural Expert
+        0       // Reborn status (uses special rebirth system)
+    };
+    
+    // Experience points required for each rank (now based on currency costs)
+    private final int[] rankExperienceRequirements = new int[]{
+        0,      // Rank 0 (unused)
+        0,      // Newcomer (starting rank)
+        5000,   // Farmer
+        15000,  // Expert Farmer
+        30000,  // Master Farmer
+        60000,  // Agricultural Expert
         100000  // Reborn status
     };
     
     // Rank names
     private final String[] rankNames = new String[]{
+        "", // Index 0 is unused
         "Newcomer",
         "Farmer",
         "Expert Farmer",
-        "Agricultural Expert",
         "Master Farmer",
+        "Agricultural Expert",
         "Reborn Farmer"
     };
     
     // Rank display colors
     private final ChatColor[] rankColors = new ChatColor[]{
+        ChatColor.WHITE,      // Unused
         ChatColor.GRAY,       // Newcomer
         ChatColor.GREEN,      // Farmer
         ChatColor.BLUE,       // Expert Farmer
-        ChatColor.AQUA,       // Agricultural Expert
         ChatColor.GOLD,       // Master Farmer
+        ChatColor.AQUA,       // Agricultural Expert
         ChatColor.LIGHT_PURPLE// Reborn status
     };
     
@@ -165,8 +178,8 @@ public class BDRankManager {
     public int addPlayerRebirth(Player player) {
         int currentRank = getPlayerRank(player);
         
-        // Player must be a Master Farmer to rebirth
-        if (currentRank < RANK_MASTER_FARMER) {
+        // Player must be an Agricultural Expert to rebirth
+        if (currentRank < RANK_AGRICULTURAL_EXPERT) {
             return getPlayerRebirths(player);
         }
         
@@ -196,7 +209,7 @@ public class BDRankManager {
         int currentExperience = getPlayerExperience(player);
         
         // Player is already at max rank
-        if (currentRank >= RANK_MASTER_FARMER) {
+        if (currentRank >= RANK_AGRICULTURAL_EXPERT) {
             return false;
         }
         
@@ -278,7 +291,7 @@ public class BDRankManager {
         int currentRank = getPlayerRank(player);
         
         // Player is already at max rank
-        if (currentRank >= RANK_MASTER_FARMER) {
+        if (currentRank >= RANK_AGRICULTURAL_EXPERT) {
             return -1;
         }
         
@@ -295,7 +308,7 @@ public class BDRankManager {
         int currentRank = getPlayerRank(player);
         
         // Player is already at max rank
-        if (currentRank >= RANK_MASTER_FARMER) {
+        if (currentRank >= RANK_AGRICULTURAL_EXPERT) {
             return 100;
         }
         
@@ -362,7 +375,7 @@ public class BDRankManager {
         int currentRank = getPlayerRank(player);
         
         // Player is already at max rank
-        if (currentRank >= RANK_MASTER_FARMER) {
+        if (currentRank >= RANK_AGRICULTURAL_EXPERT) {
             return -1;
         }
         

@@ -102,6 +102,13 @@ commands:
     usage: /bddeathinfo
     permission: bdvital.deathinfo
     
+  # Rebirth Command
+  bdrebirth:
+    description: Manage player rebirth and prestige
+    usage: /bdrebirth [check|confirm|stats] [player]
+    aliases: [bdrb]
+    permission: bdcraft.rebirth
+    
   # Admin Commands
   bdgive:
     description: Gives BD items to players
@@ -151,6 +158,44 @@ permissions:
   bdcraft.rank.up:
     description: Allows ranking up
     default: true
+    
+  # Rebirth Permissions
+  bdcraft.rebirth:
+    description: Allows accessing rebirth system
+    default: true
+    children:
+      bdcraft.rebirth.check: true
+      bdcraft.rebirth.confirm: true
+      bdcraft.rebirth.stats: true
+      
+  bdcraft.rebirth.check:
+    description: Allows checking rebirth eligibility
+    default: true
+    
+  bdcraft.rebirth.confirm:
+    description: Allows confirming rebirth
+    default: true
+    
+  bdcraft.rebirth.stats:
+    description: Allows viewing rebirth stats
+    default: true
+    
+  bdcraft.rebirth.stats.others:
+    description: Allows viewing other players' rebirth stats
+    default: op
+    
+  # Deity Permissions (Rebirth 10)
+  bdcraft.deity.bless:
+    description: Allows using the bless command (Rebirth 10)
+    default: false
+    
+  bdcraft.deity.predict:
+    description: Allows predicting seasonal trader items (Rebirth 10)
+    default: false
+    
+  bdcraft.deity.aura:
+    description: Allows toggling abundance aura (Rebirth 10)
+    default: false
     
   # Vital Module Permissions
   bdvital.tp:

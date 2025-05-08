@@ -7,6 +7,7 @@ import com.bdcraft.plugin.modules.economy.items.BDItemManager;
 import com.bdcraft.plugin.modules.economy.listeners.CropGrowthListener;
 import com.bdcraft.plugin.modules.economy.listeners.HouseTokenListener;
 import com.bdcraft.plugin.modules.economy.listeners.MarketTokenListener;
+import com.bdcraft.plugin.modules.economy.listeners.ToolUseListener;
 import com.bdcraft.plugin.modules.economy.listeners.VillagerTradeListener;
 import com.bdcraft.plugin.modules.economy.crafting.BDRecipeManager;
 import com.bdcraft.plugin.modules.economy.crafting.BDRecipeListener;
@@ -102,6 +103,7 @@ public class BDEconomyModule implements Module {
         plugin.getServer().getPluginManager().registerEvents(new VillagerTradeListener(plugin), plugin);
         plugin.getServer().getPluginManager().registerEvents(new BDRecipeListener(plugin, recipeManager), plugin);
         plugin.getServer().getPluginManager().registerEvents(new AuctionListener(plugin, auctionHouseGUI), plugin);
+        plugin.getServer().getPluginManager().registerEvents(new ToolUseListener(plugin), plugin);
         
         // Register recipes
         recipeManager.registerRecipes();

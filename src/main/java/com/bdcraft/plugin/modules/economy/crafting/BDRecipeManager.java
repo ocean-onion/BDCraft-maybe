@@ -53,6 +53,7 @@ public class BDRecipeManager {
         registerTradeTokenRecipe();
         
         // Register tool recipes
+        registerBDStickRecipe();
         registerHarvesterRecipe();
         registerUltimateHarvesterRecipe();
         
@@ -143,6 +144,45 @@ public class BDRecipeManager {
                 Material.CYAN_BED, Material.PURPLE_BED, Material.BLUE_BED,
                 Material.BROWN_BED, Material.GREEN_BED, Material.RED_BED, Material.BLACK_BED);
         recipe.setIngredient('B', bedChoice);
+        
+        Bukkit.addRecipe(recipe);
+        registeredRecipes.add(key);
+    }
+    
+    /**
+     * Registers the trade token recipe.
+     * 
+     * Pattern:
+     * GDG
+     * DBD
+     * GDG
+     * 
+     * Where G = Gold Block, D = Diamond, B = Purple BD Crop
+     */
+    /**
+     * Registers the BD Stick recipe.
+     * 
+     * Pattern:
+     * [P F S]
+     * 
+     * Where P = Paper, F = BD Crop (Fern), S = Flint
+     * This is a shapeless recipe in a single row
+     */
+    private void registerBDStickRecipe() {
+        ItemStack bdStick = itemManager.createBDTool(ToolType.BDSTICK);
+        NamespacedKey key = new NamespacedKey(plugin, "bd_stick");
+        
+        // This is a shapeless recipe with 3 ingredients
+        ShapedRecipe recipe = new ShapedRecipe(key, bdStick);
+        recipe.shape("PFS");
+        
+        recipe.setIngredient('P', Material.PAPER);
+        recipe.setIngredient('S', Material.FLINT);
+        
+        // Custom ingredient for BD Crop (regular)
+        RecipeChoice.ExactChoice bdCropChoice = new RecipeChoice.ExactChoice(
+                itemManager.createBDCrop(CropType.REGULAR, 1));
+        recipe.setIngredient('F', bdCropChoice);
         
         Bukkit.addRecipe(recipe);
         registeredRecipes.add(key);
