@@ -44,7 +44,7 @@ public abstract class BDItem {
      * @param key The key
      * @return The namespaced key
      */
-    public static NamespacedKey getNamespacedKey(String key) {
+    public static NamespacedKey getStaticNamespacedKey(String key) {
         return new NamespacedKey("bdcraft", key);
     }
 }

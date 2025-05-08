@@ -202,9 +202,9 @@ public class BDSeed extends BDItem {
         ItemMeta meta = item.getItemMeta();
         PersistentDataContainer container = meta.getPersistentDataContainer();
         
-        return container.has(BDItem.getNamespacedKey(BD_SEED_KEY), PersistentDataType.STRING) ||
-               container.has(BDItem.getNamespacedKey(GREEN_BD_SEED_KEY), PersistentDataType.STRING) ||
-               container.has(BDItem.getNamespacedKey(PURPLE_BD_SEED_KEY), PersistentDataType.STRING);
+        return container.has(BDItem.getStaticNamespacedKey(BD_SEED_KEY), PersistentDataType.STRING) ||
+               container.has(BDItem.getStaticNamespacedKey(GREEN_BD_SEED_KEY), PersistentDataType.STRING) ||
+               container.has(BDItem.getStaticNamespacedKey(PURPLE_BD_SEED_KEY), PersistentDataType.STRING);
     }
     
     /**
@@ -221,11 +221,11 @@ public class BDSeed extends BDItem {
         ItemMeta meta = item.getItemMeta();
         PersistentDataContainer container = meta.getPersistentDataContainer();
         
-        if (container.has(BDItem.getNamespacedKey(BD_SEED_KEY), PersistentDataType.STRING)) {
+        if (container.has(BDItem.getStaticNamespacedKey(BD_SEED_KEY), PersistentDataType.STRING)) {
             return SeedType.REGULAR;
-        } else if (container.has(BDItem.getNamespacedKey(GREEN_BD_SEED_KEY), PersistentDataType.STRING)) {
+        } else if (container.has(BDItem.getStaticNamespacedKey(GREEN_BD_SEED_KEY), PersistentDataType.STRING)) {
             return SeedType.GREEN;
-        } else if (container.has(BDItem.getNamespacedKey(PURPLE_BD_SEED_KEY), PersistentDataType.STRING)) {
+        } else if (container.has(BDItem.getStaticNamespacedKey(PURPLE_BD_SEED_KEY), PersistentDataType.STRING)) {
             return SeedType.PURPLE;
         }
         
