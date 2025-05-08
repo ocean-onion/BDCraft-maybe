@@ -14,6 +14,7 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -41,7 +42,12 @@ public class MarketCommand implements CommandExecutor, TabCompleter {
         
         Player player = (Player) sender;
         
-        if (!player.hasPermission("bdcraft.admin.market")) {
+        // Check for basic market permission, specific actions will check their own permissions
+        if (!player.hasPermission("bdcraft.market.check") && 
+            !player.hasPermission("bdcraft.market.info") && 
+            !player.hasPermission("bdcraft.market.create") && 
+            !player.hasPermission("bdcraft.market.associate") && 
+            !player.hasPermission("bdcraft.admin.market")) {
             player.sendMessage(ChatColor.RED + "You don't have permission to use this command.");
             return true;
         }
@@ -89,6 +95,12 @@ public class MarketCommand implements CommandExecutor, TabCompleter {
      * @param marketManager The market manager
      */
     private void createMarket(Player player, MarketManager marketManager) {
+        // Check permission (bdcraft.market.create according to documentation)
+        if (!player.hasPermission("bdcraft.market.create") && !player.hasPermission("bdcraft.admin.market")) {
+            player.sendMessage(ChatColor.RED + "You don't have permission to create markets.");
+            return;
+        }
+        
         Location location = player.getLocation();
         
         // Check if near existing market
@@ -114,11 +126,23 @@ public class MarketCommand implements CommandExecutor, TabCompleter {
      * @param marketManager The market manager
      */
     private void upgradeMarket(Player player, String[] args, MarketManager marketManager) {
+        // Check permission (bdcraft.market.upgrade according to documentation)
+        if (!player.hasPermission("bdcraft.market.upgrade") && !player.hasPermission("bdcraft.admin.market")) {
+            player.sendMessage(ChatColor.RED + "You don't have permission to upgrade markets.");
+            return;
+        }
+        
         // Check if in a market
         BDMarket market = marketManager.getMarketAt(player.getLocation());
         
         if (market == null) {
             player.sendMessage(ChatColor.RED + "You are not in a market.");
+            return;
+        }
+        
+        // Check if player is the founder or has admin permissions
+        if (!player.getUniqueId().equals(market.getFounderId()) && !player.hasPermission("bdcraft.admin.market")) {
+            player.sendMessage(ChatColor.RED + "Only the market founder can upgrade this market.");
             return;
         }
         
@@ -142,6 +166,12 @@ public class MarketCommand implements CommandExecutor, TabCompleter {
      * @param marketManager The market manager
      */
     private void getMarketInfo(Player player, MarketManager marketManager) {
+        // Check permission (bdcraft.market.info according to documentation)
+        if (!player.hasPermission("bdcraft.market.info") && !player.hasPermission("bdcraft.admin.market")) {
+            player.sendMessage(ChatColor.RED + "You don't have permission to view market information.");
+            return;
+        }
+        
         // Check if in a market
         BDMarket market = marketManager.getMarketAt(player.getLocation());
         
@@ -170,6 +200,12 @@ public class MarketCommand implements CommandExecutor, TabCompleter {
      * @param marketManager The market manager
      */
     private void listMarkets(Player player, MarketManager marketManager) {
+        // Check permission (bdcraft.market.create according to documentation)
+        if (!player.hasPermission("bdcraft.market.create") && !player.hasPermission("bdcraft.admin.market")) {
+            player.sendMessage(ChatColor.RED + "You don't have permission to list markets.");
+            return;
+        }
+        
         List<BDMarket> markets = marketManager.getMarketsInWorld(player.getWorld().getName());
         
         if (markets.isEmpty()) {
@@ -195,6 +231,12 @@ public class MarketCommand implements CommandExecutor, TabCompleter {
      * @param marketManager The market manager
      */
     private void deleteMarket(Player player, String[] args, MarketManager marketManager) {
+        // Check permission (bdcraft.admin.market according to documentation)
+        if (!player.hasPermission("bdcraft.admin.market")) {
+            player.sendMessage(ChatColor.RED + "You don't have permission to delete markets.");
+            return;
+        }
+        
         // Check if in a market
         BDMarket market = marketManager.getMarketAt(player.getLocation());
         
@@ -254,6 +296,12 @@ public class MarketCommand implements CommandExecutor, TabCompleter {
      * @param marketManager The market manager
      */
     private void checkMarketBoundary(Player player, MarketManager marketManager) {
+        // Check permission (bdcraft.market.check according to documentation)
+        if (!player.hasPermission("bdcraft.market.check") && !player.hasPermission("bdcraft.admin.market")) {
+            player.sendMessage(ChatColor.RED + "You don't have permission to check market boundaries.");
+            return;
+        }
+        
         // Check if in a market
         BDMarket market = marketManager.getMarketAt(player.getLocation());
         
