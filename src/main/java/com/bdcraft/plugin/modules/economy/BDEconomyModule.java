@@ -2,6 +2,7 @@ package com.bdcraft.plugin.modules.economy;
 
 import com.bdcraft.plugin.BDCraft;
 import com.bdcraft.plugin.modules.Module;
+import com.bdcraft.plugin.modules.economy.farming.BDCropManager;
 import com.bdcraft.plugin.modules.economy.items.BDItemManager;
 import com.bdcraft.plugin.modules.economy.listeners.CropGrowthListener;
 import com.bdcraft.plugin.modules.economy.listeners.HouseTokenListener;
@@ -32,6 +33,7 @@ public class BDEconomyModule implements Module {
     private BDItemManager itemManager;
     private BDVillagerManager villagerManager;
     private MarketManager marketManager;
+    private BDCropManager cropManager;
     
     private final Map<UUID, Integer> playerBalances = new HashMap<>();
     private final File economyFile;
@@ -78,6 +80,7 @@ public class BDEconomyModule implements Module {
         this.itemManager = new BDItemManager(plugin);
         this.villagerManager = new BDVillagerManager(plugin);
         this.marketManager = new MarketManager(plugin);
+        this.cropManager = new BDCropManager(plugin);
         
         // Register listeners
         plugin.getServer().getPluginManager().registerEvents(new MarketTokenListener(plugin), plugin);
@@ -216,5 +219,13 @@ public class BDEconomyModule implements Module {
      */
     public MarketManager getMarketManager() {
         return marketManager;
+    }
+    
+    /**
+     * Gets the crop manager.
+     * @return The crop manager
+     */
+    public BDCropManager getCropManager() {
+        return cropManager;
     }
 }
