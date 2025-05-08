@@ -45,7 +45,7 @@ public class MarketOwnerVillager extends BDVillager {
     
     @Override
     protected Profession getBukkitProfession() {
-        return Profession.NITWIT; // Distinctive profession that doesn't typically have trades
+        return Profession.CARTOGRAPHER; // According to documentation
     }
     
     @Override

@@ -23,7 +23,7 @@ import java.util.UUID;
  */
 public class BDMarket {
     public static final int MAX_MARKET_LEVEL = 5;
-    private static final int BASE_RADIUS = 20;
+    private static final int MARKET_RADIUS = 49; // Documentation specifies 49x49 block radius
     
     private final UUID id;
     private final Location center;
@@ -266,7 +266,7 @@ public class BDMarket {
      * @return The radius
      */
     public int getRadius() {
-        return BASE_RADIUS + (level * 5); // Base radius + 5 per level
+        return MARKET_RADIUS / 2; // 49x49 area, so radius is half of 49
     }
     
     /**
