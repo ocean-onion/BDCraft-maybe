@@ -3,6 +3,7 @@ package com.bdcraft.plugin.modules.economy.villagers;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.entity.Villager.Profession;
 import org.bukkit.inventory.ItemStack;
@@ -24,6 +25,7 @@ import java.util.UUID;
  * Represents a BD Dealer villager that buys crops and sells seeds.
  */
 public class BDDealerVillager extends BDVillager {
+    public static final String TYPE = "BD_DEALER";
     private final BDMarket market;
     
     /**
@@ -159,5 +161,56 @@ public class BDDealerVillager extends BDVillager {
      */
     public void updateTrades() {
         setupTrades();
+    }
+    
+    @Override
+    public boolean onInteract(Player player) {
+        // Standard trading interface
+        return false; // Return false to allow default trading behavior
+    }
+    
+    @Override
+    public boolean onDamage(double damage) {
+        // BD Dealer villagers cannot be damaged
+        return true; // Cancel damage
+    }
+    
+    @Override
+    public boolean onProfessionChange(Villager.Profession newProfession) {
+        // BD Dealer villagers cannot change profession
+        return true; // Cancel change
+    }
+    
+    @Override
+    public boolean shouldRemove() {
+        // Remove if market is null or market is removed
+        return market == null || market.isRemoved();
+    }
+    
+    @Override
+    public void onTick() {
+        if (market == null) {
+            return;
+        }
+        
+        // Check if villager is too far from market center
+        Location center = market.getCenter();
+        Location current = entity.getLocation();
+        
+        // If more than 24 blocks away (market radius), teleport back to center
+        if (center.getWorld().equals(current.getWorld()) && 
+                center.distance(current) > 24) {
+            entity.teleport(center);
+        }
+    }
+    
+    @Override
+    public void onRemove() {
+        // Nothing special to do
+    }
+    
+    @Override
+    public String getTypeName() {
+        return TYPE;
     }
 }

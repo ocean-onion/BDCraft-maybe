@@ -3,6 +3,7 @@ package com.bdcraft.plugin.modules.economy.villagers;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.entity.Villager.Profession;
 import org.bukkit.inventory.ItemStack;
@@ -22,6 +23,7 @@ import java.util.UUID;
  * Represents a Seasonal BD Trader villager that offers rare and seasonal items.
  */
 public class SeasonalBDTraderVillager extends BDVillager {
+    public static final String TYPE = "BD_SEASONAL_TRADER";
     private final Season currentSeason;
     
     /**
@@ -274,6 +276,45 @@ public class SeasonalBDTraderVillager extends BDVillager {
      */
     public Season getCurrentSeason() {
         return currentSeason;
+    }
+    
+    @Override
+    public boolean onInteract(Player player) {
+        // Standard trading interface
+        return false; // Return false to allow default trading behavior
+    }
+    
+    @Override
+    public boolean onDamage(double damage) {
+        // Seasonal BD Trader villagers cannot be damaged
+        return true; // Cancel damage
+    }
+    
+    @Override
+    public boolean onProfessionChange(Villager.Profession newProfession) {
+        // Seasonal BD Trader villagers cannot change profession
+        return true; // Cancel change
+    }
+    
+    @Override
+    public boolean shouldRemove() {
+        // These are special traders that should not be removed automatically
+        return false;
+    }
+    
+    @Override
+    public void onTick() {
+        // Nothing special to do per tick
+    }
+    
+    @Override
+    public void onRemove() {
+        // Nothing special to do
+    }
+    
+    @Override
+    public String getTypeName() {
+        return TYPE;
     }
     
     /**

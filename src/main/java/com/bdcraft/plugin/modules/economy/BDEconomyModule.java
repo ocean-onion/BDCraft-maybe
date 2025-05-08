@@ -14,6 +14,7 @@ import com.bdcraft.plugin.modules.economy.auction.AuctionManager;
 import com.bdcraft.plugin.modules.economy.auction.AuctionHouseGUI;
 import com.bdcraft.plugin.modules.economy.auction.AuctionListener;
 import com.bdcraft.plugin.modules.economy.market.MarketManager;
+import com.bdcraft.plugin.modules.economy.market.gui.MarketManagementGUI;
 import com.bdcraft.plugin.modules.economy.villager.BDVillagerManager;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -42,6 +43,7 @@ public class BDEconomyModule implements Module {
     private BDRecipeManager recipeManager;
     private AuctionManager auctionManager;
     private AuctionHouseGUI auctionHouseGUI;
+    private MarketManagementGUI marketManagementGUI;
     
     private final Map<UUID, Integer> playerBalances = new HashMap<>();
     private final File economyFile;
@@ -278,6 +280,17 @@ public class BDEconomyModule implements Module {
      */
     public AuctionHouseGUI getAuctionHouseGUI() {
         return auctionHouseGUI;
+    }
+    
+    /**
+     * Gets the market management GUI.
+     * @return The market management GUI
+     */
+    public MarketManagementGUI getMarketManagementGUI() {
+        if (marketManagementGUI == null) {
+            marketManagementGUI = new MarketManagementGUI(plugin, marketManager);
+        }
+        return marketManagementGUI;
     }
     
     /**

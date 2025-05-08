@@ -3,6 +3,7 @@ package com.bdcraft.plugin.modules.economy.villagers;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.entity.Villager.Profession;
 import org.bukkit.inventory.ItemStack;
@@ -20,6 +21,7 @@ import java.util.UUID;
  * Represents a BD Collector villager that buys crops from players.
  */
 public class BDCollectorVillager extends BDVillager {
+    public static final String TYPE = "BD_COLLECTOR";
     private final UUID houseId;
     
     /**
@@ -152,5 +154,45 @@ public class BDCollectorVillager extends BDVillager {
      */
     public void updateTrades() {
         setupTrades();
+    }
+    
+    @Override
+    public boolean onInteract(Player player) {
+        // Standard trading interface
+        return false; // Return false to allow default trading behavior
+    }
+    
+    @Override
+    public boolean onDamage(double damage) {
+        // BD Collector villagers cannot be damaged
+        return true; // Cancel damage
+    }
+    
+    @Override
+    public boolean onProfessionChange(Villager.Profession newProfession) {
+        // BD Collector villagers cannot change profession
+        return true; // Cancel change
+    }
+    
+    @Override
+    public boolean shouldRemove() {
+        // Remove if the house is destroyed or removed
+        // This would be implemented further if we had house tracking
+        return false;
+    }
+    
+    @Override
+    public void onTick() {
+        // Nothing special to do per tick
+    }
+    
+    @Override
+    public void onRemove() {
+        // Nothing special to do
+    }
+    
+    @Override
+    public String getTypeName() {
+        return TYPE;
     }
 }

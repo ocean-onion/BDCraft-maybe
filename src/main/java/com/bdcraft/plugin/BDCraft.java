@@ -12,6 +12,7 @@ import com.bdcraft.plugin.modules.perms.BDPermsModule;
 import com.bdcraft.plugin.modules.progression.BDProgressionModule;
 import com.bdcraft.plugin.modules.vital.BDVitalModule;
 
+import org.bukkit.NamespacedKey;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.JavaPluginLoader;
@@ -217,5 +218,15 @@ public class BDCraft extends JavaPlugin {
      */
     public BDVitalModule getVitalModule() {
         return moduleManager.getModule(BDVitalModule.class);
+    }
+    
+    /**
+     * Creates a namespaced key for this plugin.
+     * 
+     * @param key The key to create
+     * @return The namespaced key
+     */
+    public NamespacedKey getNamespacedKey(String key) {
+        return new NamespacedKey(this, key);
     }
 }

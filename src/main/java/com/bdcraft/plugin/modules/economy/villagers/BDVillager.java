@@ -14,6 +14,9 @@ import com.bdcraft.plugin.BDCraft;
 
 import java.util.UUID;
 
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent;
+
 /**
  * Base class for BD specialized villagers.
  */
@@ -238,4 +241,52 @@ public abstract class BDVillager {
         BD_COLLECTOR,      // Buys crops (spawns from House Token)
         SEASONAL_TRADER    // Special rare trades
     }
+    
+    /**
+     * Handles a player interacting with this villager.
+     * 
+     * @param player The player
+     * @return True if interaction was handled
+     */
+    public abstract boolean onInteract(Player player);
+    
+    /**
+     * Handles the villager getting damaged.
+     * 
+     * @param damage The damage
+     * @return True if the damage event should be cancelled
+     */
+    public abstract boolean onDamage(double damage);
+    
+    /**
+     * Handles the villager trying to change career/profession.
+     * 
+     * @param newProfession The new profession
+     * @return True if the profession change should be cancelled
+     */
+    public abstract boolean onProfessionChange(Villager.Profession newProfession);
+    
+    /**
+     * Checks if this villager should be removed from the world.
+     * 
+     * @return True if the villager should be removed
+     */
+    public abstract boolean shouldRemove();
+    
+    /**
+     * Called on each tick for this villager to handle any periodic tasks.
+     */
+    public abstract void onTick();
+    
+    /**
+     * Called when this villager is removed from the world.
+     */
+    public abstract void onRemove();
+    
+    /**
+     * Gets the type name of this villager.
+     * 
+     * @return The type name
+     */
+    public abstract String getTypeName();
 }

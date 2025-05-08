@@ -375,9 +375,14 @@ public class MarketManagementGUI {
             List<String> requirements = getUpgradeRequirements(market.getLevel());
             
             String requirementsDescription = ChatColor.YELLOW + "Requirements:";
+            // Combine the requirements into a single list of lore items
+            List<String> loreList = new ArrayList<>();
+            loreList.add(requirementsDescription);
+            loreList.addAll(requirements);
+            
             ItemStack upgradeItem = createGuiItem(Material.EMERALD_BLOCK, 
                     ChatColor.GREEN + "Upgrade to Level " + nextLevel,
-                    requirementsDescription, requirements.toArray(new String[0]));
+                    loreList.toArray(new String[0]));
             menu.setItem(25, upgradeItem);
         } else {
             ItemStack maxLevelItem = createGuiItem(Material.GOLDEN_APPLE, 

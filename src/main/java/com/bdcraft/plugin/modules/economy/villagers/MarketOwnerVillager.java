@@ -5,6 +5,7 @@ import com.bdcraft.plugin.modules.economy.market.BDMarket;
 import com.bdcraft.plugin.modules.economy.market.gui.MarketManagementGUI;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
@@ -14,6 +15,7 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.MerchantRecipe;
+import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
@@ -31,6 +33,20 @@ public class MarketOwnerVillager extends BDVillager {
     
     private final BDMarket market;
     
+    @Override
+    protected Villager.Profession getBukkitProfession() {
+        return Villager.Profession.CARTOGRAPHER; // According to documentation
+    }
+    
+    @Override
+    public void setupTrades() {
+        // Market owners don't have standard trades, they have custom upgrade trades
+        // that are set up in addUpgradeTrades() method
+        if (entity != null) {
+            entity.setRecipes(new ArrayList<>());
+        }
+    }
+    
     /**
      * Creates a new Market Owner villager.
      * 
@@ -39,25 +55,23 @@ public class MarketOwnerVillager extends BDVillager {
      * @param market The market this villager manages
      */
     public MarketOwnerVillager(BDCraft plugin, Location location, BDMarket market) {
-        super(plugin, location);
+        super(
+            plugin, 
+            UUID.randomUUID(), 
+            null, 
+            "Market Owner: " + market.getFounderName() + "'s Market", 
+            VillagerType.MARKET_OWNER
+        );
         this.market = market;
         
-        // Set villager type
-        setVillagerType(VillagerType.MARKET_OWNER);
+        // Spawn the villager
+        Villager villager = spawn(location);
         
-        // Set villager appearance
-        Villager villager = getVillager();
-        villager.setProfession(Villager.Profession.LIBRARIAN);
-        villager.setVillagerLevel(5);
-        villager.setCanPickupItems(false);
-        villager.setCustomName(ChatColor.GOLD + "Market Owner: " + ChatColor.YELLOW + market.getFounderName() + "'s Market");
-        villager.setCustomNameVisible(true);
-        
-        // Store market ID
-        getVillager().getPersistentDataContainer().set(
+        // Store market ID as string
+        villager.getPersistentDataContainer().set(
                 plugin.getNamespacedKey("market_id"),
                 PersistentDataType.STRING,
-                market.getId()
+                market.getId().toString()
         );
     }
     
@@ -68,7 +82,16 @@ public class MarketOwnerVillager extends BDVillager {
      * @param villager The villager entity
      */
     public MarketOwnerVillager(BDCraft plugin, Villager villager) {
-        super(plugin, villager);
+        super(
+            plugin, 
+            UUID.fromString(villager.getPersistentDataContainer().get(
+                new NamespacedKey(plugin, "bd_villager_uuid"), 
+                PersistentDataType.STRING
+            )),
+            villager,
+            villager.getCustomName(),
+            VillagerType.MARKET_OWNER
+        );
         
         // Get market ID
         String marketId = villager.getPersistentDataContainer().get(
@@ -76,11 +99,8 @@ public class MarketOwnerVillager extends BDVillager {
                 PersistentDataType.STRING
         );
         
-        // Get market
-        this.market = plugin.getEconomyModule().getMarketManager().getMarket(marketId);
-        
-        // Set villager type
-        setVillagerType(VillagerType.MARKET_OWNER);
+        // Get market - convert market ID string to UUID
+        this.market = plugin.getEconomyModule().getMarketManager().getMarket(UUID.fromString(marketId));
     }
     
     /**
@@ -143,7 +163,7 @@ public class MarketOwnerVillager extends BDVillager {
         }
         
         // Remove any existing trades
-        getVillager().setRecipes(new ArrayList<>());
+        entity.setRecipes(new ArrayList<>());
         
         // Add appropriate upgrade trades based on current market level
         addUpgradeTrades();
@@ -178,69 +198,64 @@ public class MarketOwnerVillager extends BDVillager {
      * Adds the trade for upgrading from level 1 to level 2.
      */
     private void addLevel2UpgradeTrade() {
-        ItemStack result = createUpgradeResult(2);
-        
-        // Required items - BD Currency note (representing BD currency)
-        ItemStack bdCurrency = createBDCurrencyItem(5000);
         ItemStack diamonds = new ItemStack(Material.DIAMOND, 16);
+        ItemStack certificate = createUpgradeCertificate(2, 5000);
         
-        addTrade(bdCurrency, diamonds, result);
+        addTrade(diamonds, null, certificate);
     }
     
     /**
      * Adds the trade for upgrading from level 2 to level 3.
      */
     private void addLevel3UpgradeTrade() {
-        ItemStack result = createUpgradeResult(3);
-        
-        // Required items - according to documentation
-        ItemStack bdCurrency = createBDCurrencyItem(10000);
         ItemStack diamonds = new ItemStack(Material.DIAMOND, 32);
+        ItemStack certificate = createUpgradeCertificate(3, 10000);
         
-        addTrade(bdCurrency, diamonds, result);
+        addTrade(diamonds, null, certificate);
     }
     
     /**
      * Adds the trade for upgrading from level 3 to level 4.
      */
     private void addLevel4UpgradeTrade() {
-        ItemStack result = createUpgradeResult(4);
-        
-        // Required items - according to documentation
-        ItemStack bdCurrency = createBDCurrencyItem(25000);
         ItemStack diamonds = new ItemStack(Material.DIAMOND, 64);
+        ItemStack certificate = createUpgradeCertificate(4, 25000);
         
-        addTrade(bdCurrency, diamonds, result);
+        addTrade(diamonds, null, certificate);
     }
     
     /**
-     * Creates a BD Currency item representing a certain amount of BD currency.
+     * Creates a market upgrade certificate that includes BD currency cost info.
      * 
-     * @param amount The amount of BD currency
-     * @return The BD currency item
+     * @param upgradeLevel The level to upgrade to
+     * @param bdCost The BD currency cost 
+     * @return The upgrade certificate
      */
-    private ItemStack createBDCurrencyItem(int amount) {
-        ItemStack currency = new ItemStack(Material.PAPER);
-        ItemMeta meta = currency.getItemMeta();
+    private ItemStack createUpgradeCertificate(int upgradeLevel, int bdCost) {
+        ItemStack certificate = new ItemStack(Material.PAPER);
+        ItemMeta meta = certificate.getItemMeta();
         if (meta != null) {
-            meta.setDisplayName(ChatColor.GOLD + "BD Currency Note: " + amount);
+            meta.setDisplayName(ChatColor.GOLD + "Market Upgrade Certificate");
             meta.setLore(Arrays.asList(
-                ChatColor.YELLOW + "Value: " + amount + " BD",
+                ChatColor.YELLOW + "This certificate requires " + bdCost + " BD Currency",
+                ChatColor.YELLOW + "to upgrade your market from level " + market.getLevel() + " to " + upgradeLevel,
                 "",
-                ChatColor.GRAY + "This note represents BD currency",
-                ChatColor.GRAY + "used for market transactions."
+                ChatColor.AQUA + "⚠ The BD Currency cost will be automatically",
+                ChatColor.AQUA + "   deducted when you use this certificate.",
+                "",
+                ChatColor.GRAY + "Right-click while holding to apply upgrade."
             ));
             
-            // Add persistent data to identify this as a BD currency note
+            // Add persistent data to identify this as a valid upgrade certificate
             meta.getPersistentDataContainer().set(
-                plugin.getNamespacedKey("bd_currency"),
-                PersistentDataType.INTEGER,
-                amount
+                plugin.getNamespacedKey("market_upgrade_certificate"),
+                PersistentDataType.STRING,
+                market.getId().toString() + ":" + upgradeLevel + ":" + bdCost
             );
             
-            currency.setItemMeta(meta);
+            certificate.setItemMeta(meta);
         }
-        return currency;
+        return certificate;
     }
     
     /**
@@ -265,7 +280,7 @@ public class MarketOwnerVillager extends BDVillager {
             meta.getPersistentDataContainer().set(
                 plugin.getNamespacedKey("market_upgrade"),
                 PersistentDataType.STRING,
-                market.getId() + ":" + newLevel
+                market.getId().toString() + ":" + newLevel
             );
             
             certificate.setItemMeta(meta);
@@ -289,7 +304,7 @@ public class MarketOwnerVillager extends BDVillager {
         }
         
         // Add the trade to the villager
-        getVillager().getRecipes().add(recipe);
+        entity.getRecipes().add(recipe);
     }
     
     /**
@@ -343,12 +358,12 @@ public class MarketOwnerVillager extends BDVillager {
         
         // Check if villager is too far from market center
         Location center = market.getCenter();
-        Location current = getVillager().getLocation();
+        Location current = entity.getLocation();
         
         // If more than 24 blocks away (market radius), teleport back to center
         if (center.getWorld().equals(current.getWorld()) && 
                 center.distance(current) > 24) {
-            getVillager().teleport(center);
+            entity.teleport(center);
         }
     }
     
@@ -366,7 +381,7 @@ public class MarketOwnerVillager extends BDVillager {
      */
     public void updateTrades() {
         // Clear current trades
-        getVillager().setRecipes(new ArrayList<>());
+        entity.setRecipes(new ArrayList<>());
         
         // Add appropriate upgrade trades based on current market level
         addUpgradeTrades();
