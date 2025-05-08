@@ -183,9 +183,8 @@ public abstract class BDVillager {
      */
     public enum VillagerType {
         MARKET_OWNER,      // Manages market upgrades
-        BD_DEALER,         // Buy/sell seeds and crops
-        SEASONAL_TRADER,   // Special rare trades 
-        HOUSE_OWNER,       // Manages a house (from House Token)
-        BD_COLLECTOR       // Special crop collector at higher-level markets
+        BD_DEALER,         // Sells seeds and tools
+        BD_COLLECTOR,      // Buys crops (spawns from House Token)
+        SEASONAL_TRADER    // Special rare trades
     }
 }
