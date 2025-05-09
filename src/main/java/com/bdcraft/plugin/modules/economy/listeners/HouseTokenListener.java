@@ -4,7 +4,7 @@ import com.bdcraft.plugin.BDCraft;
 import com.bdcraft.plugin.modules.economy.items.BDItemManager;
 import com.bdcraft.plugin.modules.economy.items.tokens.BDToken;
 import com.bdcraft.plugin.modules.economy.market.BDMarket;
-import com.bdcraft.plugin.modules.economy.market.MarketManager;
+import com.bdcraft.plugin.modules.economy.market.BDMarketManager;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -57,7 +57,7 @@ public class HouseTokenListener implements Listener {
         }
         
         // Check if in a market
-        MarketManager marketManager = plugin.getEconomyModule().getMarketManager();
+        BDMarketManager marketManager = plugin.getEconomyModule().getBDMarketManager();
         BDMarket market = marketManager.getMarketAt(clickedBlock.getLocation());
         
         if (market == null) {

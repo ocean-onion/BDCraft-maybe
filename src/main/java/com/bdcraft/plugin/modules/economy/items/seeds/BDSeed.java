@@ -34,6 +34,43 @@ public class BDSeed {
     }
     
     /**
+     * Creates a new BD seed from a seed type.
+     * 
+     * @param plugin The plugin instance
+     * @param type The seed type
+     */
+    public BDSeed(BDCraft plugin, SeedType type) {
+        this.type = type;
+        
+        // Default growth times based on seed quality
+        switch (type) {
+            case LEGENDARY:
+                this.growthTime = 2400; // 2 minutes
+                break;
+            case PURPLE:
+                this.growthTime = 3600; // 3 minutes
+                break; 
+            case BLUE:
+                this.growthTime = 4800; // 4 minutes
+                break;
+            case GREEN:
+                this.growthTime = 6000; // 5 minutes
+                break;
+            default:
+                this.growthTime = 8400; // 7 minutes
+                break;
+        }
+        
+        // Create the item stack
+        this.itemStack = new ItemStack(Material.WHEAT_SEEDS);
+        ItemMeta meta = this.itemStack.getItemMeta();
+        if (meta != null) {
+            meta.setDisplayName(getSeedDisplayName());
+            this.itemStack.setItemMeta(meta);
+        }
+    }
+    
+    /**
      * Gets the item stack.
      * 
      * @return The item stack
@@ -196,6 +233,81 @@ public class BDSeed {
                 return 100;
             default:
                 return 1;
+        }
+    }
+    
+    /**
+     * Gets the display name of the seed based on type.
+     * 
+     * @return The display name
+     */
+    public String getSeedDisplayName() {
+        ChatColor color;
+        String name;
+        
+        switch (type) {
+            case GREEN:
+                color = ChatColor.GREEN;
+                name = "Quality Seeds";
+                break;
+            case BLUE:
+                color = ChatColor.BLUE;
+                name = "Premium Seeds";
+                break;
+            case PURPLE:
+                color = ChatColor.LIGHT_PURPLE;
+                name = "Exceptional Seeds";
+                break;
+            case LEGENDARY:
+                color = ChatColor.GOLD;
+                name = "Legendary Seeds";
+                break;
+            default:
+                color = ChatColor.WHITE;
+                name = "Seeds";
+                break;
+        }
+        
+        return color + name;
+    }
+    
+    /**
+     * Gets the required rank to use this seed.
+     * 
+     * @return The required rank
+     */
+    public int getRequiredRank() {
+        switch (type) {
+            case GREEN:
+                return 1; // Farmer
+            case BLUE: 
+                return 2; // Expert Farmer
+            case PURPLE:
+                return 3; // Master Farmer
+            case LEGENDARY:
+                return 4; // Agricultural Expert
+            default:
+                return 0; // Newcomer
+        }
+    }
+    
+    /**
+     * Gets the name of the required rank.
+     * 
+     * @return The required rank name
+     */
+    public String getRequiredRankName() {
+        switch (getRequiredRank()) {
+            case 1:
+                return "Farmer";
+            case 2:
+                return "Expert Farmer";
+            case 3:
+                return "Master Farmer";
+            case 4:
+                return "Agricultural Expert";
+            default:
+                return "Newcomer";
         }
     }
     

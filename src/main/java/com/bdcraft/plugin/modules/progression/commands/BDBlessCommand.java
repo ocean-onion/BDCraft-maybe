@@ -123,7 +123,7 @@ public class BDBlessCommand implements CommandExecutor {
         // Apply visual effects
         blesser.getWorld().strikeLightningEffect(target.getLocation());
         target.getWorld().spawnParticle(Particle.ENCHANTMENT_TABLE, target.getLocation().add(0, 1, 0), 
-                100, 0.5, 1.0, 0.5, 0.2);
+                100, 0.5, 1.0, 0.5);
         
         // Play sound effects
         target.playSound(target.getLocation(), Sound.BLOCK_BEACON_POWER_SELECT, 1.0f, 1.0f);

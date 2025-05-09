@@ -153,6 +153,16 @@ public class AuctionManager {
     }
     
     /**
+     * Gets an auction item by ID (alias for getAuction).
+     * 
+     * @param id The auction ID
+     * @return The auction, or null if not found
+     */
+    public AuctionItem getAuctionItem(UUID id) {
+        return getAuction(id);
+    }
+    
+    /**
      * Buys an auction.
      * 
      * @param auction The auction
@@ -251,5 +261,27 @@ public class AuctionManager {
         }
         
         return count;
+    }
+    
+    /**
+     * Collects pending payments for a player.
+     * 
+     * @param player The player
+     * @return The amount collected, or 0 if none
+     */
+    public int collectPendingPayment(Player player) {
+        // For now, this is a stub since we don't track pending payments
+        return 0;
+    }
+    
+    /**
+     * Collects pending returns for a player.
+     * 
+     * @param player The player
+     * @return The number of items returned, or 0 if none
+     */
+    public int collectPendingReturns(Player player) {
+        // For now, this is a stub since we don't track pending returns
+        return 0;
     }
 }

@@ -1,4 +1,4 @@
-package com.bdcraft.plugin.modules.economy.market.gui;
+package com.bdcraft.plugin.modules.economy.gui;
 
 import com.bdcraft.plugin.BDCraft;
 import com.bdcraft.plugin.modules.economy.market.BDMarket;

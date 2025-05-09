@@ -3,7 +3,7 @@ package com.bdcraft.plugin.modules.economy.listeners;
 import com.bdcraft.plugin.BDCraft;
 import com.bdcraft.plugin.modules.economy.items.BDItemManager;
 import com.bdcraft.plugin.modules.economy.items.tokens.BDToken;
-import com.bdcraft.plugin.modules.economy.market.MarketManager;
+import com.bdcraft.plugin.modules.economy.market.BDMarketManager;
 import com.bdcraft.plugin.modules.progression.BDRankManager;
 
 import org.bukkit.ChatColor;
@@ -81,14 +81,15 @@ public class MarketTokenListener implements Listener {
         }
         
         // Check if in another market
-        MarketManager marketManager = plugin.getEconomyModule().getMarketManager();
+        BDMarketManager marketManager = plugin.getEconomyModule().getBDMarketManager();
         if (marketManager.isInMarket(clickedBlock.getLocation())) {
             player.sendMessage(ChatColor.RED + "This location is already within another market's radius.");
             return;
         }
         
         // Try to create the market
-        if (marketManager.createMarket(clickedBlock.getLocation(), player) != null) {
+        String marketName = "Market of " + player.getName();
+        if (marketManager.createMarket(player, marketName, clickedBlock.getLocation()) != null) {
             // Success, consume token
             consumeItem(player, item);
             

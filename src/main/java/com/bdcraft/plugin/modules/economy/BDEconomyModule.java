@@ -7,6 +7,7 @@ import com.bdcraft.plugin.modules.economy.market.MarketManager;
 import com.bdcraft.plugin.modules.economy.market.BDMarketManager;
 import com.bdcraft.plugin.modules.economy.auction.AuctionManager;
 import com.bdcraft.plugin.modules.economy.items.BDItemManager;
+import com.bdcraft.plugin.modules.economy.gui.MarketManagementGUI;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
@@ -43,6 +44,7 @@ public class BDEconomyModule implements BDModule, EconomyAPI {
     // Other managers
     private AuctionManager auctionManager;
     private BDItemManager itemManager;
+    private MarketManagementGUI marketManagementGUI;
     
     /**
      * Creates a new BD economy module.
@@ -76,6 +78,9 @@ public class BDEconomyModule implements BDModule, EconomyAPI {
         
         // Initialize item manager
         itemManager = new BDItemManager(plugin);
+        
+        // Initialize market management GUI
+        marketManagementGUI = new MarketManagementGUI(plugin);
         
         // Register API interface
         plugin.setEconomyAPI(this);
@@ -270,6 +275,15 @@ public class BDEconomyModule implements BDModule, EconomyAPI {
      */
     public BDMarketManager getBDMarketManager() {
         return bdMarketManager;
+    }
+    
+    /**
+     * Gets the market management GUI.
+     * 
+     * @return The market management GUI
+     */
+    public MarketManagementGUI getMarketManagementGUI() {
+        return marketManagementGUI;
     }
     
     /**

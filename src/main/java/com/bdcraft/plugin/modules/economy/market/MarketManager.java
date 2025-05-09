@@ -2,7 +2,6 @@ package com.bdcraft.plugin.modules.economy.market;
 
 import com.bdcraft.plugin.BDCraft;
 import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -11,9 +10,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
- * Manages player markets in the BDCraft economy system.
+ * Manages markets in the game.
  */
 public class MarketManager {
     private final BDCraft plugin;
@@ -51,52 +51,18 @@ public class MarketManager {
     }
     
     /**
-     * Gets a player's owned markets.
+     * Gets a market at a location.
      * 
-     * @param playerId The player's UUID
-     * @return The player's markets
+     * @param location The location
+     * @return The market, or null if not found
      */
-    public List<Market> getPlayerMarkets(UUID playerId) {
-        List<Market> playerMarkets = new ArrayList<>();
-        
+    public Market getMarketAt(Location location) {
         for (Market market : markets.values()) {
-            if (market.getOwnerId().equals(playerId)) {
-                playerMarkets.add(market);
+            if (market.isInMarket(location)) {
+                return market;
             }
         }
-        
-        return playerMarkets;
-    }
-    
-    /**
-     * Gets markets where a player is an associate.
-     * 
-     * @param playerId The player's UUID
-     * @return The markets
-     */
-    public List<Market> getPlayerAssociatedMarkets(UUID playerId) {
-        List<Market> associatedMarkets = new ArrayList<>();
-        
-        for (Market market : markets.values()) {
-            if (market.isAssociate(playerId)) {
-                associatedMarkets.add(market);
-            }
-        }
-        
-        return associatedMarkets;
-    }
-    
-    /**
-     * Creates a new market.
-     * 
-     * @param location The market location
-     * @param player The player owner
-     * @return The new market, or null if creation failed
-     */
-    public Market createMarket(Location location, Player player) {
-        // Generate a default name based on player's name
-        String name = player.getName() + "'s Market";
-        return createMarket(player, name, location);
+        return null;
     }
     
     /**
@@ -108,30 +74,34 @@ public class MarketManager {
      * @return The new market, or null if creation failed
      */
     public Market createMarket(Player owner, String name, Location center) {
-        // Check if player can create a market (permissions, etc.)
-        if (!canCreateMarket(owner)) {
-            return null;
-        }
-        
-        // Check for market area overlap
-        if (isOverlappingExistingMarket(center)) {
-            return null;
+        // Check for overlap with existing markets
+        for (Market market : markets.values()) {
+            if (market.getWorldName().equals(center.getWorld().getName())) {
+                Location marketCenter = new Location(
+                        center.getWorld(),
+                        market.getCenterX(),
+                        market.getCenterY(),
+                        market.getCenterZ()
+                );
+                
+                double distance = center.distance(marketCenter);
+                
+                if (distance < market.getRadius() * 2) {
+                    return null; // Too close to another market
+                }
+            }
         }
         
         // Create the market
-        Market market = new Market(
-                UUID.randomUUID(), 
-                owner.getUniqueId(), 
-                owner.getName(), 
-                name, 
-                center.getBlockX(), 
-                center.getBlockY(), 
-                center.getBlockZ(), 
-                center.getWorld().getName()
-        );
+        UUID id = UUID.randomUUID();
+        int radius = 24; // Default radius of 24 blocks
+        Market market = new Market(id, owner, name, center, radius);
         
-        // Add to registry
-        markets.put(market.getId(), market);
+        // Add to markets
+        markets.put(id, market);
+        
+        logger.info("Created market '" + name + "' at " + center.getWorld().getName() + 
+                " (" + center.getBlockX() + ", " + center.getBlockY() + ", " + center.getBlockZ() + ")");
         
         return market;
     }
@@ -143,23 +113,38 @@ public class MarketManager {
      * @return True if removed successfully
      */
     public boolean removeMarket(UUID id) {
-        return markets.remove(id) != null;
+        Market market = markets.remove(id);
+        
+        if (market != null) {
+            logger.info("Removed market '" + market.getName() + "' with ID " + id);
+            return true;
+        }
+        
+        return false;
     }
     
     /**
-     * Gets a market at a location.
+     * Gets a player's owned markets.
      * 
-     * @param location The location
-     * @return The market, or null if not found
+     * @param playerId The player's UUID
+     * @return The player's markets
      */
-    public Market getMarketAt(Location location) {
-        for (Market market : markets.values()) {
-            if (market.isInBounds(location)) {
-                return market;
-            }
-        }
-        
-        return null;
+    public List<Market> getPlayerMarkets(UUID playerId) {
+        return markets.values().stream()
+                .filter(market -> market.isOwner(playerId))
+                .collect(Collectors.toList());
+    }
+    
+    /**
+     * Gets markets where a player is an associate.
+     * 
+     * @param playerId The player's UUID
+     * @return The markets where the player is an associate
+     */
+    public List<Market> getPlayerAssociatedMarkets(UUID playerId) {
+        return markets.values().stream()
+                .filter(market -> market.isAssociate(playerId))
+                .collect(Collectors.toList());
     }
     
     /**
@@ -168,95 +153,50 @@ public class MarketManager {
      * @param player The player
      * @return True if the player can create a market
      */
-    private boolean canCreateMarket(Player player) {
-        // Check permission
-        if (!player.hasPermission("bdcraft.market.create")) {
-            return false;
+    public boolean canCreateMarket(Player player) {
+        if (player.hasPermission("bdcraft.market.create.unlimited")) {
+            return true;
         }
         
-        // Check market limit based on rank
-        int rank = plugin.getProgressionModule().getRankManager().getPlayerRank(player);
-        int maxMarkets = getMaxMarketsByRank(rank);
+        int maxMarkets = 1;
         
-        List<Market> playerMarkets = getPlayerMarkets(player.getUniqueId());
-        return playerMarkets.size() < maxMarkets;
-    }
-    
-    /**
-     * Gets the maximum number of markets a player can have based on rank.
-     * 
-     * @param rank The player's rank
-     * @return The maximum number of markets
-     */
-    private int getMaxMarketsByRank(int rank) {
-        switch (rank) {
-            case 1: // Newcomer
-                return 0;
-            case 2: // Farmer
-                return 1;
-            case 3: // Expert Farmer
-                return 2;
-            case 4: // Master Farmer
-                return 3;
-            case 5: // Agricultural Expert
-                return 5;
-            default:
-                return 0;
+        if (player.hasPermission("bdcraft.market.create.tier1")) {
+            maxMarkets = 1;
+        } else if (player.hasPermission("bdcraft.market.create.tier2")) {
+            maxMarkets = 2;
+        } else if (player.hasPermission("bdcraft.market.create.tier3")) {
+            maxMarkets = 3;
         }
-    }
-    
-    /**
-     * Checks if a location overlaps with an existing market.
-     * 
-     * @param location The location to check
-     * @return True if overlapping
-     */
-    private boolean isOverlappingExistingMarket(Location location) {
-        return getMarketAt(location) != null;
+        
+        return getPlayerMarkets(player.getUniqueId()).size() < maxMarkets;
     }
     
     /**
      * Checks if a location is within a market.
      * 
-     * @param location The location
-     * @return True if within a market
+     * @param location The location to check
+     * @return True if the location is in a market
      */
     public boolean isInMarket(Location location) {
         return getMarketAt(location) != null;
     }
     
     /**
-     * Checks if a player is in their own market at a location.
+     * Adds a collector house to a market.
      * 
-     * @param player The player
-     * @param location The location
-     * @return True if in own market
+     * @param player The player placing the house
+     * @param location The house location
+     * @return True if added successfully
      */
-    public boolean isPlayerInOwnMarket(Player player, Location location) {
+    public boolean addCollectorHouse(Player player, Location location) {
         Market market = getMarketAt(location);
         if (market == null) {
             return false;
         }
         
-        return market.getOwnerId().equals(player.getUniqueId());
-    }
-    
-    /**
-     * Adds a collector house to a market.
-     * 
-     * @param player The player
-     * @param location The location
-     * @return True if added successfully
-     */
-    public boolean addCollectorHouse(Player player, Location location) {
-        Market market = getMarketAt(location);
-        if (market == null || !market.getOwnerId().equals(player.getUniqueId())) {
-            return false;
-        }
-        
-        // Implementation would add a collector house to the market
-        // This is a placeholder - actual implementation would add
-        // a villager or other collector entity
+        // Implementation would normally add a collector house
+        // This basic implementation just returns true
+        // Actual implementation would need to spawn a villager, etc.
         return true;
     }
 }

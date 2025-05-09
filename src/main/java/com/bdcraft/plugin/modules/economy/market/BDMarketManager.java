@@ -69,6 +69,40 @@ public class BDMarketManager {
     }
     
     /**
+     * Converts a Market to a BDMarket.
+     * 
+     * @param market The market
+     * @return The BD market
+     */
+    private BDMarket convertToBDMarket(Market market) {
+        BDMarket bdMarket = new BDMarket(market);
+        
+        // Set default values for BD-specific properties
+        bdMarket.setOpenBreak(false);
+        bdMarket.setParticles(true);
+        bdMarket.setSounds(true);
+        bdMarket.setWeeklyTradeCount(0);
+        
+        // Set price modifier based on level
+        switch (market.getLevel()) {
+            case 2:
+                bdMarket.setPriceModifier(1.05); // 5% better prices
+                break;
+            case 3:
+                bdMarket.setPriceModifier(1.10); // 10% better prices
+                break;
+            case 4:
+                bdMarket.setPriceModifier(1.15); // 15% better prices
+                break;
+            default:
+                bdMarket.setPriceModifier(1.0); // Default prices
+                break;
+        }
+        
+        return bdMarket;
+    }
+    
+    /**
      * Gets a BD market at a location.
      * 
      * @param location The location
@@ -179,27 +213,59 @@ public class BDMarketManager {
     }
     
     /**
-     * Converts a Market to a BDMarket.
+     * Adds a collector house to a market at the specified location.
      * 
-     * @param market The Market to convert
-     * @return The BDMarket
+     * @param player The player adding the house
+     * @param location The location of the house
+     * @return True if successfully added
      */
-    private BDMarket convertToBDMarket(Market market) {
-        BDMarket bdMarket = new BDMarket(
-            market.getId(),
-            market.getName(),
-            market.getOwnerId(),
-            market.getOwnerName(),
-            market.getWorldName(),
-            market.getCenterX(),
-            market.getCenterY(),
-            market.getCenterZ(),
-            market.getLevel(),
-            market.getRadius()
-        );
+    public boolean addCollectorHouse(Player player, Location location) {
+        // First check if the location is in a market
+        BDMarket market = getMarketAt(location);
+        if (market == null) {
+            return false;
+        }
         
-        // Convert any additional properties as needed
+        // Check if player is the owner or associate
+        if (!market.isOwner(player.getUniqueId()) && !market.isAssociate(player.getUniqueId())) {
+            return false;
+        }
         
-        return bdMarket;
+        // Check if the market has reached collector limit
+        int currentCollectors = market.getTraderCount("COLLECTOR");
+        int maxCollectors;
+        
+        switch (market.getLevel()) {
+            case 2:
+                maxCollectors = 5;
+                break;
+            case 3:
+                maxCollectors = 7;
+                break;
+            case 4:
+                maxCollectors = 10;
+                break;
+            default:
+                maxCollectors = 3;
+                break;
+        }
+        
+        if (currentCollectors >= maxCollectors) {
+            return false;
+        }
+        
+        // In a real implementation we would spawn the villager and add it to the market
+        // For now, we'll just return true to show the placement was valid
+        return true;
+    }
+    
+    /**
+     * Checks if a location is within any market.
+     * 
+     * @param location The location to check
+     * @return True if the location is within a market
+     */
+    public boolean isInMarket(Location location) {
+        return getMarketAt(location) != null;
     }
 }

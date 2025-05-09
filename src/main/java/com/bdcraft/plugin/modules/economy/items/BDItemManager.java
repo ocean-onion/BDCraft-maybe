@@ -3,6 +3,7 @@ package com.bdcraft.plugin.modules.economy.items;
 import com.bdcraft.plugin.BDCraft;
 import com.bdcraft.plugin.modules.economy.items.crops.BDCrop;
 import com.bdcraft.plugin.modules.economy.items.seeds.BDSeed;
+import com.bdcraft.plugin.modules.economy.items.tokens.TokenType;
 import com.bdcraft.plugin.modules.economy.items.tools.ToolType;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -627,6 +628,37 @@ public class BDItemManager {
             default:
                 return 1;
         }
+    }
+    
+    /**
+     * Checks if an item is a BD tool.
+     * 
+     * @param item The item to check
+     * @return True if the item is a BD tool
+     */
+    public boolean isBDTool(ItemStack item) {
+        if (item == null || item.getType().isAir()) {
+            return false;
+        }
+        
+        ItemMeta meta = item.getItemMeta();
+        if (meta == null) {
+            return false;
+        }
+        
+        // Check for lore containing something like "BD Tool"
+        if (meta.hasLore()) {
+            List<String> lore = meta.getLore();
+            if (lore != null) {
+                for (String line : lore) {
+                    if (line.contains("BD Tool") || line.contains("BD Harvester")) {
+                        return true;
+                    }
+                }
+            }
+        }
+        
+        return false;
     }
     
     /**

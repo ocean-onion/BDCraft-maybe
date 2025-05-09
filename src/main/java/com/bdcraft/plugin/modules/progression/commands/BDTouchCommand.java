@@ -87,8 +87,8 @@ public class BDTouchCommand implements CommandExecutor {
         plugin.getProgressionModule().getRebirthManager().setPlayerExpBoost(player.getUniqueId(), totalBonus, duration);
         
         // Visual effects
-        player.getWorld().spawnParticle(Particle.TOTEM, player.getLocation().add(0, 1.0, 0), 
-                100, 0.5, 1.0, 0.5, 0.2);
+        player.getWorld().spawnParticle(Particle.END_ROD, player.getLocation().add(0, 1.0, 0), 
+                100, 0.5, 1.0, 0.5);
         
         // Sound effects
         player.playSound(player.getLocation(), Sound.ITEM_TOTEM_USE, 0.7f, 1.0f);
@@ -107,7 +107,7 @@ public class BDTouchCommand implements CommandExecutor {
             }
             
             nearby.sendMessage(ChatColor.GOLD + player.getName() + "'s Golden Touch illuminates the area...");
-            nearby.spawnParticle(Particle.END_ROD, player.getLocation().add(0, 1.5, 0), 20, 0.5, 0.5, 0.5, 0.05);
+            nearby.spawnParticle(Particle.END_ROD, player.getLocation().add(0, 1.5, 0), 20, 0.5, 0.5, 0.5);
         }
     }
 }

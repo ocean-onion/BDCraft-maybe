@@ -1,53 +1,51 @@
 package com.bdcraft.plugin.modules.economy.market;
 
 import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 /**
- * Represents a player-owned market in the BDCraft economy system.
+ * Represents a player-owned market in the game.
  */
 public class Market {
     private final UUID id;
     private final UUID ownerId;
     private final String ownerName;
     private String name;
+    private final String worldName;
     private final int centerX;
     private final int centerY;
     private final int centerZ;
-    private final String worldName;
     private int level;
+    private int radius;
+    private final Set<UUID> associates;
     private int totalSales;
-    private final List<UUID> associates;
     
     /**
      * Creates a new market.
      * 
      * @param id The market ID
-     * @param ownerId The owner's UUID
-     * @param ownerName The owner's name
+     * @param owner The owner
      * @param name The market name
-     * @param centerX The center X coordinate
-     * @param centerY The center Y coordinate
-     * @param centerZ The center Z coordinate
-     * @param worldName The world name
+     * @param center The center location
+     * @param radius The market radius
      */
-    public Market(UUID id, UUID ownerId, String ownerName, String name, 
-            int centerX, int centerY, int centerZ, String worldName) {
+    public Market(UUID id, Player owner, String name, Location center, int radius) {
         this.id = id;
-        this.ownerId = ownerId;
-        this.ownerName = ownerName;
+        this.ownerId = owner.getUniqueId();
+        this.ownerName = owner.getName();
         this.name = name;
-        this.centerX = centerX;
-        this.centerY = centerY;
-        this.centerZ = centerZ;
-        this.worldName = worldName;
+        this.worldName = center.getWorld().getName();
+        this.centerX = center.getBlockX();
+        this.centerY = center.getBlockY();
+        this.centerZ = center.getBlockZ();
         this.level = 1;
+        this.radius = radius;
+        this.associates = new HashSet<>();
         this.totalSales = 0;
-        this.associates = new ArrayList<>();
     }
     
     /**
@@ -60,20 +58,38 @@ public class Market {
     }
     
     /**
-     * Gets the owner's UUID.
+     * Gets the owner ID.
      * 
-     * @return The owner's UUID
+     * @return The owner ID
      */
     public UUID getOwnerId() {
         return ownerId;
     }
     
     /**
-     * Gets the owner's name.
+     * Gets the founder ID (same as owner ID for backward compatibility).
      * 
-     * @return The owner's name
+     * @return The founder ID
+     */
+    public UUID getFounderId() {
+        return ownerId;
+    }
+    
+    /**
+     * Gets the owner name.
+     * 
+     * @return The owner name
      */
     public String getOwnerName() {
+        return ownerName;
+    }
+    
+    /**
+     * Gets the founder name (same as owner name for backward compatibility).
+     * 
+     * @return The founder name
+     */
+    public String getFounderName() {
         return ownerName;
     }
     
@@ -96,9 +112,18 @@ public class Market {
     }
     
     /**
+     * Gets the world name.
+     * 
+     * @return The world name
+     */
+    public String getWorldName() {
+        return worldName;
+    }
+    
+    /**
      * Gets the center X coordinate.
      * 
-     * @return The X coordinate
+     * @return The center X
      */
     public int getCenterX() {
         return centerX;
@@ -107,7 +132,7 @@ public class Market {
     /**
      * Gets the center Y coordinate.
      * 
-     * @return The Y coordinate
+     * @return The center Y
      */
     public int getCenterY() {
         return centerY;
@@ -116,19 +141,10 @@ public class Market {
     /**
      * Gets the center Z coordinate.
      * 
-     * @return The Z coordinate
+     * @return The center Z
      */
     public int getCenterZ() {
         return centerZ;
-    }
-    
-    /**
-     * Gets the world name.
-     * 
-     * @return The world name
-     */
-    public String getWorldName() {
-        return worldName;
     }
     
     /**
@@ -144,13 +160,102 @@ public class Market {
      * Sets the market level.
      * 
      * @param level The new level
+     * @return True if set successfully
      */
-    public void setLevel(int level) {
+    public boolean setLevel(int level) {
+        if (level < 1 || level > 4) {
+            return false;
+        }
         this.level = level;
+        return true;
     }
     
     /**
-     * Gets the total sales.
+     * Gets the market radius.
+     * 
+     * @return The radius
+     */
+    public int getRadius() {
+        return radius;
+    }
+    
+    /**
+     * Sets the market radius.
+     * 
+     * @param radius The new radius
+     */
+    public void setRadius(int radius) {
+        this.radius = radius;
+    }
+    
+    /**
+     * Checks if a location is within this market.
+     * 
+     * @param location The location
+     * @return True if within the market
+     */
+    public boolean isInMarket(Location location) {
+        if (!location.getWorld().getName().equals(worldName)) {
+            return false;
+        }
+        
+        int dx = location.getBlockX() - centerX;
+        int dz = location.getBlockZ() - centerZ;
+        
+        return Math.abs(dx) <= radius && Math.abs(dz) <= radius;
+    }
+    
+    /**
+     * Checks if a player is the owner of this market.
+     * 
+     * @param playerId The player ID
+     * @return True if owner
+     */
+    public boolean isOwner(UUID playerId) {
+        return ownerId.equals(playerId);
+    }
+    
+    /**
+     * Checks if a player is an associate of this market.
+     * 
+     * @param playerId The player ID
+     * @return True if associate
+     */
+    public boolean isAssociate(UUID playerId) {
+        return associates.contains(playerId);
+    }
+    
+    /**
+     * Gets the market associates.
+     * 
+     * @return The associates
+     */
+    public Set<UUID> getAssociates() {
+        return new HashSet<>(associates);
+    }
+    
+    /**
+     * Adds an associate to the market.
+     * 
+     * @param playerId The player ID
+     * @return True if added
+     */
+    public boolean addAssociate(UUID playerId) {
+        return associates.add(playerId);
+    }
+    
+    /**
+     * Removes an associate from the market.
+     * 
+     * @param playerId The player ID
+     * @return True if removed
+     */
+    public boolean removeAssociate(UUID playerId) {
+        return associates.remove(playerId);
+    }
+    
+    /**
+     * Gets the total sales count for this market.
      * 
      * @return The total sales
      */
@@ -159,101 +264,18 @@ public class Market {
     }
     
     /**
-     * Increments the total sales.
-     * 
-     * @param amount The amount to add
+     * Increments the total sales count.
      */
-    public void incrementTotalSales(int amount) {
-        this.totalSales += amount;
+    public void incrementTotalSales() {
+        this.totalSales++;
     }
     
     /**
-     * Gets the market associates.
+     * Adds to the total sales count.
      * 
-     * @return The associates
+     * @param count The count to add
      */
-    public List<UUID> getAssociates() {
-        return new ArrayList<>(associates);
-    }
-    
-    /**
-     * Adds an associate to the market.
-     * 
-     * @param associateId The associate's UUID
-     * @return True if added successfully
-     */
-    public boolean addAssociate(UUID associateId) {
-        if (associates.size() >= 5) {
-            return false; // Maximum 5 associates per market
-        }
-        
-        if (!associates.contains(associateId)) {
-            associates.add(associateId);
-            return true;
-        }
-        
-        return false;
-    }
-    
-    /**
-     * Removes an associate from the market.
-     * 
-     * @param associateId The associate's UUID
-     * @return True if removed successfully
-     */
-    public boolean removeAssociate(UUID associateId) {
-        return associates.remove(associateId);
-    }
-    
-    /**
-     * Checks if a player is an associate of the market.
-     * 
-     * @param playerId The player's UUID
-     * @return True if the player is an associate
-     */
-    public boolean isAssociate(UUID playerId) {
-        return associates.contains(playerId);
-    }
-    
-    /**
-     * Gets the market radius.
-     * 
-     * @return The radius in blocks
-     */
-    public int getRadius() {
-        return 24; // 49x49 area as per documentation
-    }
-    
-    /**
-     * Gets the market center location.
-     * 
-     * @param world The world
-     * @return The center location
-     */
-    public Location getCenterLocation(World world) {
-        return new Location(world, centerX, centerY, centerZ);
-    }
-    
-    /**
-     * Checks if a location is within the market boundaries.
-     * 
-     * @param location The location to check
-     * @return True if within boundaries
-     */
-    public boolean isInBounds(Location location) {
-        if (!location.getWorld().getName().equals(worldName)) {
-            return false;
-        }
-        
-        int radius = getRadius();
-        int minX = centerX - radius;
-        int maxX = centerX + radius;
-        int minZ = centerZ - radius;
-        int maxZ = centerZ + radius;
-        
-        int x = location.getBlockX();
-        int z = location.getBlockZ();
-        
-        return x >= minX && x <= maxX && z >= minZ && z <= maxZ;
+    public void addTotalSales(int count) {
+        this.totalSales += count;
     }
 }

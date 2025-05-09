@@ -53,7 +53,7 @@ public class BDPredictCommand implements CommandExecutor {
         if (success) {
             // Create a mystical effect around the player
             player.getWorld().spawnParticle(Particle.ENCHANTMENT_TABLE, player.getLocation().add(0, 1, 0), 
-                    50, 0.5, 0.5, 0.5, 0.1);
+                    50, 0.5, 0.5, 0.5);
             
             // Play a mystical sound
             player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_CHIME, 1.0f, 1.0f);
