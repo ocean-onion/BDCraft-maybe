@@ -1,386 +1,354 @@
 package com.bdcraft.plugin.modules.economy.market;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 /**
- * Extended Market class with BD-specific features.
+ * Represents a player-owned market in the BDCraft economy system.
  */
 public class BDMarket {
-    private final Market market;
-    private boolean openBreak;
-    private boolean hasParticles;
-    private boolean hasSounds;
-    private int weeklyTradeCount;
-    private double priceModifier;
-    private boolean removed;
+    private final UUID id;
+    private final String name;
+    private final UUID ownerUuid;
+    private final List<UUID> associates;
+    private final Location centerLocation;
+    private int level;
+    private int collectorsCount;
+    private boolean unlimitedCollectors;
     
     /**
-     * Creates a new BD market wrapper around a base market.
-     * 
-     * @param market The base market
+     * Creates a new market.
+     *
+     * @param id The market ID
+     * @param name The market name
+     * @param ownerUuid The UUID of the market owner
+     * @param centerLocation The center location of the market
      */
-    public BDMarket(Market market) {
-        this.market = market;
-        this.openBreak = false;
-        this.hasParticles = true;
-        this.hasSounds = true;
-        this.weeklyTradeCount = 0;
-        this.priceModifier = 1.0;
-        this.removed = false;
-    }
-    
-    /**
-     * Gets the wrapped market.
-     * 
-     * @return The market
-     */
-    public Market getMarket() {
-        return market;
+    public BDMarket(UUID id, String name, UUID ownerUuid, Location centerLocation) {
+        this.id = id;
+        this.name = name;
+        this.ownerUuid = ownerUuid;
+        this.centerLocation = centerLocation;
+        this.associates = new ArrayList<>();
+        this.level = 1;
+        this.collectorsCount = 0;
+        this.unlimitedCollectors = false;
     }
     
     /**
      * Gets the market ID.
-     * 
-     * @return The ID
+     *
+     * @return The market ID
      */
     public UUID getId() {
-        return market.getId();
+        return id;
     }
     
     /**
      * Gets the market name.
-     * 
-     * @return The name
+     *
+     * @return The market name
      */
     public String getName() {
-        return market.getName();
+        return name;
     }
     
     /**
-     * Gets the owner ID.
-     * 
-     * @return The owner ID
+     * Gets the UUID of the market owner.
+     *
+     * @return The owner UUID
      */
-    public UUID getOwnerId() {
-        return market.getOwnerId();
+    public UUID getOwnerUuid() {
+        return ownerUuid;
     }
     
     /**
      * Gets the owner name.
-     * 
-     * @return The owner name
+     *
+     * @return The owner name, or "Unknown" if offline
      */
     public String getOwnerName() {
-        return market.getOwnerName();
+        Player owner = Bukkit.getPlayer(ownerUuid);
+        if (owner != null) {
+            return owner.getName();
+        }
+        
+        String name = Bukkit.getOfflinePlayer(ownerUuid).getName();
+        return name != null ? name : "Unknown";
     }
     
     /**
-     * Gets the founder name (same as owner name for backward compatibility).
-     * 
-     * @return The founder name
-     */
-    public String getFounderName() {
-        return market.getFounderName();
-    }
-    
-    /**
-     * Gets the founder ID (same as owner ID for backward compatibility).
-     * 
-     * @return The founder ID
-     */
-    public UUID getFounderId() {
-        return market.getFounderId();
-    }
-    
-    /**
-     * Gets the world name.
-     * 
-     * @return The world name
-     */
-    public String getWorldName() {
-        return market.getWorldName();
-    }
-    
-    /**
-     * Gets the center X coordinate.
-     * 
-     * @return The center X
-     */
-    public int getCenterX() {
-        return market.getCenterX();
-    }
-    
-    /**
-     * Gets the center Y coordinate.
-     * 
-     * @return The center Y
-     */
-    public int getCenterY() {
-        return market.getCenterY();
-    }
-    
-    /**
-     * Gets the center Z coordinate.
-     * 
-     * @return The center Z
-     */
-    public int getCenterZ() {
-        return market.getCenterZ();
-    }
-    
-    /**
-     * Gets the center location.
-     * 
+     * Gets the center location of the market.
+     *
      * @return The center location
      */
-    public Location getCenter() {
-        World world = org.bukkit.Bukkit.getWorld(getWorldName());
-        if (world != null) {
-            return new Location(world, getCenterX(), getCenterY(), getCenterZ());
-        }
-        return null;
+    public Location getCenterLocation() {
+        return centerLocation.clone();
     }
     
     /**
      * Gets the market level.
-     * 
-     * @return The level
+     *
+     * @return The market level (1-4)
      */
     public int getLevel() {
-        return market.getLevel();
+        return level;
     }
     
     /**
-     * Gets the market radius.
-     * 
-     * @return The radius
+     * Gets the list of associates.
+     *
+     * @return The list of associate UUIDs
      */
-    public int getRadius() {
-        return market.getRadius();
-    }
-    
-    /**
-     * Checks if a player is the owner of this market.
-     * 
-     * @param playerId The player ID
-     * @return True if owner
-     */
-    public boolean isOwner(UUID playerId) {
-        return market.isOwner(playerId);
-    }
-    
-    /**
-     * Checks if a player is an associate of this market.
-     * 
-     * @param playerId The player ID
-     * @return True if associate
-     */
-    public boolean isAssociate(UUID playerId) {
-        return market.isAssociate(playerId);
-    }
-    
-    /**
-     * Gets the market associates.
-     * 
-     * @return The associates
-     */
-    public Set<UUID> getAssociates() {
-        return market.getAssociates();
+    public List<UUID> getAssociates() {
+        return new ArrayList<>(associates);
     }
     
     /**
      * Adds an associate to the market.
-     * 
-     * @param playerId The player ID
-     * @return True if added
+     *
+     * @param uuid The associate UUID
+     * @return True if the associate was added
      */
-    public boolean addAssociate(UUID playerId) {
-        return market.addAssociate(playerId);
+    public boolean addAssociate(UUID uuid) {
+        if (associates.contains(uuid) || uuid.equals(ownerUuid)) {
+            return false;
+        }
+        
+        associates.add(uuid);
+        return true;
     }
     
     /**
      * Removes an associate from the market.
-     * 
-     * @param playerId The player ID
-     * @return True if removed
+     *
+     * @param uuid The associate UUID
+     * @return True if the associate was removed
      */
-    public boolean removeAssociate(UUID playerId) {
-        return market.removeAssociate(playerId);
+    public boolean removeAssociate(UUID uuid) {
+        return associates.remove(uuid);
     }
     
     /**
-     * Checks if the market allows open breaking.
-     * 
-     * @return True if open breaking is allowed
+     * Checks if a player is associated with the market.
+     *
+     * @param uuid The player UUID
+     * @return True if the player is the owner or an associate
      */
-    public boolean isOpenBreak() {
-        return openBreak;
-    }
-    
-    /**
-     * Sets whether the market allows open breaking.
-     * 
-     * @param openBreak Whether to allow open breaking
-     */
-    public void setOpenBreak(boolean openBreak) {
-        this.openBreak = openBreak;
-    }
-    
-    /**
-     * Checks if the market has particles enabled.
-     * 
-     * @return True if particles are enabled
-     */
-    public boolean hasParticles() {
-        return hasParticles;
-    }
-    
-    /**
-     * Sets whether the market has particles enabled.
-     * 
-     * @param hasParticles Whether to enable particles
-     */
-    public void setParticles(boolean hasParticles) {
-        this.hasParticles = hasParticles;
-    }
-    
-    /**
-     * Checks if the market has sounds enabled.
-     * 
-     * @return True if sounds are enabled
-     */
-    public boolean hasSounds() {
-        return hasSounds;
-    }
-    
-    /**
-     * Sets whether the market has sounds enabled.
-     * 
-     * @param hasSounds Whether to enable sounds
-     */
-    public void setSounds(boolean hasSounds) {
-        this.hasSounds = hasSounds;
-    }
-    
-    /**
-     * Gets the weekly trade count.
-     * 
-     * @return The weekly trade count
-     */
-    public int getWeeklyTradeCount() {
-        return weeklyTradeCount;
-    }
-    
-    /**
-     * Sets the weekly trade count.
-     * 
-     * @param weeklyTradeCount The weekly trade count
-     */
-    public void setWeeklyTradeCount(int weeklyTradeCount) {
-        this.weeklyTradeCount = weeklyTradeCount;
-    }
-    
-    /**
-     * Increments the weekly trade count.
-     */
-    public void incrementWeeklyTradeCount() {
-        this.weeklyTradeCount++;
-    }
-    
-    /**
-     * Gets the total sales for this market.
-     * 
-     * @return The total sales
-     */
-    public int getTotalSales() {
-        return market.getTotalSales();
-    }
-    
-    /**
-     * Increments the total sales count.
-     */
-    public void incrementTotalSales() {
-        market.incrementTotalSales();
-    }
-    
-    /**
-     * Gets the price modifier.
-     * 
-     * @return The price modifier
-     */
-    public double getPriceModifier() {
-        return priceModifier;
-    }
-    
-    /**
-     * Sets the price modifier.
-     * 
-     * @param priceModifier The price modifier
-     */
-    public void setPriceModifier(double priceModifier) {
-        this.priceModifier = priceModifier;
-    }
-    
-    /**
-     * Checks if the market is removed.
-     * 
-     * @return True if removed
-     */
-    public boolean isRemoved() {
-        return removed;
-    }
-    
-    /**
-     * Sets whether the market is removed.
-     * 
-     * @param removed Whether the market is removed
-     */
-    public void setRemoved(boolean removed) {
-        this.removed = removed;
-    }
-    
-    /**
-     * Gets the count of a specific trader type.
-     * 
-     * @param traderType The trader type
-     * @return The count
-     */
-    public int getTraderCount(String traderType) {
-        // Implementation would need to track traders
-        return 0;
+    public boolean isAssociated(UUID uuid) {
+        return uuid.equals(ownerUuid) || associates.contains(uuid);
     }
     
     /**
      * Upgrades the market to the next level.
-     * 
-     * @return True if upgraded successfully
+     *
+     * @return True if the market was upgraded
      */
     public boolean upgrade() {
-        boolean upgraded = market.setLevel(market.getLevel() + 1);
+        if (level >= 4) {
+            return false;
+        }
         
-        if (upgraded) {
-            // Adjust price modifier based on new level
-            switch (market.getLevel()) {
-                case 2:
-                    setPriceModifier(1.05); // 5% better prices
-                    break;
-                case 3:
-                    setPriceModifier(1.10); // 10% better prices
-                    break;
-                case 4:
-                    setPriceModifier(1.15); // 15% better prices
-                    break;
+        level++;
+        return true;
+    }
+    
+    /**
+     * Sets the market level.
+     *
+     * @param level The market level
+     */
+    public void setLevel(int level) {
+        if (level < 1 || level > 4) {
+            throw new IllegalArgumentException("Invalid market level: " + level);
+        }
+        
+        this.level = level;
+    }
+    
+    /**
+     * Gets the maximum number of collectors allowed in this market.
+     *
+     * @return The maximum number of collectors
+     */
+    public int getMaxCollectors() {
+        if (unlimitedCollectors) {
+            return Integer.MAX_VALUE;
+        }
+        
+        switch (level) {
+            case 1:
+                return 3;
+            case 2:
+                return 5;
+            case 3:
+                return 7;
+            case 4:
+                return 10;
+            default:
+                return 0;
+        }
+    }
+    
+    /**
+     * Gets the price multiplier for this market.
+     *
+     * @return The price multiplier
+     */
+    public double getPriceMultiplier() {
+        switch (level) {
+            case 2:
+                return 1.05;  // 5% better prices
+            case 3:
+                return 1.10;  // 10% better prices
+            case 4:
+                return 1.15;  // 15% better prices
+            default:
+                return 1.0;
+        }
+    }
+    
+    /**
+     * Gets the current collector count.
+     *
+     * @return The number of collectors in this market
+     */
+    public int getCollectorsCount() {
+        return collectorsCount;
+    }
+    
+    /**
+     * Increments the collector count.
+     *
+     * @return True if a new collector can be added
+     */
+    public boolean incrementCollectorsCount() {
+        if (collectorsCount >= getMaxCollectors()) {
+            return false;
+        }
+        
+        collectorsCount++;
+        return true;
+    }
+    
+    /**
+     * Decrements the collector count.
+     */
+    public void decrementCollectorsCount() {
+        if (collectorsCount > 0) {
+            collectorsCount--;
+        }
+    }
+    
+    /**
+     * Sets whether this market has unlimited collectors.
+     *
+     * @param unlimited True if the market should have unlimited collectors
+     */
+    public void setUnlimitedCollectors(boolean unlimited) {
+        this.unlimitedCollectors = unlimited;
+    }
+    
+    /**
+     * Checks if this market has unlimited collectors.
+     *
+     * @return True if the market has unlimited collectors
+     */
+    public boolean hasUnlimitedCollectors() {
+        return unlimitedCollectors;
+    }
+    
+    /**
+     * Serializes the market to a string for storage.
+     *
+     * @return The serialized market data
+     */
+    public String serialize() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(id.toString()).append(";");
+        sb.append(name).append(";");
+        sb.append(ownerUuid.toString()).append(";");
+        sb.append(centerLocation.getWorld().getName()).append(",");
+        sb.append(centerLocation.getX()).append(",");
+        sb.append(centerLocation.getY()).append(",");
+        sb.append(centerLocation.getZ()).append(";");
+        sb.append(level).append(";");
+        sb.append(collectorsCount).append(";");
+        sb.append(unlimitedCollectors ? "1" : "0").append(";");
+        
+        // Serialize associates
+        if (associates.isEmpty()) {
+            sb.append("-");
+        } else {
+            for (int i = 0; i < associates.size(); i++) {
+                if (i > 0) {
+                    sb.append(",");
+                }
+                sb.append(associates.get(i).toString());
             }
         }
         
-        return upgraded;
+        return sb.toString();
+    }
+    
+    /**
+     * Deserializes a market from a string.
+     *
+     * @param data The serialized market data
+     * @return The deserialized market, or null if invalid
+     */
+    public static BDMarket deserialize(String data) {
+        try {
+            String[] parts = data.split(";");
+            
+            if (parts.length < 7) {
+                return null;
+            }
+            
+            UUID id = UUID.fromString(parts[0]);
+            String name = parts[1];
+            UUID ownerUuid = UUID.fromString(parts[2]);
+            
+            // Parse location
+            String[] locParts = parts[3].split(",");
+            if (locParts.length != 4) {
+                return null;
+            }
+            
+            String worldName = locParts[0];
+            double x = Double.parseDouble(locParts[1]);
+            double y = Double.parseDouble(locParts[2]);
+            double z = Double.parseDouble(locParts[3]);
+            
+            Location location = new Location(Bukkit.getWorld(worldName), x, y, z);
+            
+            // Create market
+            BDMarket market = new BDMarket(id, name, ownerUuid, location);
+            
+            // Set level and collectors count
+            market.setLevel(Integer.parseInt(parts[4]));
+            market.collectorsCount = Integer.parseInt(parts[5]);
+            market.unlimitedCollectors = parts[6].equals("1");
+            
+            // Parse associates
+            if (parts.length > 7 && !parts[7].equals("-")) {
+                String[] associateParts = parts[7].split(",");
+                for (String associatePart : associateParts) {
+                    if (!associatePart.isEmpty()) {
+                        market.addAssociate(UUID.fromString(associatePart));
+                    }
+                }
+            }
+            
+            return market;
+        } catch (Exception e) {
+            Bukkit.getLogger().warning("Failed to deserialize market: " + e.getMessage());
+            return null;
+        }
     }
 }

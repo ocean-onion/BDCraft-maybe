@@ -1,45 +1,57 @@
 package com.bdcraft.plugin.modules;
 
-import java.util.List;
+import com.bdcraft.plugin.BDCraft;
 
 /**
- * Interface for BDCraft modules.
+ * Base class for all BDCraft modules.
  */
-public interface BDModule extends Module {
+public abstract class BDModule {
+    protected final BDCraft plugin;
+    private final String name;
+    
+    /**
+     * Creates a new module.
+     *
+     * @param plugin The plugin instance
+     * @param name The module name
+     */
+    public BDModule(BDCraft plugin, String name) {
+        this.plugin = plugin;
+        this.name = name;
+    }
+    
+    /**
+     * Gets the module name.
+     *
+     * @return The module name
+     */
+    public String getName() {
+        return name;
+    }
+    
     /**
      * Called when the module is enabled.
      */
-    void onEnable();
+    public abstract void onEnable();
     
     /**
      * Called when the module is disabled.
      */
-    void onDisable();
+    public abstract void onDisable();
     
     /**
-     * Called when the plugin is reloaded.
+     * Reloads the module data and configuration.
      */
-    void onReload();
-    
-    /**
-     * Gets the module's dependencies.
-     * @return The module dependencies
-     */
-    List<String> getDependencies();
-    
-    /**
-     * Default implementation of Module.enable()
-     */
-    @Override
-    default void enable() {
-        onEnable();
+    public void reload() {
+        // Default implementation does nothing
     }
     
     /**
-     * Default implementation of Module.disable()
+     * Gets the plugin instance.
+     *
+     * @return The plugin instance
      */
-    @Override
-    default void disable() {
-        onDisable();
+    public BDCraft getPlugin() {
+        return plugin;
     }
 }

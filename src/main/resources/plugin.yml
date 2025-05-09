@@ -1,290 +1,121 @@
 name: BDCraft
-version: '${version}'
+version: 1.0.0
 main: com.bdcraft.plugin.BDCraft
 api-version: '1.21'
-authors: [BDCraft Team]
-description: 'A comprehensive Minecraft server management plugin with farming-based economy, player markets with villager trading, and progression systems'
-website: https://bdcraft.org
+author: BDCraft Team
+description: A comprehensive economy and market system plugin for Minecraft
+website: https://bdcraft.com
 
 commands:
-  bdcraft:
-    description: Main command for BDCraft plugin
-    usage: /bdcraft <subcommand> [args]
-    aliases: [bd]
-    permission: bdcraft.admin
-  
-  bdhelp:
-    description: Shows help information for BDCraft commands
-    usage: /bdhelp [command]
-    aliases: [bdh]
-    permission: bdcraft.help
-  
-  bdadmin:
-    description: Administrative commands for BDCraft
-    usage: /bdadmin <subcommand> [args]
-    aliases: [bda]
-    permission: bdcraft.admin
-  
-  # Economy Commands
-  bdcurrency:
-    description: Currency management commands
-    usage: /bdcurrency <balance|pay|top> [args]
-    aliases: [bdc]
-    permission: bdcraft.currency
-    
-  # Market Commands
+  bdscoreboard:
+    description: Toggles the BDCraft scoreboard
+    usage: /bdscoreboard [toggle|on|off|reload]
+    aliases: [bdsc, bdboard]
+    permission: bdcraft.scoreboard
+  bdbalance:
+    description: Checks your BD currency balance
+    usage: /bdbalance
+    aliases: [bdbal, bdmoney]
+    permission: bdcraft.balance
+  bdpay:
+    description: Pay BD currency to another player
+    usage: /bdpay <player> <amount>
+    permission: bdcraft.pay
   bdmarket:
-    description: Market management commands
-    usage: /bdmarket <create|info|list|warp> [args]
-    aliases: [bdm]
+    description: Manage your markets
+    usage: /bdmarket [create|list|info|upgrade|addassociate|removeassociate]
+    aliases: [bdm, markets]
     permission: bdcraft.market
-    
-  # Rank Commands
-  bdrank:
-    description: Displays and manages player ranks
-    usage: /bdrank [player] [set|info|list] [rank]
-    aliases: [bdrk]
-    permission: bdcraft.rank
-    
-  # Vital Module Commands
-  bdtp:
-    description: Request to teleport to a player
-    usage: /bdtp <player>
-    permission: bdvital.tp
-    
-  bdtpa:
-    description: Accept a teleport request
-    usage: /bdtpa
-    permission: bdvital.tpa
-    
-  bdtpd:
-    description: Deny a teleport request
-    usage: /bdtpd
-    permission: bdvital.tpa
-    
-  bdtpr:
-    description: Request a player to teleport to you
-    usage: /bdtpr <player>
-    permission: bdvital.tpr
-    
-  bdback:
-    description: Return to previous location or death point
-    usage: /bdback
-    permission: bdvital.back
-    
-  bdspawn:
-    description: Teleport to server spawn
-    usage: /bdspawn
-    permission: bdvital.spawn
-    
-  bdhome:
-    description: Home system commands
-    usage: /bdhome [set|del|list] [name]
-    permission: bdvital.home
-    
-  bdmsg:
-    description: Send a private message
-    usage: /bdmsg <player> <message>
-    permission: bdvital.msg
-    
-  bdr:
-    description: Reply to last private message
-    usage: /bdr <message>
-    permission: bdvital.msg
-    
-  bdmail:
-    description: Mail system commands
-    usage: /bdmail <send|read|clear> [player] [message]
-    permission: bdvital.mail
-    
-  bddeathinfo:
-    description: Show coordinates of last death
-    usage: /bddeathinfo
-    permission: bdvital.deathinfo
-    
-  bdmarketwarp:
-    description: Market warp system commands
-    usage: /bdmarketwarp <n|set|remove|list>
-    aliases: [bdmw]
-    permission: bdvital.market.warp
-    
-  # Rebirth Command
   bdrebirth:
-    description: Manage player rebirth and prestige
-    usage: /bdrebirth [check|confirm|stats] [player]
-    aliases: [bdrb]
+    description: Rebirth to gain permanent bonuses
+    usage: /bdrebirth
     permission: bdcraft.rebirth
-    
-  # Deity Commands (Rebirth-only)
+  bdrank:
+    description: Check your current rank
+    usage: /bdrank
+    permission: bdcraft.rank
+  bdaura:
+    description: Toggle your rebirth aura
+    usage: /bdaura
+    permission: bdcraft.rebirth.aura
   bdbless:
     description: Bless another player with temporary bonuses
     usage: /bdbless <player>
-    permission: bdcraft.deity.bless
-    
-  bdaura:
-    description: Toggle your rebirth aura for nearby players
-    usage: /bdaura
-    permission: bdcraft.deity.aura
-    
+    permission: bdcraft.rebirth.bless
   bdtouch:
-    description: Use Golden Touch to grow crops in an area
+    description: Apply rebirth touch to crops
     usage: /bdtouch
-    permission: bdcraft.deity.touch
-    
+    permission: bdcraft.rebirth.touch
   bdinsight:
-    description: Gain seasonal market insights and predictions
-    usage: /bdinsight
-    permission: bdcraft.deity.insight
-    
-  # Admin Commands
-  bdgive:
-    description: Gives BD items to players
-    usage: /bdgive item <player> <item_id> [amount] [value]
-    aliases: [bdg]
-    permission: bdcraft.admin.give
-    
-  # Logging Commands
-  bdlogs:
-    description: View server activity logs
-    usage: /bdlogs <list|player|action|time|radius> [args]
-    aliases: [bdl]
-    permission: bdcraft.admin.logs
+    description: Get economic insights and predictions
+    usage: /bdinsight [market|economy|trends]
+    permission: bdcraft.insight
+  bdadmin:
+    description: Admin commands for BDCraft
+    usage: /bdadmin [reload|setmoney|setrank|resetplayer|market]
+    permission: bdcraft.admin
 
 permissions:
-  # Admin Permissions
-  bdcraft.admin:
-    description: Gives access to administrative commands
-    default: op
+  bdcraft.*:
+    description: Gives access to all BDCraft commands
     children:
-      bdcraft.admin.reload: true
-      bdcraft.admin.status: true
-      bdcraft.admin.economy: true
-      bdcraft.admin.items: true
-      bdcraft.admin.rank: true
-      bdcraft.admin.rebirth: true
-      bdcraft.admin.market: true
-      bdcraft.admin.villager: true
-      bdcraft.admin.debug: true
-      bdcraft.admin.logs: true
-      
-  # Economy Permissions
-  bdcraft.currency:
-    description: Allows currency commands
+      bdcraft.scoreboard: true
+      bdcraft.balance: true
+      bdcraft.pay: true
+      bdcraft.market: true
+      bdcraft.rebirth: true
+      bdcraft.rank: true
+      bdcraft.insight: true
+      bdcraft.admin: true
+      bdcraft.rebirth.*: true
+  bdcraft.scoreboard:
+    description: Allows using scoreboard commands
     default: true
-    
-  # Market Permissions
+  bdcraft.balance:
+    description: Allows checking balance
+    default: true
+  bdcraft.pay:
+    description: Allows paying other players
+    default: true
+  bdcraft.market:
+    description: Allows basic market usage
+    default: true
   bdcraft.market.create:
     description: Allows creating markets
     default: true
-    
-  bdcraft.market.check:
-    description: Allows checking market boundaries
+  bdcraft.market.create.tier1:
+    description: Allows creating up to 1 market
     default: true
-    
-  bdcraft.market.info:
-    description: Allows viewing market info
-    default: true
-    
-  # Rank Permissions
-  bdcraft.rank.view:
-    description: Allows viewing ranks
-    default: true
-    
-  bdcraft.rank.up:
-    description: Allows ranking up
-    default: true
-    
-  # Rebirth Permissions
-  bdcraft.rebirth:
-    description: Allows accessing rebirth system
-    default: true
-    children:
-      bdcraft.rebirth.check: true
-      bdcraft.rebirth.confirm: true
-      bdcraft.rebirth.stats: true
-      
-  bdcraft.rebirth.check:
-    description: Allows checking rebirth eligibility
-    default: true
-    
-  bdcraft.rebirth.confirm:
-    description: Allows confirming rebirth
-    default: true
-    
-  bdcraft.rebirth.stats:
-    description: Allows viewing rebirth stats
-    default: true
-    
-  bdcraft.rebirth.stats.others:
-    description: Allows viewing other players' rebirth stats
+  bdcraft.market.create.tier2:
+    description: Allows creating up to 2 markets
     default: op
-    
-  # Deity Permissions (Rebirth 10)
-  bdcraft.deity.bless:
-    description: Allows using the bless command (Rebirth 10)
-    default: false
-    
-  bdcraft.deity.predict:
-    description: Allows predicting seasonal trader items (Rebirth 10)
-    default: false
-    
-  bdcraft.deity.aura:
-    description: Allows toggling abundance aura (Rebirth 10)
-    default: false
-    
-  bdcraft.deity.touch:
-    description: Allows using Golden Touch ability (Rebirth 6)
-    default: false
-    
-  bdcraft.deity.insight:
-    description: Allows using Seasonal Insight market predictions (Rebirth 10)
-    default: false
-    
-  # Vital Module Permissions
-  bdvital.tp:
-    description: Allows teleporting to players
+  bdcraft.market.create.tier3:
+    description: Allows creating up to 3 markets
+    default: op
+  bdcraft.rebirth:
+    description: Allows using rebirth
     default: true
-    
-  bdvital.tpa:
-    description: Allows accepting/denying teleport requests
+  bdcraft.rebirth.*:
+    description: Allows using all rebirth features
+    children:
+      bdcraft.rebirth.aura: true
+      bdcraft.rebirth.bless: true
+      bdcraft.rebirth.touch: true
+  bdcraft.rebirth.aura:
+    description: Allows using rebirth aura
     default: true
-    
-  bdvital.tpr:
-    description: Allows requesting players to teleport to you
+  bdcraft.rebirth.bless:
+    description: Allows blessing other players
     default: true
-    
-  bdvital.back:
-    description: Allows returning to previous location
+  bdcraft.rebirth.touch:
+    description: Allows using rebirth touch
     default: true
-    
-  bdvital.spawn:
-    description: Allows teleporting to spawn
+  bdcraft.rank:
+    description: Allows checking rank
     default: true
-    
-  bdvital.home:
-    description: Allows using homes
+  bdcraft.insight:
+    description: Allows using economic insights
     default: true
-    
-  bdvital.sethome:
-    description: Allows setting homes
-    default: true
-    
-  bdvital.msg:
-    description: Allows private messaging
-    default: true
-    
-  bdvital.mail:
-    description: Allows using mail
-    default: true
-    
-  bdvital.market.warp:
-    description: Allows using market warps
-    default: true
-    
-  bdvital.market.setwarp:
-    description: Allows setting market warps
-    default: false
-    
-  bdvital.deathinfo:
-    description: Allows seeing death coordinates
-    default: true
+  bdcraft.admin:
+    description: Allows using admin commands
+    default: op

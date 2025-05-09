@@ -1,311 +1,168 @@
 package com.bdcraft.plugin;
 
-import com.bdcraft.plugin.api.EconomyAPI;
-import com.bdcraft.plugin.api.PermissionAPI;
-import com.bdcraft.plugin.api.ProgressionAPI;
-import com.bdcraft.plugin.api.VillagerAPI;
-import com.bdcraft.plugin.cache.BDCacheManager;
-import com.bdcraft.plugin.commands.admin.GiveItemCommand;
-import com.bdcraft.plugin.compat.PlaceholderManager;
 import com.bdcraft.plugin.compat.PluginConflictManager;
-import com.bdcraft.plugin.config.ConfigManager;
-import com.bdcraft.plugin.events.BDEventManager;
-import com.bdcraft.plugin.modules.ModuleManager;
+import com.bdcraft.plugin.modules.BDModule;
+import com.bdcraft.plugin.modules.display.BDDisplayModule;
 import com.bdcraft.plugin.modules.economy.BDEconomyModule;
-import com.bdcraft.plugin.modules.logging.BDLoggingModule;
-import com.bdcraft.plugin.modules.perms.BDPermsModule;
+import com.bdcraft.plugin.modules.economy.market.BDMarketManager;
 import com.bdcraft.plugin.modules.progression.BDProgressionModule;
-import com.bdcraft.plugin.modules.vital.BDVitalModule;
 import com.bdcraft.plugin.util.PluginBlocker;
 
-import org.bukkit.NamespacedKey;
-import org.bukkit.plugin.PluginDescriptionFile;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.plugin.java.JavaPluginLoader;
 
-import java.io.File;
-import java.util.logging.Logger;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
 
 /**
- * Main plugin class for BDCraft.
+ * Main class for the BDCraft plugin.
  */
 public class BDCraft extends JavaPlugin {
-    private Logger logger;
-    private ConfigManager configManager;
-    private ModuleManager moduleManager;
-    private PluginBlocker pluginBlocker;
-    private PluginConflictManager pluginConflictManager;
-    private PlaceholderManager placeholderManager;
-    private BDEventManager eventManager;
-    private BDCacheManager cacheManager;
+    // Modules
+    private List<BDModule> modules;
+    private BDEconomyModule economyModule;
+    private BDProgressionModule progressionModule;
+    private BDDisplayModule displayModule;
     
-    // APIs
-    private EconomyAPI economyAPI;
-    private PermissionAPI permissionAPI;
-    private VillagerAPI villagerAPI;
-    private ProgressionAPI progressionAPI;
-    
-    /**
-     * Default constructor for the plugin.
-     */
-    public BDCraft() {
-        super();
-    }
-    
-    /**
-     * Test constructor for mocking the plugin.
-     */
-    protected BDCraft(JavaPluginLoader loader, PluginDescriptionFile description, File dataFolder, File file) {
-        super(loader, description, dataFolder, file);
-    }
+    // Plugin conflict management
+    private PluginConflictManager conflictManager;
     
     @Override
     public void onEnable() {
-        logger = getLogger();
-        logger.info("Enabling BDCraft...");
+        // Save default config
+        saveDefaultConfig();
         
-        // Initialize conflict management
-        pluginConflictManager = new PluginConflictManager(this);
+        // Initialize modules list
+        modules = new ArrayList<>();
         
-        // Initialize plugin blocker to disable conflicting plugins
-        pluginBlocker = new PluginBlocker(this);
-        pluginBlocker.checkAndDisableConflictingPlugins();
-        
-        // Initialize managers
-        configManager = new ConfigManager(this);
-        moduleManager = new ModuleManager(this);
-        eventManager = new BDEventManager(this);
-        cacheManager = new BDCacheManager(this);
-        
-        // Register core modules
-        moduleManager.registerModule(new BDPermsModule(this, moduleManager));
-        moduleManager.registerModule(new BDEconomyModule(this));
-        moduleManager.registerModule(new BDProgressionModule(this));
-        moduleManager.registerModule(new BDVitalModule(this, moduleManager));
-        
-        // Register utility modules
-        moduleManager.registerModule(new BDLoggingModule(this));
-        
-        // Enable modules
-        moduleManager.enableModules();
-        
-        // Setup placeholder support
-        placeholderManager = new PlaceholderManager(this);
-        if (placeholderManager.isPlaceholderAPIHooked()) {
-            logger.info("Hooked into PlaceholderAPI for placeholders.");
+        // Initialize plugin conflict manager
+        boolean blockCompetingPlugins = getConfig().getBoolean("plugin.block-competing-plugins", true);
+        if (blockCompetingPlugins) {
+            getLogger().info("Plugin conflict management is enabled");
+            conflictManager = new PluginConflictManager(this);
+            conflictManager.checkForConflicts();
         }
         
-        // Register commands
-        registerCommands();
-        
-        logger.info("BDCraft enabled successfully!");
+        // Initialize modules
+        try {
+            // Initialize economy module
+            economyModule = new BDEconomyModule(this);
+            modules.add(economyModule);
+            
+            // Initialize progression module
+            progressionModule = new BDProgressionModule(this);
+            modules.add(progressionModule);
+            
+            // Initialize display module (depends on economy and progression)
+            displayModule = new BDDisplayModule(this, economyModule, progressionModule);
+            modules.add(displayModule);
+            
+            // Enable all modules
+            for (BDModule module : modules) {
+                module.onEnable();
+            }
+            
+            getLogger().info("BDCraft has been enabled!");
+        } catch (Exception e) {
+            getLogger().log(Level.SEVERE, "Failed to enable BDCraft:", e);
+            Bukkit.getPluginManager().disablePlugin(this);
+        }
     }
     
     @Override
     public void onDisable() {
-        logger.info("Disabling BDCraft...");
-        
-        // Disable modules
-        if (moduleManager != null) {
-            moduleManager.disableModules();
+        // Disable all modules in reverse order
+        if (modules != null) {
+            for (int i = modules.size() - 1; i >= 0; i--) {
+                try {
+                    modules.get(i).onDisable();
+                } catch (Exception e) {
+                    getLogger().log(Level.SEVERE, "Error disabling module: " + modules.get(i).getName(), e);
+                }
+            }
         }
         
-        // Clear event listeners
-        if (eventManager != null) {
-            eventManager.clearListeners();
-        }
-        
-        // Shutdown cache manager
-        if (cacheManager != null) {
-            cacheManager.shutdown();
-        }
-        
-        // Save configuration
-        if (configManager != null) {
-            configManager.saveConfigs();
-        }
-        
-        logger.info("BDCraft disabled!");
-    }
-    
-    /**
-     * Gets the module manager.
-     * @return The module manager
-     */
-    public ModuleManager getModuleManager() {
-        return moduleManager;
-    }
-    
-    /**
-     * Gets the configuration manager.
-     * @return The configuration manager
-     */
-    public ConfigManager getConfigManager() {
-        return configManager;
-    }
-    
-    /**
-     * Gets the economy API.
-     * @return The economy API
-     */
-    public EconomyAPI getEconomyAPI() {
-        return economyAPI;
-    }
-    
-    /**
-     * Sets the economy API.
-     * @param economyAPI The economy API
-     */
-    public void setEconomyAPI(EconomyAPI economyAPI) {
-        this.economyAPI = economyAPI;
-    }
-    
-    /**
-     * Gets the permission API.
-     * @return The permission API
-     */
-    public PermissionAPI getPermissionAPI() {
-        return permissionAPI;
-    }
-    
-    /**
-     * Sets the permission API.
-     * @param permissionAPI The permission API
-     */
-    public void setPermissionAPI(PermissionAPI permissionAPI) {
-        this.permissionAPI = permissionAPI;
-    }
-    
-    /**
-     * Gets the villager API.
-     * @return The villager API
-     */
-    public VillagerAPI getVillagerAPI() {
-        return villagerAPI;
-    }
-    
-    /**
-     * Sets the villager API.
-     * @param villagerAPI The villager API
-     */
-    public void setVillagerAPI(VillagerAPI villagerAPI) {
-        this.villagerAPI = villagerAPI;
-    }
-    
-    /**
-     * Gets the progression API.
-     * @return The progression API
-     */
-    public ProgressionAPI getProgressionAPI() {
-        return progressionAPI;
-    }
-    
-    /**
-     * Sets the progression API.
-     * @param progressionAPI The progression API
-     */
-    public void setProgressionAPI(ProgressionAPI progressionAPI) {
-        this.progressionAPI = progressionAPI;
-    }
-    
-    /**
-     * Registers commands for the plugin.
-     */
-    private void registerCommands() {
-        // Register admin commands
-        new GiveItemCommand(this);
-        new com.bdcraft.plugin.commands.admin.MarketCommand(this);
-        
-        // Register player commands
-        new com.bdcraft.plugin.commands.player.BDCommand(this);
-        new com.bdcraft.plugin.commands.player.RebirthCommand(this);
-        new com.bdcraft.plugin.commands.player.AuctionHouseCommand(
-            this, 
-            getEconomyModule().getAuctionManager(),
-            getEconomyModule().getAuctionHouseGUI());
-        
-        logger.info("Commands registered successfully!");
-    }
-    
-    /**
-     * Gets the permissions module.
-     * @return The permissions module
-     */
-    public BDPermsModule getPermsModule() {
-        return moduleManager.getModule(BDPermsModule.class);
+        getLogger().info("BDCraft has been disabled!");
     }
     
     /**
      * Gets the economy module.
+     *
      * @return The economy module
      */
     public BDEconomyModule getEconomyModule() {
-        return moduleManager.getModule(BDEconomyModule.class);
+        return economyModule;
     }
     
     /**
      * Gets the progression module.
+     *
      * @return The progression module
      */
     public BDProgressionModule getProgressionModule() {
-        return moduleManager.getModule(BDProgressionModule.class);
+        return progressionModule;
     }
     
     /**
-     * Gets the vital module.
-     * @return The vital module
+     * Gets the display module.
+     *
+     * @return The display module
      */
-    public BDVitalModule getVitalModule() {
-        return moduleManager.getModule(BDVitalModule.class);
+    public BDDisplayModule getDisplayModule() {
+        return displayModule;
     }
     
     /**
-     * Gets the logging module.
-     * @return The logging module
+     * Gets the market manager.
+     *
+     * @return The market manager
      */
-    public BDLoggingModule getLoggingModule() {
-        return moduleManager.getModule(BDLoggingModule.class);
-    }
-    
-    /**
-     * Gets the placeholder manager.
-     * @return The placeholder manager
-     */
-    public PlaceholderManager getPlaceholderManager() {
-        return placeholderManager;
+    public BDMarketManager getMarketManager() {
+        return economyModule.getMarketManager();
     }
     
     /**
      * Gets the plugin conflict manager.
+     *
      * @return The plugin conflict manager
      */
-    public PluginConflictManager getPluginConflictManager() {
-        return pluginConflictManager;
+    public PluginConflictManager getConflictManager() {
+        return conflictManager;
     }
     
     /**
-     * Gets the event manager.
-     * @return The event manager
+     * Gets a module by name.
+     *
+     * @param name The module name
+     * @return The module, or null if not found
      */
-    public BDEventManager getEventManager() {
-        return eventManager;
+    public BDModule getModule(String name) {
+        for (BDModule module : modules) {
+            if (module.getName().equalsIgnoreCase(name)) {
+                return module;
+            }
+        }
+        
+        return null;
     }
     
     /**
-     * Gets the cache manager.
-     * @return The cache manager
+     * Reloads the plugin and all modules.
      */
-    public BDCacheManager getCacheManager() {
-        return cacheManager;
-    }
-    
-    /**
-     * Creates a namespaced key for this plugin.
-     * 
-     * @param key The key to create
-     * @return The namespaced key
-     */
-    public NamespacedKey getNamespacedKey(String key) {
-        return new NamespacedKey(this, key);
+    public void reload() {
+        // Reload config
+        reloadConfig();
+        
+        // Reload all modules
+        for (BDModule module : modules) {
+            try {
+                module.reload();
+            } catch (Exception e) {
+                getLogger().log(Level.SEVERE, "Error reloading module: " + module.getName(), e);
+            }
+        }
+        
+        getLogger().info("BDCraft has been reloaded!");
     }
 }
