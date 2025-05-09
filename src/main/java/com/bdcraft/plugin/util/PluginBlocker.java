@@ -24,14 +24,23 @@ public class PluginBlocker implements Listener {
         "EssentialsX", 
         "CMI", 
         "GemsEconomy",
-        "TokenManager"
+        "TokenManager",
+        "CoinsEngine",
+        "PlayerPoints",
+        "CraftConomy",
+        "iConomy",
+        "RealEconomy"
     );
     
     private static final List<String> PERMISSION_PLUGINS = Arrays.asList(
         "LuckPerms",
         "PermissionsEx",
         "GroupManager",
-        "UltraPermissions"
+        "UltraPermissions",
+        "PowerRanks",
+        "PEX",
+        "PermissionManager",
+        "RankSystem"
     );
     
     private static final List<String> PROGRESSION_PLUGINS = Arrays.asList(
@@ -39,7 +48,24 @@ public class PluginBlocker implements Listener {
         "AureliumSkills",
         "Jobs",
         "JobsReborn",
-        "SkillAPI"
+        "SkillAPI",
+        "RPGCore",
+        "LevelledMobs",
+        "ProgressionSystem",
+        "PlayerLevels",
+        "RankUP"
+    );
+    
+    private static final List<String> MARKET_PLUGINS = Arrays.asList(
+        "QuickShop",
+        "Shopkeepers",
+        "BossShop",
+        "ChestShop",
+        "CraftShop",
+        "MarketPlace",
+        "DynamicShop",
+        "Shop",
+        "AuctionHouse"
     );
     
     /**
@@ -94,7 +120,8 @@ public class PluginBlocker implements Listener {
         
         return ECONOMY_PLUGINS.contains(pluginName) ||
                PERMISSION_PLUGINS.contains(pluginName) ||
-               PROGRESSION_PLUGINS.contains(pluginName);
+               PROGRESSION_PLUGINS.contains(pluginName) ||
+               MARKET_PLUGINS.contains(pluginName);
     }
     
     /**
@@ -117,6 +144,8 @@ public class PluginBlocker implements Listener {
                 plugin.getLogger().info(name + " conflicts with BDCraft permissions system.");
             } else if (PROGRESSION_PLUGINS.contains(name)) {
                 plugin.getLogger().info(name + " conflicts with BDCraft progression system.");
+            } else if (MARKET_PLUGINS.contains(name)) {
+                plugin.getLogger().info(name + " conflicts with BDCraft market and trading system.");
             }
             
         } catch (Exception e) {

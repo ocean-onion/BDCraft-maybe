@@ -4,10 +4,12 @@ import com.bdcraft.plugin.api.EconomyAPI;
 import com.bdcraft.plugin.api.PermissionAPI;
 import com.bdcraft.plugin.api.ProgressionAPI;
 import com.bdcraft.plugin.api.VillagerAPI;
+import com.bdcraft.plugin.cache.BDCacheManager;
 import com.bdcraft.plugin.commands.admin.GiveItemCommand;
 import com.bdcraft.plugin.compat.PlaceholderManager;
 import com.bdcraft.plugin.compat.PluginConflictManager;
 import com.bdcraft.plugin.config.ConfigManager;
+import com.bdcraft.plugin.events.BDEventManager;
 import com.bdcraft.plugin.modules.ModuleManager;
 import com.bdcraft.plugin.modules.economy.BDEconomyModule;
 import com.bdcraft.plugin.modules.logging.BDLoggingModule;
@@ -34,6 +36,8 @@ public class BDCraft extends JavaPlugin {
     private PluginBlocker pluginBlocker;
     private PluginConflictManager pluginConflictManager;
     private PlaceholderManager placeholderManager;
+    private BDEventManager eventManager;
+    private BDCacheManager cacheManager;
     
     // APIs
     private EconomyAPI economyAPI;
@@ -70,6 +74,8 @@ public class BDCraft extends JavaPlugin {
         // Initialize managers
         configManager = new ConfigManager(this);
         moduleManager = new ModuleManager(this);
+        eventManager = new BDEventManager(this);
+        cacheManager = new BDCacheManager(this);
         
         // Register core modules
         moduleManager.registerModule(new BDPermsModule(this, moduleManager));
@@ -102,6 +108,16 @@ public class BDCraft extends JavaPlugin {
         // Disable modules
         if (moduleManager != null) {
             moduleManager.disableModules();
+        }
+        
+        // Clear event listeners
+        if (eventManager != null) {
+            eventManager.clearListeners();
+        }
+        
+        // Shutdown cache manager
+        if (cacheManager != null) {
+            cacheManager.shutdown();
         }
         
         // Save configuration
@@ -265,6 +281,22 @@ public class BDCraft extends JavaPlugin {
      */
     public PluginConflictManager getPluginConflictManager() {
         return pluginConflictManager;
+    }
+    
+    /**
+     * Gets the event manager.
+     * @return The event manager
+     */
+    public BDEventManager getEventManager() {
+        return eventManager;
+    }
+    
+    /**
+     * Gets the cache manager.
+     * @return The cache manager
+     */
+    public BDCacheManager getCacheManager() {
+        return cacheManager;
     }
     
     /**
