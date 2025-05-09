@@ -457,6 +457,20 @@ public class BDItemManager {
     }
     
     /**
+     * Adds an enchantment glow effect to an item's metadata.
+     * Uses NamespacedKey to get the unbreaking enchantment rather than direct reference.
+     * 
+     * @param meta The item metadata to modify
+     */
+    private void addEnchantmentGlow(ItemMeta meta) {
+        Enchantment unbreaking = Enchantment.getByKey(org.bukkit.NamespacedKey.minecraft("unbreaking"));
+        if (unbreaking != null) {
+            meta.addEnchant(unbreaking, 1, true);
+        }
+        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+    }
+    
+    /**
      * Gets the value of a seed type.
      * 
      * @param type The seed type
@@ -616,8 +630,7 @@ public class BDItemManager {
             
             // Add enchant glow for better crops
             if (type != BDCrop.CropType.REGULAR) {
-                meta.addEnchant(Enchantment.DURABILITY, 1, true);
-                meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                addEnchantmentGlow(meta);
             }
             
             crop.setItemMeta(meta);
