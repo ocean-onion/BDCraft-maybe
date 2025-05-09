@@ -1,6 +1,7 @@
 package com.bdcraft.plugin.modules.economy.villager;
 
 import com.bdcraft.plugin.BDCraft;
+import com.bdcraft.plugin.modules.economy.items.CropType;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -96,22 +97,80 @@ public class BDCollector extends BDVillager {
      * @return The item
      */
     private ItemStack createBDCropItem(String name, int amount) {
-        // This is a placeholder - in real implementation, we would use BDItemFactory
-        Material material;
+        // Create a properly recognized BD crop item with metadata
+        CropType cropType;
         
         if (name.contains("Regular")) {
-            material = Material.FERN;
+            cropType = CropType.REGULAR;
         } else if (name.contains("Green")) {
-            material = Material.LARGE_FERN;
+            cropType = CropType.GREEN;
+        } else if (name.contains("Blue")) {
+            cropType = CropType.BLUE;
+        } else if (name.contains("Purple")) {
+            cropType = CropType.PURPLE;
         } else {
-            material = Material.TALL_GRASS; // Purple crop placeholder
+            cropType = CropType.LEGENDARY;
         }
         
-        ItemStack item = new ItemStack(material, amount);
+        // Until BDCraft exposes getItemManager() or we inject itemManager into this class
+        // We'll use a simpler implementation that matches the item system
+        ItemStack item = new ItemStack(cropType == CropType.REGULAR ? Material.WHEAT : 
+                cropType == CropType.GREEN ? Material.APPLE : 
+                cropType == CropType.BLUE ? Material.GOLDEN_CARROT : 
+                cropType == CropType.PURPLE ? Material.GOLDEN_APPLE : 
+                Material.ENCHANTED_GOLDEN_APPLE, amount);
+                
         var meta = item.getItemMeta();
-        meta.setDisplayName(ChatColor.GREEN + name);
+        
+        ChatColor color = cropType == CropType.REGULAR ? ChatColor.YELLOW :
+                cropType == CropType.GREEN ? ChatColor.GREEN :
+                cropType == CropType.BLUE ? ChatColor.BLUE :
+                cropType == CropType.PURPLE ? ChatColor.LIGHT_PURPLE :
+                ChatColor.GOLD;
+                
+        String displayName = cropType == CropType.REGULAR ? "Standard Crop" :
+                cropType == CropType.GREEN ? "Quality Crop" :
+                cropType == CropType.BLUE ? "Premium Crop" :
+                cropType == CropType.PURPLE ? "Exceptional Crop" :
+                "Legendary Crop";
+                
+        meta.setDisplayName(color + displayName);
+        
+        List<String> lore = new ArrayList<>();
+        lore.add(ChatColor.GRAY + "A special " + color + cropType.name().toLowerCase() + 
+                ChatColor.GRAY + " crop grown with");
+        lore.add(ChatColor.GRAY + "careful tending and agricultural expertise.");
+        lore.add("");
+        lore.add(ChatColor.GRAY + "Value: " + ChatColor.GOLD + getCropValue(cropType) + " BD each");
+        lore.add(ChatColor.GRAY + "Can be sold to collectors or at markets.");
+        
+        meta.setLore(lore);
         item.setItemMeta(meta);
+        
         return item;
+    }
+    
+    /**
+     * Gets the value of a crop type.
+     * 
+     * @param type The crop type
+     * @return The value
+     */
+    private int getCropValue(CropType type) {
+        switch (type) {
+            case REGULAR:
+                return 5;
+            case GREEN:
+                return 15;
+            case BLUE:
+                return 30;
+            case PURPLE:
+                return 50;
+            case LEGENDARY:
+                return 100;
+            default:
+                return 1;
+        }
     }
     
     @Override

@@ -10,6 +10,7 @@ import com.bdcraft.plugin.modules.economy.auction.AuctionHouseGUI;
 import com.bdcraft.plugin.modules.economy.items.BDItemManager;
 import com.bdcraft.plugin.modules.economy.gui.MarketManagementGUI;
 import com.bdcraft.plugin.modules.economy.villager.BDVillagerManager;
+import com.bdcraft.plugin.modules.economy.listeners.RecipeValidationListener;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
@@ -95,6 +96,9 @@ public class BDEconomyModule implements BDModule, EconomyAPI {
         // Register API interface
         plugin.setEconomyAPI(this);
         
+        // Register listeners
+        registerListeners();
+        
         // Load economy data
         loadEconomyData();
         
@@ -102,6 +106,17 @@ public class BDEconomyModule implements BDModule, EconomyAPI {
         initializeCropValues();
         
         logger.info("BD Economy Module enabled.");
+    }
+    
+    /**
+     * Registers all listeners for the economy module.
+     */
+    private void registerListeners() {
+        // Register recipe validation listener
+        RecipeValidationListener recipeListener = new RecipeValidationListener(plugin);
+        plugin.getServer().getPluginManager().registerEvents(recipeListener, plugin);
+        
+        logger.info("Registered economy module listeners.");
     }
     
     @Override

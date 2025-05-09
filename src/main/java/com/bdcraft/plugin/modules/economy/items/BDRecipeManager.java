@@ -120,9 +120,12 @@ public class BDRecipeManager {
         recipe.addIngredient(Material.PAPER);
         recipe.addIngredient(Material.FLINT);
         
-        // Special ingredient: BD Crop - this would need to be implemented with custom item detection
-        // Note: For now, we're using a placeholder (wheat) but this would need to detect custom BD crops
+        // Special ingredient: BD Crop - for crafting with metadata items, we have to use the material
+        // but check for the custom item in the CraftItemEvent
         recipe.addIngredient(Material.WHEAT);
+        
+        // Register a custom recipe checker in the plugin's listener to validate that the wheat
+        // is actually a BD Crop when crafting occurs
         
         // Register the recipe
         Bukkit.addRecipe(recipe);
