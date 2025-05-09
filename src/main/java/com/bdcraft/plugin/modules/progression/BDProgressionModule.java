@@ -309,4 +309,161 @@ public class BDProgressionModule extends BDModule {
     public BDRebirthManager getRebirthManager() {
         return rebirthManager;
     }
+    
+    /**
+     * Gets the rank manager.
+     *
+     * @return The rank manager
+     */
+    public BDRankManager getRankManager() {
+        return rankManager;
+    }
+    
+    /**
+     * Performs a rebirth for the player.
+     * 
+     * @param player The player to rebirth
+     * @return True if successful, false otherwise
+     */
+    public boolean performRebirth(Player player) {
+        if (player == null) {
+            return false;
+        }
+        
+        // Check if player meets rebirth requirements
+        if (!canPlayerRebirth(player)) {
+            return false;
+        }
+        
+        // Reset player rank to 1 (Newcomer)
+        setPlayerRank(player, 1);
+        
+        // Increment rebirth level
+        int currentRebirthLevel = getPlayerRebirthLevel(player);
+        setPlayerRebirthLevel(player, currentRebirthLevel + 1);
+        
+        // Clear player stats
+        resetPlayerStats(player);
+        
+        // Apply rebirth bonuses
+        applyRebirthBonuses(player);
+        
+        // Fire event
+        PlayerRebirthEvent event = new PlayerRebirthEvent(player, currentRebirthLevel + 1);
+        Bukkit.getPluginManager().callEvent(event);
+        
+        // Save data
+        saveData();
+        
+        return true;
+    }
+    
+    /**
+     * Checks if a player can rebirth.
+     * 
+     * @param player The player to check
+     * @return True if the player can rebirth, false otherwise
+     */
+    private boolean canPlayerRebirth(Player player) {
+        if (player == null) {
+            return false;
+        }
+        
+        // Check if player is at maximum rank (Agricultural Expert, rank 5)
+        if (getPlayerRank(player) != 5) {
+            return false;
+        }
+        
+        // Check if player has enough currency (100,000)
+        if (!plugin.getEconomyModule().hasCurrency(player.getUniqueId(), 100000)) {
+            return false;
+        }
+        
+        // Check if player has completed enough trades (500)
+        int completedTrades = plugin.getEconomyModule().getCompletedTradesCount(player.getUniqueId());
+        if (completedTrades < 500) {
+            return false;
+        }
+        
+        return true;
+    }
+    
+    /**
+     * Resets player stats after rebirth.
+     * 
+     * @param player The player
+     */
+    private void resetPlayerStats(Player player) {
+        if (player == null) {
+            return;
+        }
+        
+        // Reset player's currency (but preserve a small amount as a bonus)
+        UUID playerId = player.getUniqueId();
+        int currentCurrency = plugin.getEconomyModule().getCurrency(playerId);
+        int preservedAmount = Math.min(currentCurrency, 1000);
+        
+        plugin.getEconomyModule().setCurrency(playerId, preservedAmount);
+        
+        // Reset tracked statistics
+        plugin.getEconomyModule().resetTradeCount(playerId);
+        
+        // Other stat resets as needed
+    }
+    
+    /**
+     * Applies rebirth bonuses to a player.
+     * 
+     * @param player The player
+     */
+    private void applyRebirthBonuses(Player player) {
+        if (player == null) {
+            return;
+        }
+        
+        int rebirthLevel = getPlayerRebirthLevel(player);
+        
+        // Unlock rebirth perks
+        if (rebirthLevel >= 1) {
+            // Unlock aura command
+            if (!player.hasPermission("bdcraft.rebirth.aura")) {
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), 
+                        "lp user " + player.getName() + " permission set bdcraft.rebirth.aura true");
+            }
+        }
+        
+        if (rebirthLevel >= 2) {
+            // Unlock blessing command
+            if (!player.hasPermission("bdcraft.rebirth.bless")) {
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), 
+                        "lp user " + player.getName() + " permission set bdcraft.rebirth.bless true");
+            }
+        }
+        
+        if (rebirthLevel >= 3) {
+            // Unlock touch command
+            if (!player.hasPermission("bdcraft.rebirth.touch")) {
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), 
+                        "lp user " + player.getName() + " permission set bdcraft.rebirth.touch true");
+            }
+        }
+        
+        // Apply temporary rewards
+        double bonusMultiplier = 1.0 + (rebirthLevel * 0.05); // 5% per rebirth level
+        long duration = 24 * 60 * 60 * 1000; // 24 hours
+        
+        rebirthManager.setPlayerTradeBonus(player.getUniqueId(), bonusMultiplier, duration);
+        
+        // Send message
+        player.sendMessage(ChatColor.LIGHT_PURPLE + "You have been reborn! You are now at rebirth level " + rebirthLevel + ".");
+        player.sendMessage(ChatColor.YELLOW + "You have received special bonuses and abilities!");
+        
+        // Play effects
+        player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 0.5f);
+        player.playSound(player.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 0.7f, 0.8f);
+        
+        // Spawn particles
+        player.getWorld().spawnParticle(Particle.TOTEM, player.getLocation().add(0, 1, 0), 
+                100, 0.5, 1.0, 0.5, 0.2);
+    }
 }

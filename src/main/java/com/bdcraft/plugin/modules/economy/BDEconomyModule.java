@@ -41,6 +41,9 @@ public class BDEconomyModule extends BDModule {
     // Player balances
     private final Map<UUID, Integer> playerBalances;
     
+    // Player trade counts
+    private final Map<UUID, Integer> playerTrades;
+    
     /**
      * Creates a new economy module.
      *
@@ -50,6 +53,7 @@ public class BDEconomyModule extends BDModule {
         super(plugin, "economy");
         this.plugin = plugin;
         this.playerBalances = new HashMap<>();
+        this.playerTrades = new HashMap<>();
     }
     
     @Override
@@ -224,6 +228,57 @@ public class BDEconomyModule extends BDModule {
      */
     public boolean hasCoins(Player player, int amount) {
         return getPlayerBalance(player) >= amount;
+    }
+    
+    /**
+     * Checks if a player has enough currency.
+     *
+     * @param playerId The player's UUID
+     * @param amount The amount to check
+     * @return True if the player has at least this amount
+     */
+    public boolean hasCurrency(UUID playerId, int amount) {
+        return playerBalances.getOrDefault(playerId, 0) >= amount;
+    }
+    
+    /**
+     * Checks if a player has enough currency.
+     *
+     * @param player The player
+     * @param amount The amount to check
+     * @return True if the player has at least this amount
+     */
+    public boolean hasCurrency(Player player, int amount) {
+        if (player == null) {
+            return false;
+        }
+        
+        return hasCurrency(player.getUniqueId(), amount);
+    }
+    
+    /**
+     * Gets player currency.
+     *
+     * @param playerId The player's UUID
+     * @return The player's currency amount
+     */
+    public int getCurrency(UUID playerId) {
+        return playerBalances.getOrDefault(playerId, 0);
+    }
+    
+    /**
+     * Sets a player's currency.
+     *
+     * @param playerId The player's UUID
+     * @param amount The new currency amount
+     */
+    public void setCurrency(UUID playerId, int amount) {
+        if (amount < 0) {
+            amount = 0;
+        }
+        
+        playerBalances.put(playerId, amount);
+        saveData();
     }
     
     /**
