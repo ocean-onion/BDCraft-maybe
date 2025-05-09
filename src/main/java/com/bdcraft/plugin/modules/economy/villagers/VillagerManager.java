@@ -408,9 +408,7 @@ public class VillagerManager implements Listener {
         player.sendMessage(ChatColor.GREEN + "Your market has been upgraded to level " + market.getLevel() + "!");
         
         // Update trades
-        if (market instanceof BDMarket) {
-            handleMarketUpgrade((BDMarket) market);
-        }
+        handleMarketUpgrade(market);
     }
     
     /**
@@ -597,7 +595,7 @@ public class VillagerManager implements Listener {
         int targetLevel = Integer.parseInt(parts[1]);
         
         // Get market - convert market ID string to UUID
-        Market market = plugin.getEconomyModule().getMarketManager().getMarket(UUID.fromString(marketId));
+        BDMarket market = plugin.getEconomyModule().getMarketManager().getMarket(UUID.fromString(marketId));
         if (market == null) {
             player.sendMessage(ChatColor.RED + "This certificate is for a market that no longer exists!");
             return;
@@ -634,8 +632,6 @@ public class VillagerManager implements Listener {
         player.sendMessage(ChatColor.GREEN + "Your market has been upgraded to level " + market.getLevel() + "!");
         
         // Update trades for market villagers
-        if (market instanceof BDMarket) {
-            handleMarketUpgrade((BDMarket) market);
-        }
+        handleMarketUpgrade(market);
     }
 }

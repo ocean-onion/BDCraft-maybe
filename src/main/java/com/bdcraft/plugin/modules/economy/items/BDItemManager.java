@@ -79,7 +79,7 @@ public class BDItemManager {
             meta.setLore(lore);
             
             // Add enchant glow
-            meta.addEnchant(Enchantment.DURABILITY, 1, true);
+            Enchantment unbreaking = getUnbreakingEnchantment(); if (unbreaking != null) { meta.addEnchant(unbreaking, 1, true); }
             meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
             
             token.setItemMeta(meta);
@@ -283,7 +283,7 @@ public class BDItemManager {
             meta.setLore(lore);
             
             // Add enchant glow
-            meta.addEnchant(Enchantment.DURABILITY, 1, true);
+            Enchantment unbreaking = getUnbreakingEnchantment(); if (unbreaking != null) { meta.addEnchant(unbreaking, 1, true); }
             meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
             
             token.setItemMeta(meta);
@@ -382,7 +382,7 @@ public class BDItemManager {
             
             // Add enchant glow for better seeds
             if (type != SeedType.REGULAR) {
-                meta.addEnchant(Enchantment.DURABILITY, 1, true);
+                Enchantment unbreaking = getUnbreakingEnchantment(); if (unbreaking != null) { meta.addEnchant(unbreaking, 1, true); }
                 meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
             }
             
@@ -446,7 +446,7 @@ public class BDItemManager {
             
             // Add enchant glow for better seeds
             if (type != BDSeed.SeedType.REGULAR) {
-                meta.addEnchant(Enchantment.DURABILITY, 1, true);
+                Enchantment unbreaking = getUnbreakingEnchantment(); if (unbreaking != null) { meta.addEnchant(unbreaking, 1, true); }
                 meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
             }
             
@@ -454,20 +454,6 @@ public class BDItemManager {
         }
         
         return seeds;
-    }
-    
-    /**
-     * Adds an enchantment glow effect to an item's metadata.
-     * Uses NamespacedKey to get the unbreaking enchantment rather than direct reference.
-     * 
-     * @param meta The item metadata to modify
-     */
-    private void addEnchantmentGlow(ItemMeta meta) {
-        Enchantment unbreaking = Enchantment.getByKey(org.bukkit.NamespacedKey.minecraft("unbreaking"));
-        if (unbreaking != null) {
-            meta.addEnchant(unbreaking, 1, true);
-        }
-        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
     }
     
     /**
@@ -573,70 +559,6 @@ public class BDItemManager {
             default:
                 return 1;
         }
-    }
-    
-    /**
-     * Creates a BD crop with the specified crop type.
-     * 
-     * @param type The crop type
-     * @param quantity The quantity
-     * @return The crop item
-     */
-    public ItemStack createBDCrop(BDCrop.CropType type, int quantity) {
-        Material material = Material.WHEAT;
-        String displayName;
-        ChatColor color;
-        
-        switch (type) {
-            case GREEN:
-                displayName = "Quality Crop";
-                color = ChatColor.GREEN;
-                break;
-            case BLUE:
-                displayName = "Premium Crop";
-                color = ChatColor.BLUE;
-                break;
-            case PURPLE:
-                displayName = "Exceptional Crop";
-                color = ChatColor.LIGHT_PURPLE;
-                break;
-            case LEGENDARY:
-                displayName = "Legendary Crop";
-                color = ChatColor.GOLD;
-                break;
-            default:
-                displayName = "BD Crop";
-                color = ChatColor.WHITE;
-                break;
-        }
-        
-        ItemStack crop = new ItemStack(material, quantity);
-        ItemMeta meta = crop.getItemMeta();
-        
-        if (meta != null) {
-            meta.setDisplayName(color + displayName);
-            
-            List<String> lore = new ArrayList<>();
-            lore.add(ChatColor.GRAY + "A special " + color + type.name().toLowerCase() + 
-                    ChatColor.GRAY + " quality crop");
-            lore.add(ChatColor.GRAY + "grown from special seeds.");
-            lore.add("");
-            lore.add(ChatColor.GRAY + "Worth " + ChatColor.GOLD + getCropValue(type) + " BD each" + 
-                    ChatColor.GRAY + " when sold.");
-            lore.add("");
-            lore.add(ChatColor.GRAY + "ID: " + UUID.randomUUID().toString().substring(0, 8));
-            
-            meta.setLore(lore);
-            
-            // Add enchant glow for better crops
-            if (type != BDCrop.CropType.REGULAR) {
-                addEnchantmentGlow(meta);
-            }
-            
-            crop.setItemMeta(meta);
-        }
-        
-        return crop;
     }
     
     /**
@@ -789,7 +711,7 @@ public class BDItemManager {
             meta.setLore(lore);
             
             // Add enchant glow
-            meta.addEnchant(Enchantment.DURABILITY, 1, true);
+            Enchantment unbreaking = getUnbreakingEnchantment(); if (unbreaking != null) { meta.addEnchant(unbreaking, 1, true); }
             meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
             
             token.setItemMeta(meta);
@@ -1069,7 +991,7 @@ public class BDItemManager {
             meta.setLore(lore);
             
             // Add enchant glow
-            meta.addEnchant(Enchantment.DURABILITY, 1, true);
+            Enchantment unbreaking = getUnbreakingEnchantment(); if (unbreaking != null) { meta.addEnchant(unbreaking, 1, true); }
             meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
             
             tool.setItemMeta(meta);

@@ -31,7 +31,7 @@ import java.util.UUID;
 public class MarketOwnerVillager extends BDVillager {
     public static final String TYPE = "MARKET_OWNER";
     
-    private final Market market;
+    private final BDMarket market;
     
     @Override
     protected Villager.Profession getBukkitProfession() {
@@ -54,7 +54,7 @@ public class MarketOwnerVillager extends BDVillager {
      * @param location The spawn location
      * @param market The market this villager manages
      */
-    public MarketOwnerVillager(BDCraft plugin, Location location, Market market) {
+    public MarketOwnerVillager(BDCraft plugin, Location location, BDMarket market) {
         super(
             plugin, 
             UUID.randomUUID(), 
@@ -108,7 +108,7 @@ public class MarketOwnerVillager extends BDVillager {
      * 
      * @return The market
      */
-    public Market getMarket() {
+    public BDMarket getMarket() {
         return market;
     }
     
@@ -138,7 +138,7 @@ public class MarketOwnerVillager extends BDVillager {
         
         // Open the market management GUI
         MarketManagementGUI gui = plugin.getEconomyModule().getMarketManagementGUI();
-        gui.openMainMenu(player, market);
+        gui.openMarketManagementGUI(player, market);
         
         return true;
     }
