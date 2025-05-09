@@ -182,6 +182,18 @@ public class MarketManager {
     }
     
     /**
+     * Checks if a player is within their own market at a location.
+     * 
+     * @param player The player
+     * @param location The location
+     * @return True if in their own market
+     */
+    public boolean isPlayerInOwnMarket(Player player, Location location) {
+        Market market = getMarketAt(location);
+        return market != null && market.isOwner(player.getUniqueId());
+    }
+    
+    /**
      * Adds a collector house to a market.
      * 
      * @param player The player placing the house

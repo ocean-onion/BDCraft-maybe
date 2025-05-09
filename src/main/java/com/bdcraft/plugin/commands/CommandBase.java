@@ -20,6 +20,7 @@ public abstract class CommandBase implements CommandExecutor, TabCompleter {
     protected final BDCraft plugin;
     protected final String name;
     protected final String permission;
+    protected final List<String> aliases = new ArrayList<>();
     private final List<SubCommand> subCommands = new ArrayList<>();
     
     /**

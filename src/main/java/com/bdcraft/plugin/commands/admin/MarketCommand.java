@@ -245,7 +245,7 @@ public class MarketCommand extends CommandBase {
                 sender.sendMessage(ChatColor.YELLOW + "Total Sales: " + ChatColor.WHITE + market.getTotalSales());
                 
                 // List associates
-                List<UUID> associates = market.getAssociates();
+                List<UUID> associates = market.getAssociatesList();
                 sender.sendMessage(ChatColor.YELLOW + "Associates (" + associates.size() + "/5):");
                 
                 if (associates.isEmpty()) {

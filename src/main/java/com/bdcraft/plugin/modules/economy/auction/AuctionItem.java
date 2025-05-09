@@ -56,6 +56,15 @@ public class AuctionItem {
     }
     
     /**
+     * Gets the seller's UUID (alias for getSellerId).
+     * 
+     * @return The seller's UUID
+     */
+    public UUID getSellerUUID() {
+        return sellerId;
+    }
+    
+    /**
      * Gets the seller's name.
      * 
      * @return The seller's name

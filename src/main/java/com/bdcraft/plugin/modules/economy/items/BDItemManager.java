@@ -273,99 +273,39 @@ public class BDItemManager {
     }
     
     /**
-     * Creates a special BD crop item using the BDCrop.CropType.
+     * Creates a crop item using the BDCrop.CropType.
+     * This is a wrapper to maintain compatibility.
      * 
      * @param type The crop type
      * @param quantity The quantity
      * @return The crop item
      */
     public ItemStack createBDCrop(BDCrop.CropType type, int quantity) {
-        Material material;
-        String displayName;
-        ChatColor color;
-        
+        // Convert BDCrop.CropType to CropType
+        CropType cropType;
         switch (type) {
             case REGULAR:
-                material = Material.WHEAT;
-                displayName = "Standard Crop";
-                color = ChatColor.YELLOW;
+                cropType = CropType.REGULAR;
                 break;
             case GREEN:
-                material = Material.APPLE;
-                displayName = "Quality Crop";
-                color = ChatColor.GREEN;
+                cropType = CropType.GREEN;
                 break;
             case BLUE:
-                material = Material.GOLDEN_CARROT;
-                displayName = "Premium Crop";
-                color = ChatColor.BLUE;
+                cropType = CropType.BLUE;
                 break;
             case PURPLE:
-                material = Material.GOLDEN_APPLE;
-                displayName = "Exceptional Crop";
-                color = ChatColor.LIGHT_PURPLE;
+                cropType = CropType.PURPLE;
                 break;
             case LEGENDARY:
-                material = Material.ENCHANTED_GOLDEN_APPLE;
-                displayName = "Legendary Crop";
-                color = ChatColor.GOLD;
+                cropType = CropType.LEGENDARY;
                 break;
             default:
-                material = Material.WHEAT;
-                displayName = "Crop";
-                color = ChatColor.WHITE;
+                cropType = CropType.REGULAR;
                 break;
         }
         
-        ItemStack crop = new ItemStack(material, quantity);
-        ItemMeta meta = crop.getItemMeta();
-        
-        if (meta != null) {
-            meta.setDisplayName(color + displayName);
-            
-            List<String> lore = new ArrayList<>();
-            lore.add(ChatColor.GRAY + "A special " + color + type.name().toLowerCase() + 
-                    ChatColor.GRAY + " crop grown with");
-            lore.add(ChatColor.GRAY + "careful tending and agricultural expertise.");
-            lore.add("");
-            lore.add(ChatColor.GRAY + "Value: " + ChatColor.GOLD + getCropValue(type) + " BD each");
-            lore.add(ChatColor.GRAY + "Can be sold to collectors or at markets.");
-            
-            meta.setLore(lore);
-            
-            // Add enchant glow for better crops
-            if (type != BDCrop.CropType.REGULAR) {
-                meta.addEnchant(Enchantment.DURABILITY, 1, true);
-                meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            }
-            
-            crop.setItemMeta(meta);
-        }
-        
-        return crop;
-    }
-    
-    /**
-     * Gets the value of a BDCrop.CropType.
-     * 
-     * @param type The crop type
-     * @return The value
-     */
-    public int getCropValue(BDCrop.CropType type) {
-        switch (type) {
-            case REGULAR:
-                return 5;
-            case GREEN:
-                return 15;
-            case BLUE:
-                return 30;
-            case PURPLE:
-                return 50;
-            case LEGENDARY:
-                return 100;
-            default:
-                return 1;
-        }
+        // Use existing method
+        return createBDCrop(cropType, quantity);
     }
     
     /**
@@ -520,6 +460,65 @@ public class BDItemManager {
     }
     
     /**
+     * Gives an item to a player based on an item ID.
+     * 
+     * @param player The player to give the item to
+     * @param itemId The item identifier (seed, token, crop, etc)
+     * @param amount The amount of the item to give
+     * @param value Optional specific value (for some custom items)
+     * @return True if the item was given successfully
+     */
+    public boolean giveItem(org.bukkit.entity.Player player, String itemId, int amount, int value) {
+        if (player == null || itemId == null) {
+            return false;
+        }
+        
+        ItemStack item = null;
+        
+        // Handle tokens
+        if (itemId.equalsIgnoreCase("markettoken")) {
+            item = createMarketToken("Market #" + UUID.randomUUID().toString().substring(0, 4), 
+                    player.getName(), 1);
+        } else if (itemId.equalsIgnoreCase("collectortoken")) {
+            item = createVillagerToken("collector", value > 0 ? value : 1);
+        } else if (itemId.equalsIgnoreCase("vendortoken")) {
+            item = createVillagerToken("vendor", value > 0 ? value : 1);
+        } 
+        // Handle seeds
+        else if (itemId.equalsIgnoreCase("seed") || itemId.equalsIgnoreCase("seeds")) {
+            item = createBDSeed(SeedType.REGULAR, amount);
+        } else if (itemId.equalsIgnoreCase("greenseed") || itemId.equalsIgnoreCase("greenseeds")) {
+            item = createBDSeed(SeedType.GREEN, amount);
+        } else if (itemId.equalsIgnoreCase("blueseed") || itemId.equalsIgnoreCase("blueseeds")) {
+            item = createBDSeed(SeedType.BLUE, amount);
+        } else if (itemId.equalsIgnoreCase("purpleseed") || itemId.equalsIgnoreCase("purpleseeds")) {
+            item = createBDSeed(SeedType.PURPLE, amount);
+        } else if (itemId.equalsIgnoreCase("legendaryseed") || itemId.equalsIgnoreCase("legendaryseeds")) {
+            item = createBDSeed(SeedType.LEGENDARY, amount);
+        }
+        // Handle crops
+        else if (itemId.equalsIgnoreCase("crop") || itemId.equalsIgnoreCase("crops")) {
+            item = createBDCrop(CropType.REGULAR, amount);
+        } else if (itemId.equalsIgnoreCase("greencrop") || itemId.equalsIgnoreCase("greencrops")) {
+            item = createBDCrop(CropType.GREEN, amount);
+        } else if (itemId.equalsIgnoreCase("bluecrop") || itemId.equalsIgnoreCase("bluecrops")) {
+            item = createBDCrop(CropType.BLUE, amount);
+        } else if (itemId.equalsIgnoreCase("purplecrop") || itemId.equalsIgnoreCase("purplecrops")) {
+            item = createBDCrop(CropType.PURPLE, amount);
+        } else if (itemId.equalsIgnoreCase("legendarycrop") || itemId.equalsIgnoreCase("legendarycrops")) {
+            item = createBDCrop(CropType.LEGENDARY, amount);
+        }
+        
+        // If item was created, give it to the player
+        if (item != null) {
+            player.getInventory().addItem(item);
+            return true;
+        }
+        
+        return false;
+    }
+    
+    /**
      * Gets the value of a BDSeed.SeedType.
      * 
      * @param type The seed type
@@ -608,26 +607,38 @@ public class BDItemManager {
     }
     
     /**
-     * Gets the value of a crop type.
+     * Gets the value of a crop type using BDCrop.CropType.
+     * This is a wrapper for compatibility.
      * 
      * @param type The crop type
      * @return The value
      */
     public int getCropValue(BDCrop.CropType type) {
+        // Convert BDCrop.CropType to CropType
+        CropType cropType;
         switch (type) {
             case REGULAR:
-                return 10;
+                cropType = CropType.REGULAR;
+                break;
             case GREEN:
-                return 30;
+                cropType = CropType.GREEN;
+                break;
             case BLUE:
-                return 60;
+                cropType = CropType.BLUE;
+                break;
             case PURPLE:
-                return 100;
+                cropType = CropType.PURPLE;
+                break;
             case LEGENDARY:
-                return 200;
+                cropType = CropType.LEGENDARY;
+                break;
             default:
-                return 1;
+                cropType = CropType.REGULAR;
+                break;
         }
+        
+        // Use existing method
+        return getCropValue(cropType);
     }
     
     /**

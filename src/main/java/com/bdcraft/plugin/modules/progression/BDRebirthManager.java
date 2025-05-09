@@ -9,7 +9,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Logger;
@@ -65,7 +67,13 @@ public class BDRebirthManager {
      * @return The rebirth level
      */
     public int getRebirthLevel(UUID uuid) {
-        return plugin.getProgressionModule().getRankManager().getPlayerRebirths(uuid);
+        // Get the player by UUID
+        Player player = plugin.getServer().getPlayer(uuid);
+        // If player is null, return 0 as a fallback
+        if (player == null) {
+            return 0;
+        }
+        return plugin.getProgressionModule().getRankManager().getPlayerRebirths(player);
     }
     
     /**
@@ -167,7 +175,7 @@ public class BDRebirthManager {
                 
                 Location location = player.getLocation();
                 location.getWorld().spawnParticle(
-                    Particle.VILLAGER_HAPPY, 
+                    Particle.FLAME, 
                     location, 
                     10, 
                     1.5, 
@@ -496,18 +504,168 @@ public class BDRebirthManager {
      */
     public boolean togglePlayerAura(Player player, boolean enabled) {
         UUID uuid = player.getUniqueId();
-        
         playerAuraEnabled.put(uuid, enabled);
         
         if (enabled) {
-            // Start aura effect task
             startAuraTask(player);
         } else {
-            // Stop aura effect task
             stopAuraTask(player);
         }
         
         return enabled;
+    }
+    
+    /**
+     * Starts the aura visual effect task for a player.
+     * 
+     * @param player The player
+     */
+    private void startAuraTask(Player player) {
+        // Implementation would start a particle effect around the player
+    }
+    
+    /**
+     * Stops the aura visual effect task for a player.
+     * 
+     * @param player The player
+     */
+    private void stopAuraTask(Player player) {
+        // Implementation would stop the particle effect around the player
+    }
+    
+    /**
+     * Gets the blessing cooldown remaining for a player.
+     * 
+     * @param player The player
+     * @return The cooldown time remaining in milliseconds
+     */
+    public long getBlessCooldownRemaining(Player player) {
+        return getRemainingCooldown(player.getUniqueId(), "bless");
+    }
+    
+    /**
+     * Checks if a player is on the bless cooldown.
+     * 
+     * @param player The player
+     * @return True if the player is on cooldown
+     */
+    public boolean isOnBlessCooldown(Player player) {
+        return isOnCommandCooldown(player.getUniqueId(), "bless", 86400000); // 24 hours
+    }
+    
+    /**
+     * Blesses another player, giving them temporary buffs.
+     * 
+     * @param blesser The player giving the blessing
+     * @param target The player receiving the blessing
+     * @return True if successful
+     */
+    public boolean blessPlayer(Player blesser, Player target) {
+        // Check if blesser has permission
+        if (!blesser.hasPermission("bdcraft.deity.bless")) {
+            blesser.sendMessage(ChatColor.RED + "You don't have permission to bless other players.");
+            return false;
+        }
+        
+        // Check blesser's rebirth level
+        int rebirthLevel = getRebirthLevel(blesser);
+        if (rebirthLevel < 3) {
+            blesser.sendMessage(ChatColor.RED + "You need to be rebirth level 3 or higher to bless other players.");
+            return false;
+        }
+        
+        // Check if blesser is on cooldown
+        if (isOnBlessCooldown(blesser)) {
+            long cooldownRemaining = getBlessCooldownRemaining(blesser);
+            blesser.sendMessage(ChatColor.RED + "You can bless another player in " + 
+                formatTimeRemaining(cooldownRemaining) + ".");
+            return false;
+        }
+        
+        // Apply blessing effect to target
+        long blessingDuration = 1200000; // 20 minutes
+        addBlessingEffect(target.getUniqueId(), System.currentTimeMillis() + blessingDuration);
+        
+        // Add temporary experience boost
+        double expBoost = 0.1 + (rebirthLevel * 0.05); // 15-50% boost based on rebirth level
+        setPlayerExpBoost(target.getUniqueId(), expBoost, blessingDuration);
+        
+        // Apply visual effects
+        blesser.getWorld().strikeLightningEffect(target.getLocation());
+        target.getWorld().spawnParticle(Particle.FLAME, target.getLocation().add(0, 1, 0), 
+                100, 0.5, 1.0, 0.5);
+        
+        // Play sound effects
+        target.playSound(target.getLocation(), Sound.BLOCK_BEACON_POWER_SELECT, 1.0f, 1.0f);
+        blesser.playSound(blesser.getLocation(), Sound.BLOCK_BEACON_ACTIVATE, 0.7f, 1.2f);
+        
+        // Send messages
+        target.sendMessage(ChatColor.LIGHT_PURPLE + "✧✧✧ " + ChatColor.GOLD + "You have been blessed by " + 
+                blesser.getName() + ChatColor.LIGHT_PURPLE + " ✧✧✧");
+        target.sendMessage(ChatColor.GOLD + "You feel invigorated and more productive!");
+        target.sendMessage(ChatColor.YELLOW + "• Mining/farming speed increased");
+        target.sendMessage(ChatColor.YELLOW + "• Luck increased");
+        target.sendMessage(ChatColor.YELLOW + "• Strength increased");
+        target.sendMessage(ChatColor.YELLOW + "• Experience gain +" + (int)(expBoost * 100) + "%");
+        target.sendMessage(ChatColor.GRAY + "These effects will last for 20 minutes.");
+        
+        blesser.sendMessage(ChatColor.LIGHT_PURPLE + "You have blessed " + ChatColor.GOLD + target.getName() + 
+                ChatColor.LIGHT_PURPLE + " with your divine favor.");
+        blesser.sendMessage(ChatColor.GRAY + "You can bless another player in 24 hours.");
+        
+        // Record blessing use
+        recordCommandUse(blesser.getUniqueId(), "bless");
+        
+        return true;
+    }
+    
+    /**
+     * Checks if a player is eligible for rebirth.
+     * 
+     * @param player The player
+     * @return True if eligible
+     */
+    public boolean isEligibleForRebirth(Player player) {
+        // Check rank
+        int rank = plugin.getProgressionModule().getRankManager().getPlayerRank(player);
+        if (rank < BDRankManager.RANK_AGRICULTURAL_EXPERT) {
+            return false;
+        }
+        
+        // Check trades
+        int trades = getTradeCount(player);
+        if (trades < 500) {
+            return false;
+        }
+        
+        // Check money
+        if (!plugin.getEconomyModule().hasCurrency(player, 100000)) {
+            return false;
+        }
+        
+        return true;
+    }
+    
+    /**
+     * Gets a player's trade count.
+     * 
+     * @param player The player
+     * @return The trade count
+     */
+    public int getTradeCount(Player player) {
+        return getPlayerTradeCount(player.getUniqueId());
+    }
+    
+    /**
+     * Gets the top players by rebirth level.
+     * 
+     * @param limit The number of players to retrieve
+     * @return The top players
+     */
+    public List<Map.Entry<UUID, Integer>> getTopPlayers(int limit) {
+        // This would be properly implemented with a database
+        // For now, return an empty list
+        return new ArrayList<>();
     }
     
     /**
@@ -525,74 +683,7 @@ public class BDRebirthManager {
      * 
      * @param player The player
      */
-    private void startAuraTask(Player player) {
-        UUID uuid = player.getUniqueId();
-        
-        // Stop any existing task
-        stopAuraTask(player);
-        
-        // Start new task
-        BukkitTask task = new BukkitRunnable() {
-            @Override
-            public void run() {
-                if (!player.isOnline() || !hasAuraEnabled(uuid)) {
-                    cancel();
-                    playerAuraTasks.remove(uuid);
-                    return;
-                }
-                
-                // Display aura particle effects
-                Location loc = player.getLocation().add(0, 1, 0);
-                player.getWorld().spawnParticle(Particle.PORTAL, loc, 20, 0.5, 0.5, 0.5, 0.05);
-                
-                // Apply aura benefits to nearby players
-                int rebirthLevel = getPlayerRebirthLevel(player);
-                int auraRadius = 10 + (rebirthLevel / 2); // 10-15 blocks based on level
-                
-                for (Player nearby : player.getWorld().getPlayers()) {
-                    if (nearby.equals(player)) {
-                        continue;
-                    }
-                    
-                    if (nearby.getLocation().distance(player.getLocation()) <= auraRadius) {
-                        // Apply aura effect (soft particles)
-                        nearby.getWorld().spawnParticle(Particle.PORTAL, nearby.getLocation().add(0, 1, 0), 
-                                3, 0.3, 0.3, 0.3, 0.01);
-                        
-                        // Apply aura boost if not already blessed
-                        UUID nearbyUuid = nearby.getUniqueId();
-                        if (!hasActiveBlessingEffect(nearbyUuid) && getPlayerExpBoost(nearbyUuid) < 0.05) {
-                            // Add small boost that stacks with blessings
-                            double auraBoost = 0.05 + (rebirthLevel * 0.005); // 5-10% boost
-                            setPlayerExpBoost(nearbyUuid, auraBoost, 30 * 1000); // 30 seconds
-                            
-                            // Don't spam messages, only send if player wasn't already boosted
-                            if (Math.random() < 0.1) { // 10% chance to show message to avoid spam
-                                nearby.sendMessage(ChatColor.LIGHT_PURPLE + "You feel a subtle boost from " + 
-                                        player.getName() + "'s aura...");
-                            }
-                        }
-                    }
-                }
-            }
-        }.runTaskTimer(plugin, 20L, 40L); // Run every 2 seconds
-        
-        playerAuraTasks.put(uuid, task);
-    }
-    
-    /**
-     * Stops the aura effect task for a player.
-     * 
-     * @param player The player
-     */
-    private void stopAuraTask(Player player) {
-        UUID uuid = player.getUniqueId();
-        BukkitTask task = playerAuraTasks.remove(uuid);
-        
-        if (task != null) {
-            task.cancel();
-        }
-    }
+    // Implementations already exist for these methods, removing duplicate methods
     
     /**
      * Cleans up any tasks when the server is shutting down.

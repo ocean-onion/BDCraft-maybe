@@ -120,8 +120,10 @@ public class AuctionHouseCommand extends CommandBase {
                         return true;
                     }
                     
-                    UUID itemId = auctionManager.listItem(player, heldItem, price) ? 
-                            auctionManager.getLastListingId() : null;
+                    // Default auction duration is 24 hours (in milliseconds)
+                    long duration = 24 * 60 * 60 * 1000;
+                    AuctionItem auction = auctionManager.listItem(player, heldItem, price, duration);
+                    UUID itemId = (auction != null) ? auction.getId() : null;
                     
                     if (itemId != null) {
                         // Remove the item from player's hand

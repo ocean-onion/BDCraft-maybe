@@ -163,6 +163,48 @@ public class AuctionManager {
     }
     
     /**
+     * Gets the last listing ID created.
+     * 
+     * @return The last listing ID, or null if none
+     */
+    public UUID getLastListingId() {
+        if (activeAuctions.isEmpty()) {
+            return null;
+        }
+        return activeAuctions.get(activeAuctions.size() - 1).getId();
+    }
+    
+    /**
+     * Buys an item by its ID.
+     * 
+     * @param buyer The buyer
+     * @param itemId The item ID
+     * @return True if bought successfully
+     */
+    public boolean buyItem(Player buyer, UUID itemId) {
+        AuctionItem item = getAuctionItem(itemId);
+        if (item == null) {
+            return false;
+        }
+        return buyAuction(item, buyer);
+    }
+    
+    /**
+     * Cancels a listing by its ID.
+     * 
+     * @param player The player
+     * @param itemId The item ID
+     * @return True if cancelled successfully
+     */
+    public boolean cancelListing(Player player, UUID itemId) {
+        AuctionItem item = getAuctionItem(itemId);
+        if (item == null) {
+            return false;
+        }
+        return cancelAuction(item, player);
+    }
+    
+    /**
      * Buys an auction.
      * 
      * @param auction The auction
@@ -180,15 +222,24 @@ public class AuctionManager {
         }
         
         // Check if buyer has enough money
-        if (!plugin.getEconomyAPI().hasMoney(buyer.getUniqueId(), auction.getPrice())) {
+        Player buyerPlayer = buyer; // We already have the Player object
+        if (!plugin.getEconomyModule().hasCurrency(buyerPlayer, auction.getPrice())) {
             return false;
         }
         
         // Get seller if online
         UUID sellerId = auction.getSellerId();
+        Player sellerPlayer = plugin.getServer().getPlayer(sellerId);
         
-        // Transfer money
-        plugin.getEconomyAPI().transferMoney(buyer.getUniqueId(), sellerId, auction.getPrice());
+        // Transfer money - use the EconomyModule methods directly
+        plugin.getEconomyModule().removeCurrency(buyerPlayer, auction.getPrice());
+        
+        // If seller is online, add currency directly, otherwise store in their offline balance
+        if (sellerPlayer != null && sellerPlayer.isOnline()) {
+            plugin.getEconomyModule().addCurrency(sellerPlayer, auction.getPrice());
+        } else {
+            plugin.getEconomyModule().addOfflineCurrency(sellerId, auction.getPrice());
+        }
         
         // Remove from active auctions
         activeAuctions.remove(auction);

@@ -2,7 +2,7 @@ package com.bdcraft.plugin.modules.economy.villagers;
 
 import com.bdcraft.plugin.BDCraft;
 import com.bdcraft.plugin.modules.economy.market.BDMarket;
-import com.bdcraft.plugin.modules.economy.market.gui.MarketManagementGUI;
+import com.bdcraft.plugin.modules.economy.gui.MarketManagementGUI;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
@@ -31,7 +31,7 @@ import java.util.UUID;
 public class MarketOwnerVillager extends BDVillager {
     public static final String TYPE = "MARKET_OWNER";
     
-    private final BDMarket market;
+    private final Market market;
     
     @Override
     protected Villager.Profession getBukkitProfession() {
@@ -54,7 +54,7 @@ public class MarketOwnerVillager extends BDVillager {
      * @param location The spawn location
      * @param market The market this villager manages
      */
-    public MarketOwnerVillager(BDCraft plugin, Location location, BDMarket market) {
+    public MarketOwnerVillager(BDCraft plugin, Location location, Market market) {
         super(
             plugin, 
             UUID.randomUUID(), 
@@ -108,7 +108,7 @@ public class MarketOwnerVillager extends BDVillager {
      * 
      * @return The market
      */
-    public BDMarket getMarket() {
+    public Market getMarket() {
         return market;
     }
     

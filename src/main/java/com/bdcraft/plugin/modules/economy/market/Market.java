@@ -157,6 +157,19 @@ public class Market {
     }
     
     /**
+     * Upgrades the market by one level.
+     * Capped at level 4.
+     * 
+     * @return The new level
+     */
+    public int upgrade() {
+        if (level < 4) { // Max level is 4
+            level++;
+        }
+        return level;
+    }
+    
+    /**
      * Sets the market level.
      * 
      * @param level The new level
@@ -232,6 +245,15 @@ public class Market {
      */
     public Set<UUID> getAssociates() {
         return new HashSet<>(associates);
+    }
+    
+    /**
+     * Gets the market associates as a list.
+     * 
+     * @return The associates as a list
+     */
+    public java.util.List<UUID> getAssociatesList() {
+        return new java.util.ArrayList<>(associates);
     }
     
     /**

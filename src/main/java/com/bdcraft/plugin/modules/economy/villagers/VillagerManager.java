@@ -25,6 +25,7 @@ import org.bukkit.persistence.PersistentDataType;
 
 import com.bdcraft.plugin.BDCraft;
 import com.bdcraft.plugin.modules.economy.market.BDMarket;
+import com.bdcraft.plugin.modules.economy.market.Market;
 import com.bdcraft.plugin.modules.economy.villagers.BDVillager.VillagerType;
 
 import java.util.ArrayList;
@@ -191,7 +192,7 @@ public class VillagerManager implements Listener {
      * 
      * @param market The market that was upgraded
      */
-    public void handleMarketUpgrade(BDMarket market) {
+    public void handleMarketUpgrade(Market market) {
         // Update trades for all villagers in this market
         for (MarketOwnerVillager owner : getMarketOwners()) {
             if (owner.getMarket().equals(market)) {
@@ -594,7 +595,7 @@ public class VillagerManager implements Listener {
         int targetLevel = Integer.parseInt(parts[1]);
         
         // Get market - convert market ID string to UUID
-        BDMarket market = plugin.getEconomyModule().getMarketManager().getMarket(UUID.fromString(marketId));
+        Market market = plugin.getEconomyModule().getMarketManager().getMarket(UUID.fromString(marketId));
         if (market == null) {
             player.sendMessage(ChatColor.RED + "This certificate is for a market that no longer exists!");
             return;
