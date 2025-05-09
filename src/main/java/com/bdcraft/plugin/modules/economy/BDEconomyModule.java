@@ -6,6 +6,7 @@ import com.bdcraft.plugin.modules.BDModule;
 import com.bdcraft.plugin.modules.economy.market.MarketManager;
 import com.bdcraft.plugin.modules.economy.market.BDMarketManager;
 import com.bdcraft.plugin.modules.economy.auction.AuctionManager;
+import com.bdcraft.plugin.modules.economy.auction.AuctionHouseGUI;
 import com.bdcraft.plugin.modules.economy.items.BDItemManager;
 import com.bdcraft.plugin.modules.economy.gui.MarketManagementGUI;
 import com.bdcraft.plugin.modules.economy.villager.BDVillagerManager;
@@ -44,6 +45,7 @@ public class BDEconomyModule implements BDModule, EconomyAPI {
     
     // Other managers
     private AuctionManager auctionManager;
+    private AuctionHouseGUI auctionHouseGUI;
     private BDItemManager itemManager;
     private MarketManagementGUI marketManagementGUI;
     private BDVillagerManager bdVillagerManager;
@@ -77,6 +79,9 @@ public class BDEconomyModule implements BDModule, EconomyAPI {
         
         // Initialize auction manager
         auctionManager = new AuctionManager(plugin);
+        
+        // Initialize auction house GUI
+        auctionHouseGUI = new AuctionHouseGUI(plugin, auctionManager);
         
         // Initialize item manager
         itemManager = new BDItemManager(plugin);
@@ -298,6 +303,15 @@ public class BDEconomyModule implements BDModule, EconomyAPI {
      */
     public BDVillagerManager getBDVillagerManager() {
         return bdVillagerManager;
+    }
+    
+    /**
+     * Gets the auction house GUI.
+     * 
+     * @return The auction house GUI
+     */
+    public AuctionHouseGUI getAuctionHouseGUI() {
+        return auctionHouseGUI;
     }
     
     /**

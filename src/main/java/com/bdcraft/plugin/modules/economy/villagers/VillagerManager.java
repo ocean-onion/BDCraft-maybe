@@ -595,7 +595,7 @@ public class VillagerManager implements Listener {
         int targetLevel = Integer.parseInt(parts[1]);
         
         // Get market - convert market ID string to UUID
-        BDMarket market = plugin.getEconomyModule().getMarketManager().getMarket(UUID.fromString(marketId));
+        BDMarket market = plugin.getEconomyModule().getBDMarketManager().getMarket(UUID.fromString(marketId));
         if (market == null) {
             player.sendMessage(ChatColor.RED + "This certificate is for a market that no longer exists!");
             return;

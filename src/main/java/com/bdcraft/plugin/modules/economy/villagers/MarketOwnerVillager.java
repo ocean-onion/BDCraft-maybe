@@ -100,7 +100,7 @@ public class MarketOwnerVillager extends BDVillager {
         );
         
         // Get market - convert market ID string to UUID
-        this.market = plugin.getEconomyModule().getMarketManager().getMarket(UUID.fromString(marketId));
+        this.market = plugin.getEconomyModule().getBDMarketManager().getMarket(UUID.fromString(marketId));
     }
     
     /**
