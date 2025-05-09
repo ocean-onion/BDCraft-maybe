@@ -202,6 +202,51 @@ public class BDRebirthManager {
     }
     
     /**
+     * Sets a blessing cooldown for a player.
+     * 
+     * @param playerId The player UUID
+     * @param timestamp The cooldown timestamp
+     */
+    public void setBlessCooldown(UUID playerId, long timestamp) {
+        Map<String, Long> playerCooldowns = commandCooldowns.computeIfAbsent(playerId, k -> new HashMap<>());
+        playerCooldowns.put("bless", timestamp);
+    }
+    
+    /**
+     * Gets a blessing cooldown for a player.
+     * 
+     * @param playerId The player UUID
+     * @return The cooldown timestamp
+     */
+    public long getBlessCooldown(UUID playerId) {
+        Map<String, Long> playerCooldowns = commandCooldowns.get(playerId);
+        if (playerCooldowns == null) {
+            return 0;
+        }
+        return playerCooldowns.getOrDefault("bless", 0L);
+    }
+    
+    /**
+     * Checks if a player has deity status.
+     * 
+     * @param player The player
+     * @return True if the player has deity status
+     */
+    public boolean hasDeityStatus(Player player) {
+        return getRebirthLevel(player) >= 10;
+    }
+    
+    /**
+     * Checks if a player has seasonal insight.
+     * 
+     * @param player The player
+     * @return True if the player has seasonal insight
+     */
+    public boolean hasSeasonalInsight(Player player) {
+        return getRebirthLevel(player) >= 15;
+    }
+    
+    /**
      * Predicts seasonal items for a player.
      * 
      * @param player The player

@@ -204,7 +204,10 @@ public class BDSeed {
             
             // Add enchant glow for better seeds
             if (type != SeedType.REGULAR) {
-                meta.addEnchant(Enchantment.DURABILITY, 1, true);
+                Enchantment unbreaking = Enchantment.getByKey(org.bukkit.NamespacedKey.minecraft("unbreaking"));
+                if (unbreaking != null) {
+                    meta.addEnchant(unbreaking, 1, true);
+                }
                 meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
             }
             

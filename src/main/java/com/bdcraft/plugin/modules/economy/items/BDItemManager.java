@@ -3,7 +3,7 @@ package com.bdcraft.plugin.modules.economy.items;
 import com.bdcraft.plugin.BDCraft;
 import com.bdcraft.plugin.modules.economy.items.crops.BDCrop;
 import com.bdcraft.plugin.modules.economy.items.seeds.BDSeed;
-import com.bdcraft.plugin.modules.economy.items.tokens.TokenType;
+import com.bdcraft.plugin.modules.economy.items.TokenType;
 import com.bdcraft.plugin.modules.economy.items.tools.ToolType;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -29,6 +29,28 @@ public class BDItemManager {
      */
     public BDItemManager(BDCraft plugin) {
         this.plugin = plugin;
+    }
+    
+    /**
+     * Gets the unbreaking enchantment, used for adding glowing effect to items.
+     *
+     * @return The unbreaking enchantment
+     */
+    private Enchantment getUnbreakingEnchantment() {
+        return Enchantment.getByKey(org.bukkit.NamespacedKey.minecraft("unbreaking"));
+    }
+    
+    /**
+     * Adds enchantment glow to an item meta.
+     *
+     * @param meta The item meta to add glow to
+     */
+    private void addEnchantmentGlow(ItemMeta meta) {
+        Enchantment unbreaking = getUnbreakingEnchantment();
+        if (unbreaking != null) {
+            meta.addEnchant(unbreaking, 1, true);
+        }
+        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
     }
     
     /**
@@ -129,8 +151,7 @@ public class BDItemManager {
             
             // Add enchant glow for better crops
             if (type != CropType.REGULAR) {
-                meta.addEnchant(Enchantment.DURABILITY, 1, true);
-                meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                addEnchantmentGlow(meta);
             }
             
             crop.setItemMeta(meta);
@@ -215,8 +236,7 @@ public class BDItemManager {
             meta.setLore(lore);
             
             // Add enchant glow
-            meta.addEnchant(Enchantment.DURABILITY, 1, true);
-            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            addEnchantmentGlow(meta);
             
             seeds.setItemMeta(meta);
         }

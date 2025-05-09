@@ -192,7 +192,7 @@ public class VillagerManager implements Listener {
      * 
      * @param market The market that was upgraded
      */
-    public void handleMarketUpgrade(Market market) {
+    public void handleMarketUpgrade(BDMarket market) {
         // Update trades for all villagers in this market
         for (MarketOwnerVillager owner : getMarketOwners()) {
             if (owner.getMarket().equals(market)) {
@@ -408,7 +408,9 @@ public class VillagerManager implements Listener {
         player.sendMessage(ChatColor.GREEN + "Your market has been upgraded to level " + market.getLevel() + "!");
         
         // Update trades
-        handleMarketUpgrade(market);
+        if (market instanceof BDMarket) {
+            handleMarketUpgrade((BDMarket) market);
+        }
     }
     
     /**
@@ -632,6 +634,8 @@ public class VillagerManager implements Listener {
         player.sendMessage(ChatColor.GREEN + "Your market has been upgraded to level " + market.getLevel() + "!");
         
         // Update trades for market villagers
-        handleMarketUpgrade(market);
+        if (market instanceof BDMarket) {
+            handleMarketUpgrade((BDMarket) market);
+        }
     }
 }

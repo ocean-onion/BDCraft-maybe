@@ -3,7 +3,7 @@ package com.bdcraft.plugin.modules.economy.villager;
 import com.bdcraft.plugin.BDCraft;
 import com.bdcraft.plugin.api.VillagerAPI;
 import com.bdcraft.plugin.modules.economy.market.BDMarket;
-import com.bdcraft.plugin.modules.economy.market.MarketManager;
+import com.bdcraft.plugin.modules.economy.market.BDMarketManager;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
@@ -24,7 +24,7 @@ public class BDVillagerAPI implements VillagerAPI {
     private final BDCraft plugin;
     private final Logger logger;
     private final BDVillagerManager villagerManager;
-    private final MarketManager marketManager;
+    private final BDMarketManager marketManager;
     
     // Store reputation data: playerUUID -> villagerUUID -> reputation
     private final Map<UUID, Map<UUID, Integer>> reputationData = new HashMap<>();
@@ -41,7 +41,7 @@ public class BDVillagerAPI implements VillagerAPI {
      * @param villagerManager The villager manager
      * @param marketManager The market manager
      */
-    public BDVillagerAPI(BDCraft plugin, BDVillagerManager villagerManager, MarketManager marketManager) {
+    public BDVillagerAPI(BDCraft plugin, BDVillagerManager villagerManager, BDMarketManager marketManager) {
         this.plugin = plugin;
         this.logger = plugin.getLogger();
         this.villagerManager = villagerManager;

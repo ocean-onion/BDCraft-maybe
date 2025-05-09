@@ -57,7 +57,7 @@ public class VillagerTradeListener implements Listener {
         Player player = (Player) event.getWhoClicked();
         MerchantInventory merchantInventory = (MerchantInventory) event.getInventory();
         Villager villager = (Villager) merchantInventory.getMerchant();
-        BDVillagerManager villagerManager = plugin.getEconomyModule().getVillagerManager();
+        BDVillagerManager villagerManager = plugin.getEconomyModule().getBDVillagerManager();
         
         // Check if it's a BD villager
         if (!villagerManager.isBDVillager(villager)) {

@@ -223,7 +223,7 @@ public class AuctionManager {
         
         // Check if buyer has enough money
         Player buyerPlayer = buyer; // We already have the Player object
-        if (!plugin.getEconomyModule().hasCurrency(buyerPlayer, auction.getPrice())) {
+        if (!plugin.getEconomyModule().hasCoins(buyerPlayer, (int)auction.getPrice())) {
             return false;
         }
         
@@ -232,13 +232,13 @@ public class AuctionManager {
         Player sellerPlayer = plugin.getServer().getPlayer(sellerId);
         
         // Transfer money - use the EconomyModule methods directly
-        plugin.getEconomyModule().removeCurrency(buyerPlayer, auction.getPrice());
+        plugin.getEconomyModule().removePlayerBalance(buyerPlayer, (int)auction.getPrice());
         
         // If seller is online, add currency directly, otherwise store in their offline balance
         if (sellerPlayer != null && sellerPlayer.isOnline()) {
-            plugin.getEconomyModule().addCurrency(sellerPlayer, auction.getPrice());
+            plugin.getEconomyModule().addPlayerBalance(sellerPlayer, (int)auction.getPrice());
         } else {
-            plugin.getEconomyModule().addOfflineCurrency(sellerId, auction.getPrice());
+            plugin.getEconomyModule().addOfflinePlayerCoins(sellerId, (int)auction.getPrice());
         }
         
         // Remove from active auctions

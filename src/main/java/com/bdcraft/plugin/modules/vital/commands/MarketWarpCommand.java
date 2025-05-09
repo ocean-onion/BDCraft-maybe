@@ -2,7 +2,7 @@ package com.bdcraft.plugin.modules.vital.commands;
 
 import com.bdcraft.plugin.BDCraft;
 import com.bdcraft.plugin.modules.economy.market.BDMarket;
-import com.bdcraft.plugin.modules.economy.market.MarketManager;
+import com.bdcraft.plugin.modules.economy.market.BDMarketManager;
 import com.bdcraft.plugin.modules.vital.BDVitalModule;
 import com.bdcraft.plugin.modules.vital.warp.MarketWarpManager;
 import org.bukkit.ChatColor;
@@ -59,7 +59,7 @@ public class MarketWarpCommand implements CommandExecutor, TabCompleter {
             return true;
         }
         
-        MarketManager marketManager = plugin.getEconomyModule().getMarketManager();
+        BDMarketManager marketManager = plugin.getEconomyModule().getBDMarketManager();
         
         switch (args[0].toLowerCase()) {
             case "set":
@@ -101,7 +101,7 @@ public class MarketWarpCommand implements CommandExecutor, TabCompleter {
      * @param player The player
      * @param marketManager The market manager
      */
-    private void setMarketWarp(Player player, MarketManager marketManager) {
+    private void setMarketWarp(Player player, BDMarketManager marketManager) {
         if (!player.hasPermission("bdvital.market.setwarp")) {
             player.sendMessage(ChatColor.RED + "You don't have permission to set market warps.");
             return;
@@ -142,7 +142,7 @@ public class MarketWarpCommand implements CommandExecutor, TabCompleter {
      * @param player The player
      * @param marketManager The market manager
      */
-    private void removeMarketWarp(Player player, MarketManager marketManager) {
+    private void removeMarketWarp(Player player, BDMarketManager marketManager) {
         if (!player.hasPermission("bdvital.market.setwarp")) {
             player.sendMessage(ChatColor.RED + "You don't have permission to remove market warps.");
             return;
@@ -176,7 +176,7 @@ public class MarketWarpCommand implements CommandExecutor, TabCompleter {
      * @param player The player
      * @param marketManager The market manager
      */
-    private void listMarketWarps(Player player, MarketManager marketManager) {
+    private void listMarketWarps(Player player, BDMarketManager marketManager) {
         if (!player.hasPermission("bdvital.market.warp")) {
             player.sendMessage(ChatColor.RED + "You don't have permission to list market warps.");
             return;
@@ -210,7 +210,7 @@ public class MarketWarpCommand implements CommandExecutor, TabCompleter {
      * @param arg The warp name or index
      * @param marketManager The market manager
      */
-    private void teleportToMarketWarp(Player player, String arg, MarketManager marketManager) {
+    private void teleportToMarketWarp(Player player, String arg, BDMarketManager marketManager) {
         if (!player.hasPermission("bdvital.market.warp")) {
             player.sendMessage(ChatColor.RED + "You don't have permission to use market warps.");
             return;

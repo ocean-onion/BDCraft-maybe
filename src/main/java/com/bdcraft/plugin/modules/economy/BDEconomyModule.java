@@ -8,6 +8,7 @@ import com.bdcraft.plugin.modules.economy.market.BDMarketManager;
 import com.bdcraft.plugin.modules.economy.auction.AuctionManager;
 import com.bdcraft.plugin.modules.economy.items.BDItemManager;
 import com.bdcraft.plugin.modules.economy.gui.MarketManagementGUI;
+import com.bdcraft.plugin.modules.economy.villager.BDVillagerManager;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
@@ -45,6 +46,7 @@ public class BDEconomyModule implements BDModule, EconomyAPI {
     private AuctionManager auctionManager;
     private BDItemManager itemManager;
     private MarketManagementGUI marketManagementGUI;
+    private BDVillagerManager bdVillagerManager;
     
     /**
      * Creates a new BD economy module.
@@ -81,6 +83,9 @@ public class BDEconomyModule implements BDModule, EconomyAPI {
         
         // Initialize market management GUI
         marketManagementGUI = new MarketManagementGUI(plugin);
+        
+        // Initialize villager manager
+        bdVillagerManager = new BDVillagerManager(plugin);
         
         // Register API interface
         plugin.setEconomyAPI(this);
@@ -287,6 +292,15 @@ public class BDEconomyModule implements BDModule, EconomyAPI {
     }
     
     /**
+     * Gets the BD villager manager.
+     * 
+     * @return The BD villager manager
+     */
+    public BDVillagerManager getBDVillagerManager() {
+        return bdVillagerManager;
+    }
+    
+    /**
      * Gets a player's balance.
      * 
      * @param player The player
@@ -436,7 +450,15 @@ public class BDEconomyModule implements BDModule, EconomyAPI {
     }
     
     @Override
-    public boolean hasMoney(UUID uuid, double amount) {
+    public void setBalance(UUID uuid, double amount) {
+        Player player = plugin.getServer().getPlayer(uuid);
+        if (player != null) {
+            setPlayerBalance(player, (int) amount);
+        }
+    }
+    
+    @Override
+    public boolean hasEnough(UUID uuid, double amount) {
         return getBalance(uuid) >= amount;
     }
     
@@ -454,7 +476,7 @@ public class BDEconomyModule implements BDModule, EconomyAPI {
     @Override
     public boolean withdrawMoney(UUID uuid, double amount) {
         Player player = plugin.getServer().getPlayer(uuid);
-        if (player != null && hasMoney(uuid, amount)) {
+        if (player != null && hasEnough(uuid, amount)) {
             int newBalance = getPlayerBalance(player) - (int) amount;
             setPlayerBalance(player, newBalance);
             return true;
@@ -463,8 +485,28 @@ public class BDEconomyModule implements BDModule, EconomyAPI {
     }
     
     @Override
+    public String formatCurrency(double amount) {
+        return getCurrencySymbol() + " " + String.format("%.2f", amount);
+    }
+    
+    @Override
+    public String getCurrencyName() {
+        return "BDCoin";
+    }
+    
+    @Override
+    public String getCurrencyNamePlural() {
+        return "BDCoins";
+    }
+    
+    @Override
+    public String getCurrencySymbol() {
+        return "§6BD§r";
+    }
+    
+    // Custom methods not part of the EconomyAPI interface
     public boolean transferMoney(UUID fromUuid, UUID toUuid, double amount) {
-        if (hasMoney(fromUuid, amount)) {
+        if (hasEnough(fromUuid, amount)) {
             withdrawMoney(fromUuid, amount);
             depositMoney(toUuid, amount);
             return true;
@@ -472,13 +514,11 @@ public class BDEconomyModule implements BDModule, EconomyAPI {
         return false;
     }
     
-    @Override
     public String getFormattedBalance(UUID uuid) {
         double balance = getBalance(uuid);
         return String.format("%.2f BD", balance);
     }
     
-    @Override
     public void setCurrency(UUID uuid, double amount) {
         Player player = plugin.getServer().getPlayer(uuid);
         if (player != null) {
@@ -486,28 +526,23 @@ public class BDEconomyModule implements BDModule, EconomyAPI {
         }
     }
     
-    @Override
     public boolean hasCurrency(Player player, int amount) {
         return getPlayerBalance(player) >= amount;
     }
     
-    @Override
     public double getCurrencyValue(String itemType) {
         return cropValues.getOrDefault(itemType, 0.0);
     }
     
-    @Override
     public Map<String, Double> getAllCurrencyValues() {
         return getCurrentCropValues();
     }
     
-    @Override
     public boolean setCurrencyValue(String itemType, double value) {
         cropValues.put(itemType, value);
         return true;
     }
     
-    @Override
     public List<UUID> getTopBalances(int limit) {
         // This would require a proper database implementation
         // Placeholder for now

@@ -17,7 +17,7 @@ import com.bdcraft.plugin.modules.economy.items.crops.BDCrop.CropType;
 import com.bdcraft.plugin.modules.economy.items.seeds.BDSeed;
 import com.bdcraft.plugin.modules.economy.items.seeds.BDSeed.SeedType;
 import com.bdcraft.plugin.modules.economy.items.tokens.BDToken;
-import com.bdcraft.plugin.modules.economy.items.tokens.TokenType;
+import com.bdcraft.plugin.modules.economy.items.TokenType;
 import com.bdcraft.plugin.modules.economy.items.tools.BDTool;
 import com.bdcraft.plugin.modules.economy.items.tools.ToolType;
 
