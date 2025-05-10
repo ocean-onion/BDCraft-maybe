@@ -713,11 +713,11 @@ public class BDRebirthManager {
      * @return True if the player has an active blessing
      */
     public boolean hasActiveBlessing(UUID uuid) {
-        Long endTime = blessingEffects.get(uuid);
-        
-        if (endTime == null) {
+        if (!blessingEffects.containsKey(uuid)) {
             return false;
         }
+        
+        long endTime = blessingEffects.get(uuid);
         
         // Check if expired
         if (endTime <= System.currentTimeMillis()) {

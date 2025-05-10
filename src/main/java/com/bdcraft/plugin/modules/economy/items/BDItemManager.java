@@ -869,19 +869,19 @@ public class BDItemManager {
         
         // Handle tools
         if (itemType.equals("bd_stick")) {
-            return createBDTool(ToolType.BDSTICK);
+            return createLegacyBDTool(ToolType.BDSTICK);
         } else if (itemType.equals("bd_shovel")) {
-            return createBDTool(ToolType.BDSHOVEL);
+            return createLegacyBDTool(ToolType.BDSHOVEL);
         } else if (itemType.equals("bd_hoe")) {
-            return createBDTool(ToolType.BDHOE);
+            return createLegacyBDTool(ToolType.BDHOE);
         } else if (itemType.equals("bd_pickaxe")) {
-            return createBDTool(ToolType.BDPICKAXE);
+            return createLegacyBDTool(ToolType.BDPICKAXE);
         } else if (itemType.equals("bd_axe")) {
-            return createBDTool(ToolType.BDAXE);
+            return createLegacyBDTool(ToolType.BDAXE);
         } else if (itemType.equals("harvester")) {
-            return createBDTool(ToolType.HARVESTER);
+            return createLegacyBDTool(ToolType.HARVESTER);
         } else if (itemType.equals("ultimate_harvester")) {
-            return createBDTool(ToolType.ULTIMATE_HARVESTER);
+            return createLegacyBDTool(ToolType.ULTIMATE_HARVESTER);
         }
         
         // Default fallback
@@ -900,8 +900,8 @@ public class BDItemManager {
      * @param type The tool type
      * @return The tool
      */
-    public ItemStack createBDTool(ToolType type) {
-        return createBDTool(com.bdcraft.plugin.modules.economy.items.tools.ToolType.valueOf(type.name()));
+    public ItemStack createLegacyBDTool(ToolType type) {
+        return createLegacyBDTool(com.bdcraft.plugin.modules.economy.items.tools.ToolType.valueOf(type.name()));
     }
     
     /**
@@ -910,7 +910,7 @@ public class BDItemManager {
      * @param type The tool type
      * @return The tool item
      */
-    public ItemStack createBDTool(com.bdcraft.plugin.modules.economy.items.tools.ToolType type) {
+    public ItemStack createLegacyBDTool(com.bdcraft.plugin.modules.economy.items.tools.ToolType type) {
         Material material;
         String displayName;
         ChatColor color = ChatColor.AQUA;

@@ -2,7 +2,7 @@ package com.bdcraft.plugin.modules.display;
 
 import com.bdcraft.plugin.BDCraft;
 import com.bdcraft.plugin.modules.economy.BDEconomyModule;
-import com.bdcraft.plugin.modules.economy.market.BDMarketManager;
+import com.bdcraft.plugin.modules.economy.market.MarketManager;
 import com.bdcraft.plugin.modules.progression.BDProgressionModule;
 
 import org.bukkit.Bukkit;
@@ -29,7 +29,7 @@ public class BDScoreboardManager implements Listener {
     private final BDCraft plugin;
     private final BDEconomyModule economyModule;
     private final BDProgressionModule progressionModule;
-    private final BDMarketManager marketManager;
+    private final MarketManager marketManager;
     
     private final Map<UUID, Scoreboard> playerScoreboards;
     private BukkitTask updateTask;
@@ -47,7 +47,7 @@ public class BDScoreboardManager implements Listener {
      * @param marketManager The market manager
      */
     public BDScoreboardManager(BDCraft plugin, BDEconomyModule economyModule, 
-                               BDProgressionModule progressionModule, BDMarketManager marketManager) {
+                               BDProgressionModule progressionModule, MarketManager marketManager) {
         this.plugin = plugin;
         this.economyModule = economyModule;
         this.progressionModule = progressionModule;

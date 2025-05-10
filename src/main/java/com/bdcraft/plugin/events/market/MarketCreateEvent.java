@@ -1,7 +1,7 @@
 package com.bdcraft.plugin.events.market;
 
 import com.bdcraft.plugin.events.BDEvent;
-import com.bdcraft.plugin.modules.economy.market.BDMarket;
+import com.bdcraft.plugin.modules.economy.market.Market;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
  */
 public class MarketCreateEvent extends BDEvent {
     private final Player player;
-    private final BDMarket market;
+    private final Market market;
     private final Location location;
     
     /**
@@ -20,7 +20,7 @@ public class MarketCreateEvent extends BDEvent {
      * @param market The market being created
      * @param location The location of the market
      */
-    public MarketCreateEvent(Player player, BDMarket market, Location location) {
+    public MarketCreateEvent(Player player, Market market, Location location) {
         super(true); // Market creation can be cancelled
         this.player = player;
         this.market = market;
@@ -41,7 +41,7 @@ public class MarketCreateEvent extends BDEvent {
      * 
      * @return The market
      */
-    public BDMarket getMarket() {
+    public Market getMarket() {
         return market;
     }
     

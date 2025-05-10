@@ -330,24 +330,6 @@ public class BDProgressionModule extends BDModule implements ProgressionAPI {
     }
     
     /**
-     * Gets the rebirth manager.
-     *
-     * @return The rebirth manager
-     */
-    public BDRebirthManager getRebirthManager() {
-        return rebirthManager;
-    }
-    
-    /**
-     * Gets the rank manager.
-     *
-     * @return The rank manager
-     */
-    public BDRankManager getRankManager() {
-        return rankManager;
-    }
-    
-    /**
      * Implements ProgressionAPI.getPlayerRank
      */
     @Override

@@ -20,8 +20,8 @@ public class ParticleHelper {
      * @param speed The speed of the particles
      */
     public static void spawnWitchParticles(Location location, int count, double offsetX, double offsetY, double offsetZ, double speed) {
-        // Use basic smoke particles that exist in all Minecraft versions
-        location.getWorld().spawnParticle(Particle.SMOKE_LARGE, location, count, offsetX, offsetY, offsetZ, speed);
+        // Use basic particles that exist in all Minecraft versions
+        location.getWorld().spawnParticle(Particle.SMOKE, location, count, offsetX, offsetY, offsetZ, speed);
     }
     
     /**

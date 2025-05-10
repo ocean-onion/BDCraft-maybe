@@ -613,4 +613,24 @@ public class Market {
             return null;
         }
     }
+    
+    /**
+     * Checks if this market has sound effects enabled.
+     *
+     * @return True if sound effects are enabled
+     */
+    public boolean hasSounds() {
+        // Return true by default or based on market level
+        return level > 1;
+    }
+    
+    /**
+     * Checks if this market has particle effects enabled.
+     *
+     * @return True if particle effects are enabled
+     */
+    public boolean hasParticles() {
+        // Return true by default or based on market level
+        return level > 2;
+    }
 }

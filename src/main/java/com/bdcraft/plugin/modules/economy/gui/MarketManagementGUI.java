@@ -1,7 +1,7 @@
 package com.bdcraft.plugin.modules.economy.gui;
 
 import com.bdcraft.plugin.BDCraft;
-import com.bdcraft.plugin.modules.economy.market.BDMarket;
+import com.bdcraft.plugin.modules.economy.market.Market;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -21,7 +21,7 @@ import java.util.UUID;
  */
 public class MarketManagementGUI {
     private final BDCraft plugin;
-    private final Map<UUID, BDMarket> playerMarketContext;
+    private final Map<UUID, Market> playerMarketContext;
     
     /**
      * Creates a new market management GUI.
@@ -39,7 +39,7 @@ public class MarketManagementGUI {
      * @param player The player
      * @param market The market
      */
-    public void openMarketManagementGUI(Player player, BDMarket market) {
+    public void openMarketManagementGUI(Player player, Market market) {
         Inventory gui = Bukkit.createInventory(player, 27, 
                 ChatColor.DARK_GREEN + "Market Management: " + market.getName());
         
@@ -173,7 +173,7 @@ public class MarketManagementGUI {
      * @param playerId The player ID
      * @return The market, or null if not viewing
      */
-    public BDMarket getMarketContext(UUID playerId) {
+    public Market getMarketContext(UUID playerId) {
         return playerMarketContext.get(playerId);
     }
     

@@ -1,7 +1,7 @@
 package com.bdcraft.plugin.modules.vital.warp;
 
 import com.bdcraft.plugin.BDCraft;
-import com.bdcraft.plugin.modules.economy.market.BDMarket;
+import com.bdcraft.plugin.modules.economy.market.Market;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
@@ -95,7 +95,7 @@ public class MarketWarpManager {
      * @param location The warp location
      * @return Whether the operation was successful
      */
-    public boolean setWarp(BDMarket market, Location location) {
+    public boolean setWarp(Market market, Location location) {
         if (market == null) {
             return false;
         }

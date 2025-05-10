@@ -1,7 +1,7 @@
 package com.bdcraft.plugin.events.market;
 
 import com.bdcraft.plugin.events.BDEvent;
-import com.bdcraft.plugin.modules.economy.market.BDMarket;
+import com.bdcraft.plugin.modules.economy.market.Market;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.inventory.ItemStack;
@@ -11,7 +11,7 @@ import org.bukkit.inventory.ItemStack;
  */
 public class MarketTradeEvent extends BDEvent {
     private final Player player;
-    private final BDMarket market;
+    private final Market market;
     private final Villager villager;
     private final ItemStack offered;
     private final ItemStack received;
@@ -27,7 +27,7 @@ public class MarketTradeEvent extends BDEvent {
      * @param received The item received
      * @param price The price
      */
-    public MarketTradeEvent(Player player, BDMarket market, Villager villager, 
+    public MarketTradeEvent(Player player, Market market, Villager villager, 
             ItemStack offered, ItemStack received, double price) {
         super(true); // Trades can be cancelled
         this.player = player;
@@ -52,7 +52,7 @@ public class MarketTradeEvent extends BDEvent {
      * 
      * @return The market
      */
-    public BDMarket getMarket() {
+    public Market getMarket() {
         return market;
     }
     

@@ -111,7 +111,7 @@ public class HouseTokenListener implements Listener {
      * @param market The market
      * @return The maximum number of collectors
      */
-    private int getMaxCollectors(BDMarket market) {
+    private int getMaxCollectors(Market market) {
         int level = market.getLevel();
         
         switch (level) {

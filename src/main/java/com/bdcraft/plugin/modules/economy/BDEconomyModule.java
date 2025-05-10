@@ -606,4 +606,24 @@ public class BDEconomyModule extends BDModule implements EconomyAPI {
         
         return predictions;
     }
+    
+    /**
+     * Gets the number of completed trades for a player.
+     * 
+     * @param playerId The player UUID
+     * @return The number of completed trades
+     */
+    public int getCompletedTradesCount(UUID playerId) {
+        return playerTrades.getOrDefault(playerId, 0);
+    }
+    
+    /**
+     * Resets the trade count for a player.
+     * 
+     * @param playerId The player UUID
+     */
+    public void resetTradeCount(UUID playerId) {
+        playerTrades.put(playerId, 0);
+        saveData();
+    }
 }
