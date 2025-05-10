@@ -2,6 +2,7 @@ package com.bdcraft.plugin.modules.economy.villager;
 
 import com.bdcraft.plugin.BDCraft;
 import com.bdcraft.plugin.modules.economy.villagers.SeasonalBDTraderVillager;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Villager;
 
@@ -68,5 +69,15 @@ public class BDSeasonalTrader extends BDVillager {
     @Override
     public String getVillagerType() {
         return TYPE;
+    }
+    
+    /**
+     * Gets the name color for this villager type.
+     * 
+     * @return The name color
+     */
+    @Override
+    protected ChatColor getNameColor() {
+        return ChatColor.LIGHT_PURPLE;
     }
 }

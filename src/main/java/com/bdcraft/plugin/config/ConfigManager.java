@@ -1,7 +1,6 @@
 package com.bdcraft.plugin.config;
 
 import com.bdcraft.plugin.BDCraft;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -9,159 +8,92 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
+import java.util.logging.Level;
 
 /**
- * Manages plugin configuration files.
+ * Manages configuration files for the plugin and its modules.
  */
 public class ConfigManager {
     private final BDCraft plugin;
-    private final Logger logger;
-    
-    private final Map<String, FileConfiguration> configs;
-    private final Map<String, File> configFiles;
-    
-    private static final String[] CONFIG_FILES = {
-            "config.yml",
-            "permissions.yml",
-            "economy.yml",
-            "vital.yml",
-            "messages.yml"
-    };
+    private final Map<String, FileConfiguration> moduleConfigs;
     
     /**
      * Creates a new config manager.
+     *
      * @param plugin The plugin instance
      */
     public ConfigManager(BDCraft plugin) {
         this.plugin = plugin;
-        this.logger = plugin.getLogger();
-        this.configs = new HashMap<>();
-        this.configFiles = new HashMap<>();
-        
-        // Load configurations
-        loadConfigs();
+        this.moduleConfigs = new HashMap<>();
     }
     
     /**
-     * Loads all configuration files.
-     */
-    private void loadConfigs() {
-        for (String configFile : CONFIG_FILES) {
-            loadConfig(configFile);
-        }
-    }
-    
-    /**
-     * Loads a specific configuration file.
-     * @param filename The configuration filename
-     */
-    private void loadConfig(String filename) {
-        File file = new File(plugin.getDataFolder(), filename);
-        String configName = getConfigName(filename);
-        
-        if (!file.exists()) {
-            // Save default resource
-            logger.info("Creating default configuration: " + filename);
-            plugin.saveResource(filename, false);
-        }
-        
-        FileConfiguration config = YamlConfiguration.loadConfiguration(file);
-        configs.put(configName, config);
-        configFiles.put(configName, file);
-        
-        logger.info("Loaded configuration: " + filename);
-    }
-    
-    /**
-     * Gets the config name from a filename.
-     * @param filename The filename
-     * @return The config name
-     */
-    private String getConfigName(String filename) {
-        // Remove .yml extension
-        return filename.substring(0, filename.lastIndexOf('.'));
-    }
-    
-    /**
-     * Reloads all configuration files.
-     */
-    public void reloadConfigs() {
-        configs.clear();
-        configFiles.clear();
-        loadConfigs();
-    }
-    
-    /**
-     * Gets a configuration by name.
-     * @param name The configuration name (without .yml extension)
-     * @return The configuration, or null if it doesn't exist
-     */
-    public FileConfiguration getConfig(String name) {
-        return configs.get(name);
-    }
-    
-    /**
-     * Gets the main plugin configuration.
-     * @return The main configuration
-     */
-    public FileConfiguration getMainConfig() {
-        return getConfig("config");
-    }
-    
-    /**
-     * Gets a module-specific configuration section.
+     * Gets the configuration for a module.
+     *
      * @param moduleName The module name
-     * @return The module configuration section
+     * @return The module configuration
      */
-    public ConfigurationSection getModuleConfig(String moduleName) {
-        FileConfiguration config;
-        
-        // Check if module has a dedicated config file
-        if (configs.containsKey(moduleName)) {
-            config = configs.get(moduleName);
-            return config;
+    public FileConfiguration getModuleConfig(String moduleName) {
+        // If already loaded, return it
+        if (moduleConfigs.containsKey(moduleName)) {
+            return moduleConfigs.get(moduleName);
         }
         
-        // Otherwise look for section in main config
-        config = getMainConfig();
-        ConfigurationSection section = config.getConfigurationSection(moduleName);
+        // Otherwise, load it
+        File configFile = new File(plugin.getDataFolder(), moduleName + ".yml");
         
-        if (section == null) {
-            // Create section if it doesn't exist
-            section = config.createSection(moduleName);
-            saveConfig("config");
+        // If file doesn't exist, create default
+        if (!configFile.exists()) {
+            try {
+                plugin.saveResource(moduleName + ".yml", false);
+            } catch (IllegalArgumentException e) {
+                // Resource doesn't exist in jar, create empty file
+                try {
+                    configFile.createNewFile();
+                } catch (IOException ex) {
+                    plugin.getLogger().log(Level.SEVERE, "Failed to create config file for " + moduleName, ex);
+                    return new YamlConfiguration();
+                }
+            }
         }
         
-        return section;
+        // Load and cache the config
+        FileConfiguration config = YamlConfiguration.loadConfiguration(configFile);
+        moduleConfigs.put(moduleName, config);
+        
+        return config;
     }
     
     /**
-     * Saves a configuration file.
-     * @param name The configuration name (without .yml extension)
+     * Saves a module's configuration.
+     *
+     * @param moduleName The module name
      */
-    public void saveConfig(String name) {
-        FileConfiguration config = configs.get(name);
-        File file = configFiles.get(name);
-        
-        if (config == null || file == null) {
-            logger.warning("Tried to save unknown configuration: " + name);
+    public void saveModuleConfig(String moduleName) {
+        if (!moduleConfigs.containsKey(moduleName)) {
+            plugin.getLogger().warning("Tried to save non-loaded config for " + moduleName);
             return;
         }
         
         try {
-            config.save(file);
+            File configFile = new File(plugin.getDataFolder(), moduleName + ".yml");
+            moduleConfigs.get(moduleName).save(configFile);
         } catch (IOException e) {
-            logger.severe("Failed to save configuration '" + name + "': " + e.getMessage());
+            plugin.getLogger().log(Level.SEVERE, "Failed to save config for " + moduleName, e);
         }
     }
     
     /**
-     * Saves all configuration files.
+     * Reloads a module's configuration.
+     *
+     * @param moduleName The module name
+     * @return The reloaded configuration
      */
-    public void saveConfigs() {
-        for (String name : configs.keySet()) {
-            saveConfig(name);
-        }
+    public FileConfiguration reloadModuleConfig(String moduleName) {
+        // Remove from cache
+        moduleConfigs.remove(moduleName);
+        
+        // Load fresh
+        return getModuleConfig(moduleName);
     }
 }

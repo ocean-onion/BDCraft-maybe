@@ -11,7 +11,7 @@ import org.bukkit.inventory.MerchantRecipe;
 
 import com.bdcraft.plugin.BDCraft;
 import com.bdcraft.plugin.modules.economy.items.SeedType;
-import com.bdcraft.plugin.modules.economy.items.ToolType;
+import com.bdcraft.plugin.modules.economy.items.tools.ToolType;
 import com.bdcraft.plugin.modules.economy.market.Market;
 
 import java.util.ArrayList;

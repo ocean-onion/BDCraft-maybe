@@ -4,8 +4,10 @@ import com.bdcraft.plugin.api.EconomyAPI;
 import com.bdcraft.plugin.api.ProgressionAPI;
 import com.bdcraft.plugin.api.VillagerAPI;
 import com.bdcraft.plugin.compat.PluginConflictManager;
+import com.bdcraft.plugin.config.ConfigManager;
 import com.bdcraft.plugin.modules.BDModule;
 import com.bdcraft.plugin.modules.ModuleManager;
+import com.bdcraft.plugin.modules.perms.BDPermissionAPI;
 import com.bdcraft.plugin.modules.display.BDDisplayModule;
 import com.bdcraft.plugin.modules.economy.BDEconomyModule;
 import com.bdcraft.plugin.modules.economy.market.MarketManager;
@@ -34,6 +36,12 @@ public class BDCraft extends JavaPlugin {
     // Module management
     private ModuleManager moduleManager;
     
+    // Configuration management
+    private ConfigManager configManager;
+    
+    // Permission API for other plugins
+    private BDPermissionAPI permissionAPI;
+    
     // Plugin conflict management
     private PluginConflictManager conflictManager;
     
@@ -44,6 +52,9 @@ public class BDCraft extends JavaPlugin {
         
         // Initialize modules list
         modules = new ArrayList<>();
+        
+        // Initialize config manager
+        configManager = new ConfigManager(this);
         
         // Initialize module manager
         moduleManager = new ModuleManager(this);
@@ -179,13 +190,52 @@ public class BDCraft extends JavaPlugin {
         return economyModule;
     }
     
+    // VillagerAPI instance
+    private VillagerAPI villagerAPI;
+    
     /**
      * Gets the villager API.
      *
      * @return The villager API
      */
     public VillagerAPI getVillagerAPI() {
-        return economyModule.getVillagerManager();
+        return villagerAPI;
+    }
+    
+    /**
+     * Sets the villager API.
+     *
+     * @param villagerAPI The villager API
+     */
+    public void setVillagerAPI(VillagerAPI villagerAPI) {
+        this.villagerAPI = villagerAPI;
+    }
+    
+    /**
+     * Gets the configuration manager.
+     *
+     * @return The configuration manager
+     */
+    public ConfigManager getConfigManager() {
+        return configManager;
+    }
+    
+    /**
+     * Sets the permission API.
+     *
+     * @param permissionAPI The permission API
+     */
+    public void setPermissionAPI(BDPermissionAPI permissionAPI) {
+        this.permissionAPI = permissionAPI;
+    }
+    
+    /**
+     * Gets the permission API.
+     *
+     * @return The permission API
+     */
+    public BDPermissionAPI getPermissionAPI() {
+        return permissionAPI;
     }
     
     /**

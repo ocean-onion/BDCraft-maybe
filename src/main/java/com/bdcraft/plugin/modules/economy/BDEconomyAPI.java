@@ -35,18 +35,26 @@ public class BDEconomyAPI implements EconomyAPI {
         this.economyModule = economyModule;
     }
     
+    /**
+     * Implements EconomyAPI.getPlayerBalance
+     */
     @Override
-    public double getBalance(UUID uuid) {
+    public double getPlayerBalance(UUID uuid) {
         Player player = Bukkit.getPlayer(uuid);
         if (player != null) {
             return economyModule.getPlayerBalance(player);
         }
         
-        // Would need to implement offline player balance checks
-        return 0;
+        // Fallback to stored player data
+        return economyModule.getCurrency(uuid);
     }
     
-    @Override
+    /**
+     * Sets a player's balance.
+     *
+     * @param uuid The player UUID
+     * @param amount The amount
+     */
     public void setBalance(UUID uuid, double amount) {
         Player player = Bukkit.getPlayer(uuid);
         if (player != null) {
@@ -59,37 +67,54 @@ public class BDEconomyAPI implements EconomyAPI {
         }
     }
     
+    /**
+     * Deposits money into a player's account.
+     *
+     * @param playerUuid The player UUID
+     * @param amount The amount
+     * @return The new balance
+     */
     @Override
-    public boolean depositMoney(UUID uuid, double amount) {
+    public double depositPlayer(UUID playerUuid, double amount) {
         if (amount <= 0) {
-            return false;
+            return getPlayerBalance(playerUuid);
         }
         
-        Player player = Bukkit.getPlayer(uuid);
+        Player player = Bukkit.getPlayer(playerUuid);
         if (player != null) {
-            economyModule.addPlayerBalance(player, (int) amount);
-            return true;
+            return economyModule.addPlayerBalance(player, (int) amount);
         }
         
         // Deposit to offline player
-        economyModule.addOfflinePlayerCoins(uuid, (int) amount);
-        return true;
+        return economyModule.addOfflinePlayerCoins(playerUuid, (int) amount);
     }
     
+    /**
+     * Withdraws money from a player's account.
+     *
+     * @param playerUuid The player UUID
+     * @param amount The amount
+     * @return The new balance, or -1 if the player doesn't have enough money
+     */
     @Override
-    public boolean withdrawMoney(UUID uuid, double amount) {
+    public double withdrawPlayer(UUID playerUuid, double amount) {
         if (amount <= 0) {
-            return false;
+            return getPlayerBalance(playerUuid);
         }
         
-        Player player = Bukkit.getPlayer(uuid);
+        Player player = Bukkit.getPlayer(playerUuid);
         if (player != null) {
-            int result = economyModule.removePlayerBalance(player, (int) amount);
-            return result >= 0;
+            return economyModule.removePlayerBalance(player, (int) amount);
         }
         
-        // For offline players, we'd need to implement a separate system
-        return false;
+        // For offline players
+        int currentBalance = economyModule.getCurrency(playerUuid);
+        if (currentBalance >= amount) {
+            int newBalance = currentBalance - (int)amount;
+            economyModule.setCurrency(playerUuid, newBalance);
+            return newBalance;
+        }
+        return -1;
     }
     
     @Override
@@ -103,22 +128,39 @@ public class BDEconomyAPI implements EconomyAPI {
         return false;
     }
     
-    @Override
+    /**
+     * Formats currency amount.
+     *
+     * @param amount The amount
+     * @return The formatted currency amount
+     */
     public String formatCurrency(double amount) {
         return currencySymbol + " " + currencyFormat.format(amount);
     }
     
-    @Override
+    /**
+     * Gets the currency name.
+     *
+     * @return The currency name
+     */
     public String getCurrencyName() {
         return currencyName;
     }
     
-    @Override
+    /**
+     * Gets the plural currency name.
+     *
+     * @return The plural currency name
+     */
     public String getCurrencyNamePlural() {
         return currencyNamePlural;
     }
     
-    @Override
+    /**
+     * Gets the currency symbol.
+     *
+     * @return The currency symbol
+     */
     public String getCurrencySymbol() {
         return currencySymbol;
     }

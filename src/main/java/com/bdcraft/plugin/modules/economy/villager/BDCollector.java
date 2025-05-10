@@ -217,4 +217,14 @@ public class BDCollector extends BDVillager {
     public String getVillagerType() {
         return TYPE;
     }
+    
+    /**
+     * Gets the name color for this villager type.
+     * 
+     * @return The name color
+     */
+    @Override
+    protected ChatColor getNameColor() {
+        return ChatColor.BLUE;
+    }
 }

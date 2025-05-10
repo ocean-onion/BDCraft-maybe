@@ -206,6 +206,25 @@ public class Market {
     }
     
     /**
+     * Gets the center location alias for compatibility with BDMarket.
+     *
+     * @return The center location
+     */
+    public Location getCenter() {
+        return getCenterLocation();
+    }
+    
+    /**
+     * Checks if the market has been removed for compatibility with BDMarket.
+     * Markets are permanently stored until explicitly removed by an admin.
+     *
+     * @return True if removed, false otherwise
+     */
+    public boolean isRemoved() {
+        return false;
+    }
+    
+    /**
      * Gets the market level.
      * 
      * @return The level

@@ -2,12 +2,14 @@ package com.bdcraft.plugin.modules.economy;
 
 import com.bdcraft.plugin.BDCraft;
 import com.bdcraft.plugin.api.EconomyAPI;
+import com.bdcraft.plugin.api.VillagerAPI;
 import com.bdcraft.plugin.modules.BDModule;
 import com.bdcraft.plugin.modules.economy.auction.AuctionManager;
 import com.bdcraft.plugin.modules.economy.items.BDItemManager;
 import com.bdcraft.plugin.modules.economy.market.MarketManager;
 import com.bdcraft.plugin.modules.economy.trade.BDTrade;
 import com.bdcraft.plugin.modules.economy.trade.BDTradeManager;
+import com.bdcraft.plugin.modules.economy.villager.VillagerAPIImpl;
 import com.bdcraft.plugin.modules.economy.villager.VillagerManager;
 
 import org.bukkit.configuration.ConfigurationSection;
@@ -66,6 +68,11 @@ public class BDEconomyModule extends BDModule implements EconomyAPI {
         marketManager = new MarketManager(plugin, this);
         villagerManager = new VillagerManager(plugin);
         auctionManager = new com.bdcraft.plugin.modules.economy.auction.AuctionManager(plugin, this);
+        
+        // Initialize and set VillagerAPI
+        VillagerAPI villagerAPI = new VillagerAPIImpl(plugin, villagerManager);
+        plugin.setVillagerAPI(villagerAPI);
+        plugin.getLogger().info("VillagerAPI initialized.");
         
         // Load villagers
         villagerManager.loadAllVillagers();

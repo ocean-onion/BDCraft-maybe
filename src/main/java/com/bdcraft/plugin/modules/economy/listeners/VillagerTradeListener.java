@@ -7,7 +7,7 @@ import com.bdcraft.plugin.modules.economy.villager.BDCollector;
 import com.bdcraft.plugin.modules.economy.villager.BDDealer;
 import com.bdcraft.plugin.modules.economy.villager.BDMarketOwner;
 import com.bdcraft.plugin.modules.economy.villager.BDVillager;
-import com.bdcraft.plugin.modules.economy.villager.BDVillagerManager;
+import com.bdcraft.plugin.modules.economy.villager.VillagerManager;
 import com.bdcraft.plugin.modules.progression.BDRankManager;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -57,7 +57,7 @@ public class VillagerTradeListener implements Listener {
         Player player = (Player) event.getWhoClicked();
         MerchantInventory merchantInventory = (MerchantInventory) event.getInventory();
         Villager villager = (Villager) merchantInventory.getMerchant();
-        BDVillagerManager villagerManager = plugin.getEconomyModule().getBDVillagerManager();
+        VillagerManager villagerManager = plugin.getEconomyModule().getVillagerManager();
         
         // Check if it's a BD villager
         if (!villagerManager.isBDVillager(villager)) {

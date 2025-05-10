@@ -3,8 +3,8 @@ package com.bdcraft.plugin.modules.economy.listeners;
 import com.bdcraft.plugin.BDCraft;
 import com.bdcraft.plugin.modules.economy.items.BDItemManager;
 import com.bdcraft.plugin.modules.economy.items.tokens.BDToken;
-import com.bdcraft.plugin.modules.economy.market.BDMarket;
-import com.bdcraft.plugin.modules.economy.market.BDMarketManager;
+import com.bdcraft.plugin.modules.economy.market.Market;
+import com.bdcraft.plugin.modules.economy.market.MarketManager;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -57,8 +57,8 @@ public class HouseTokenListener implements Listener {
         }
         
         // Check if in a market
-        BDMarketManager marketManager = plugin.getEconomyModule().getBDMarketManager();
-        BDMarket market = marketManager.getMarketAt(clickedBlock.getLocation());
+        MarketManager marketManager = plugin.getEconomyModule().getMarketManager();
+        Market market = marketManager.getMarketAt(clickedBlock.getLocation());
         
         if (market == null) {
             player.sendMessage(ChatColor.RED + "Houses can only be placed within a market.");
@@ -72,8 +72,8 @@ public class HouseTokenListener implements Listener {
         }
         
         // Check collector count
-        int currentCollectors = market.getTraderCount("COLLECTOR");
-        int maxCollectors = getMaxCollectors(market);
+        int currentCollectors = market.getCollectorsCount();
+        int maxCollectors = market.getMaxCollectors();
         
         if (currentCollectors >= maxCollectors) {
             player.sendMessage(ChatColor.RED + "This market already has the maximum number of collectors (" + 
