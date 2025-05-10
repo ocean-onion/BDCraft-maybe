@@ -1,7 +1,7 @@
 package com.bdcraft.plugin.modules.progression.commands;
 
 import com.bdcraft.plugin.BDCraft;
-import com.bdcraft.plugin.modules.economy.market.BDMarket;
+import com.bdcraft.plugin.modules.economy.market.Market;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -102,7 +102,7 @@ public class BDInsightCommand implements CommandExecutor, TabCompleter {
         player.sendMessage(ChatColor.GOLD + "======= " + ChatColor.GREEN + "Market Insights" + ChatColor.GOLD + " =======");
         
         // Get all markets
-        List<BDMarket> markets = plugin.getMarketManager().getMarkets();
+        List<Market> markets = plugin.getEconomyModule().getMarketManager().getMarkets();
         
         if (markets.isEmpty()) {
             player.sendMessage(ChatColor.YELLOW + "There are no markets to analyze.");
@@ -112,7 +112,7 @@ public class BDInsightCommand implements CommandExecutor, TabCompleter {
         // Count markets by level
         int[] marketsByLevel = new int[5]; // 0 index unused, levels are 1-4
         
-        for (BDMarket market : markets) {
+        for (Market market : markets) {
             marketsByLevel[market.getLevel()]++;
         }
         
@@ -127,15 +127,15 @@ public class BDInsightCommand implements CommandExecutor, TabCompleter {
         }
         
         // Show markets owned by the player
-        List<BDMarket> playerMarkets = plugin.getMarketManager().getPlayerMarkets(player);
+        List<Market> playerMarkets = plugin.getEconomyModule().getMarketManager().getPlayerMarkets(player);
         
         if (!playerMarkets.isEmpty()) {
             player.sendMessage("");
             player.sendMessage(ChatColor.YELLOW + "Your Markets: " + ChatColor.WHITE + playerMarkets.size());
             
             for (int i = 0; i < playerMarkets.size(); i++) {
-                BDMarket market = playerMarkets.get(i);
-                player.sendMessage(ChatColor.YELLOW + (i + 1) + ". " + 
+                Market market = playerMarkets.get(i);
+                player.sendMessage(ChatColor.YELLOW + "" + (i + 1) + ". " + 
                         ChatColor.WHITE + market.getName() + 
                         ChatColor.GRAY + " (Level " + market.getLevel() + ", " + 
                         market.getCollectorsCount() + "/" + market.getMaxCollectors() + " collectors)");

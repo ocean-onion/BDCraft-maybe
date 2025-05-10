@@ -900,6 +900,16 @@ public class BDItemManager {
      * @param type The tool type
      * @return The tool
      */
+    public ItemStack createBDTool(ToolType type) {
+        return createBDTool(com.bdcraft.plugin.modules.economy.items.tools.ToolType.valueOf(type.name()));
+    }
+    
+    /**
+     * Creates a BD tool of the specified type.
+     * 
+     * @param type The tool type
+     * @return The tool item
+     */
     public ItemStack createBDTool(com.bdcraft.plugin.modules.economy.items.tools.ToolType type) {
         Material material;
         String displayName;

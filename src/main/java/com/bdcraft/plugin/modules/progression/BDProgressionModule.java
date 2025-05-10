@@ -252,6 +252,15 @@ public class BDProgressionModule extends BDModule {
     }
     
     /**
+     * Gets the rebirth manager.
+     *
+     * @return The rebirth manager
+     */
+    public BDRebirthManager getRebirthManager() {
+        return rebirthManager;
+    }
+    
+    /**
      * Performs rebirth for a player.
      *
      * @param player The player

@@ -3,6 +3,7 @@ package com.bdcraft.plugin.modules.economy.villager;
 import com.bdcraft.plugin.BDCraft;
 import com.bdcraft.plugin.modules.economy.items.SeedType;
 import com.bdcraft.plugin.modules.economy.items.tools.ToolType;
+import com.bdcraft.plugin.modules.economy.market.Market;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -20,6 +21,7 @@ import java.util.List;
  */
 public class BDDealer extends BDVillager {
     public static final String TYPE = "DEALER";
+    private Market market;
     
     /**
      * Creates a new BD dealer.
@@ -37,6 +39,44 @@ public class BDDealer extends BDVillager {
      */
     public BDDealer(BDCraft plugin, Villager villager) {
         super(plugin, villager);
+    }
+    
+    /**
+     * Creates a new BD dealer associated with a market.
+     * @param plugin The plugin instance
+     * @param location The spawn location
+     * @param market The associated market
+     */
+    public BDDealer(BDCraft plugin, Location location, Market market) {
+        super(plugin, location, "BD Dealer", Villager.Profession.FARMER, Villager.Type.PLAINS);
+        this.market = market;
+    }
+    
+    /**
+     * Creates a new BD dealer from an existing villager with a market.
+     * @param plugin The plugin instance
+     * @param villager The villager
+     * @param market The associated market
+     */
+    public BDDealer(BDCraft plugin, Villager villager, Market market) {
+        super(plugin, villager);
+        this.market = market;
+    }
+    
+    /**
+     * Gets the associated market.
+     * @return The market, or null if none
+     */
+    public Market getMarket() {
+        return market;
+    }
+    
+    /**
+     * Sets the associated market.
+     * @param market The market
+     */
+    public void setMarket(Market market) {
+        this.market = market;
     }
     
     @Override

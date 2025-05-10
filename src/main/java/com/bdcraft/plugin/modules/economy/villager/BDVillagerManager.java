@@ -1,7 +1,7 @@
 package com.bdcraft.plugin.modules.economy.villager;
 
 import com.bdcraft.plugin.BDCraft;
-import com.bdcraft.plugin.modules.economy.market.BDMarket;
+import com.bdcraft.plugin.modules.economy.market.Market;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -48,11 +48,15 @@ public class BDVillagerManager {
     /**
      * Creates a BD Collector villager for a market.
      * @param location The location to spawn the villager
-     * @param market The associated market (ignored in this implementation)
+     * @param market The associated market
      * @return The created villager
      */
-    public BDCollector createCollector(Location location, BDMarket market) {
-        return createCollector(location);
+    public BDCollector createCollector(Location location, Market market) {
+        Villager entity = (Villager) location.getWorld().spawnEntity(location, EntityType.VILLAGER);
+        BDCollector collector = new BDCollector(plugin, entity, market);
+        villagers.put(entity.getUniqueId(), collector);
+        
+        return collector;
     }
     
     /**
@@ -71,11 +75,15 @@ public class BDVillagerManager {
     /**
      * Creates a BD Dealer villager for a market.
      * @param location The location to spawn the villager
-     * @param market The associated market (ignored in this implementation)
+     * @param market The associated market
      * @return The created villager
      */
-    public BDDealer createDealer(Location location, BDMarket market) {
-        return createDealer(location);
+    public BDDealer createDealer(Location location, Market market) {
+        Villager entity = (Villager) location.getWorld().spawnEntity(location, EntityType.VILLAGER);
+        BDDealer dealer = new BDDealer(plugin, entity, market);
+        villagers.put(entity.getUniqueId(), dealer);
+        
+        return dealer;
     }
     
     /**
@@ -84,7 +92,7 @@ public class BDVillagerManager {
      * @param market The associated market
      * @return The created villager
      */
-    public BDMarketOwner createMarketOwner(Location location, BDMarket market) {
+    public BDMarketOwner createMarketOwner(Location location, Market market) {
         Villager entity = (Villager) location.getWorld().spawnEntity(location, EntityType.VILLAGER);
         BDMarketOwner marketOwner = new BDMarketOwner(plugin, entity, market);
         villagers.put(entity.getUniqueId(), marketOwner);

@@ -2,8 +2,8 @@ package com.bdcraft.plugin.modules.economy.villager;
 
 import com.bdcraft.plugin.BDCraft;
 import com.bdcraft.plugin.api.VillagerAPI;
-import com.bdcraft.plugin.modules.economy.market.BDMarket;
-import com.bdcraft.plugin.modules.economy.market.BDMarketManager;
+import com.bdcraft.plugin.modules.economy.market.Market;
+import com.bdcraft.plugin.modules.economy.market.MarketManager;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
@@ -23,8 +23,8 @@ import java.util.logging.Logger;
 public class BDVillagerAPI implements VillagerAPI {
     private final BDCraft plugin;
     private final Logger logger;
-    private final BDVillagerManager villagerManager;
-    private final BDMarketManager marketManager;
+    private final VillagerManager villagerManager;
+    private final MarketManager marketManager;
     
     // Store reputation data: playerUUID -> villagerUUID -> reputation
     private final Map<UUID, Map<UUID, Integer>> reputationData = new HashMap<>();
@@ -41,7 +41,7 @@ public class BDVillagerAPI implements VillagerAPI {
      * @param villagerManager The villager manager
      * @param marketManager The market manager
      */
-    public BDVillagerAPI(BDCraft plugin, BDVillagerManager villagerManager, BDMarketManager marketManager) {
+    public BDVillagerAPI(BDCraft plugin, VillagerManager villagerManager, MarketManager marketManager) {
         this.plugin = plugin;
         this.logger = plugin.getLogger();
         this.villagerManager = villagerManager;
@@ -50,7 +50,7 @@ public class BDVillagerAPI implements VillagerAPI {
     
     @Override
     public Villager createDealer(Location location, String marketId) {
-        BDMarket market = null;
+        Market market = null;
         if (marketId != null) {
             try {
                 UUID marketUUID = UUID.fromString(marketId);
@@ -79,7 +79,7 @@ public class BDVillagerAPI implements VillagerAPI {
     
     @Override
     public Villager createCollector(Location location, String marketId) {
-        BDMarket market = null;
+        Market market = null;
         if (marketId != null) {
             try {
                 UUID marketUUID = UUID.fromString(marketId);
@@ -112,7 +112,7 @@ public class BDVillagerAPI implements VillagerAPI {
             return null; // Market owners must be associated with a market
         }
         
-        BDMarket market = null;
+        Market market = null;
         try {
             UUID marketUUID = UUID.fromString(marketId);
             market = marketManager.getMarket(marketUUID);
@@ -208,7 +208,7 @@ public class BDVillagerAPI implements VillagerAPI {
             return 0;
         }
         
-        BDMarket market = null;
+        Market market = null;
         try {
             UUID marketUUID = UUID.fromString(marketId);
             market = marketManager.getMarket(marketUUID);

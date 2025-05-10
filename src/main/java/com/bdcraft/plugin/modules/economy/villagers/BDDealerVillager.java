@@ -10,12 +10,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.MerchantRecipe;
 
 import com.bdcraft.plugin.BDCraft;
-import com.bdcraft.plugin.modules.economy.items.crops.BDCrop;
-import com.bdcraft.plugin.modules.economy.items.crops.BDCrop.CropType;
-import com.bdcraft.plugin.modules.economy.items.seeds.BDSeed;
-import com.bdcraft.plugin.modules.economy.items.seeds.BDSeed.SeedType;
-import com.bdcraft.plugin.modules.economy.items.tools.ToolType;
-import com.bdcraft.plugin.modules.economy.market.BDMarket;
+import com.bdcraft.plugin.modules.economy.items.SeedType;
+import com.bdcraft.plugin.modules.economy.items.ToolType;
+import com.bdcraft.plugin.modules.economy.market.Market;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +23,7 @@ import java.util.UUID;
  */
 public class BDDealerVillager extends BDVillager {
     public static final String TYPE = "BD_DEALER";
-    private final BDMarket market;
+    private final Market market;
     
     /**
      * Creates a new BD Dealer villager.
@@ -36,7 +33,7 @@ public class BDDealerVillager extends BDVillager {
      * @param market The market this villager belongs to
      * @param entity The villager entity (or null if not spawned yet)
      */
-    public BDDealerVillager(BDCraft plugin, UUID uuid, BDMarket market, Villager entity) {
+    public BDDealerVillager(BDCraft plugin, UUID uuid, Market market, Villager entity) {
         super(plugin, uuid, entity, "BD Dealer", VillagerType.BD_DEALER);
         this.market = market;
     }
@@ -152,7 +149,7 @@ public class BDDealerVillager extends BDVillager {
      * 
      * @return The market
      */
-    public BDMarket getMarket() {
+    public Market getMarket() {
         return market;
     }
     

@@ -15,9 +15,11 @@ import org.bukkit.scheduler.BukkitTask;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 /**
  * Manages player rebirth features.
@@ -299,6 +301,36 @@ public class BDRebirthManager {
     }
     
     /**
+     * Performs rebirth for a player, with default rank reset.
+     *
+     * @param player The player
+     * @return True if rebirth was successful
+     */
+    public boolean performRebirth(Player player) {
+        return rebirth(player, true);
+    }
+    
+    /**
+     * Gets the rebirth level for a player by UUID.
+     *
+     * @param uuid The player UUID
+     * @return The rebirth level
+     */
+    public int getRebirthLevel(UUID uuid) {
+        return rebirthLevels.getOrDefault(uuid, 0);
+    }
+    
+    /**
+     * Gets the rebirth level for a player.
+     *
+     * @param player The player
+     * @return The rebirth level
+     */
+    public int getRebirthLevel(Player player) {
+        return getPlayerRebirthLevel(player);
+    }
+    
+    /**
      * Shows the rebirth effect.
      *
      * @param player The player
@@ -342,6 +374,191 @@ public class BDRebirthManager {
                 showAuraEffect(player);
             }
         }
+    }
+    
+    /**
+     * Toggles a player's aura visibility.
+     *
+     * @param player The player
+     * @return The new state (true if enabled)
+     */
+    public boolean toggleAura(Player player) {
+        UUID uuid = player.getUniqueId();
+        boolean currentState = auraEnabled.getOrDefault(uuid, false);
+        boolean newState = !currentState;
+        
+        auraEnabled.put(uuid, newState);
+        saveData();
+        
+        return newState;
+    }
+    
+    /**
+     * Gets trade count for a player.
+     * 
+     * @param player The player
+     * @return The trade count
+     */
+    public int getTradeCount(Player player) {
+        // In a real implementation, this would retrieve from storage
+        // For now, simulate based on rebirth level to maintain functionality
+        int rebirthLevel = getRebirthLevel(player);
+        return 500 + (rebirthLevel * 100);
+    }
+    
+    /**
+     * Gets the top players by rebirth level.
+     *
+     * @param limit Maximum number of players to return
+     * @return List of entries with UUID and rebirth level
+     */
+    public List<Map.Entry<UUID, Integer>> getTopPlayers(int limit) {
+        return rebirthLevels.entrySet().stream()
+            .sorted(Map.Entry.<UUID, Integer>comparingByValue().reversed())
+            .limit(limit)
+            .collect(Collectors.toList());
+    }
+    
+    /**
+     * Checks if a player is on blessing cooldown.
+     *
+     * @param player The player
+     * @return True if on cooldown
+     */
+    public boolean isOnBlessCooldown(Player player) {
+        if (!commandUseTimes.containsKey(player.getUniqueId())) {
+            return false;
+        }
+        
+        Map<String, Long> cooldowns = commandUseTimes.get(player.getUniqueId());
+        if (!cooldowns.containsKey("bless")) {
+            return false;
+        }
+        
+        long lastUse = cooldowns.get("bless");
+        long cooldownTime = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+        return System.currentTimeMillis() - lastUse < cooldownTime;
+    }
+    
+    /**
+     * Gets the remaining cooldown time for blessing.
+     *
+     * @param player The player
+     * @return Remaining time in milliseconds
+     */
+    public long getBlessCooldownRemaining(Player player) {
+        if (!commandUseTimes.containsKey(player.getUniqueId())) {
+            return 0;
+        }
+        
+        Map<String, Long> cooldowns = commandUseTimes.get(player.getUniqueId());
+        if (!cooldowns.containsKey("bless")) {
+            return 0;
+        }
+        
+        long lastUse = cooldowns.get("bless");
+        long cooldownTime = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+        long elapsed = System.currentTimeMillis() - lastUse;
+        
+        return Math.max(0, cooldownTime - elapsed);
+    }
+    
+    /**
+     * Blesses another player, giving them a temporary boost.
+     *
+     * @param player The player giving the blessing
+     * @param target The player receiving the blessing
+     * @return True if successful
+     */
+    public boolean blessPlayer(Player player, Player target) {
+        if (isOnBlessCooldown(player)) {
+            return false;
+        }
+        
+        // Apply blessing effect
+        blessingEffects.put(target.getUniqueId(), System.currentTimeMillis() + (30 * 60 * 1000)); // 30 minutes
+        
+        // Set cooldown
+        if (!commandUseTimes.containsKey(player.getUniqueId())) {
+            commandUseTimes.put(player.getUniqueId(), new HashMap<>());
+        }
+        commandUseTimes.get(player.getUniqueId()).put("bless", System.currentTimeMillis());
+        
+        // Save data
+        saveData();
+        
+        return true;
+    }
+    
+    /**
+     * Checks if a player has an active blessing.
+     *
+     * @param uuid The player's UUID
+     * @return True if blessed
+     */
+    public boolean hasActiveBlessing(UUID uuid) {
+        if (!blessingEffects.containsKey(uuid)) {
+            return false;
+        }
+        
+        return blessingEffects.get(uuid) > System.currentTimeMillis();
+    }
+    
+    /**
+     * Checks if a player is eligible for rebirth.
+     *
+     * @param player The player
+     * @return True if eligible
+     */
+    public boolean isEligibleForRebirth(Player player) {
+        // Check if player is at maximum rank (5 - Agricultural Expert)
+        int currentRank = plugin.getProgressionModule().getPlayerRank(player);
+        if (currentRank < 4) { // 0-indexed, so 4 is Agricultural Expert (Rank 5)
+            return false;
+        }
+        
+        // Check if player has enough currency (100,000)
+        int balance = plugin.getEconomyModule().getPlayerBalance(player);
+        if (balance < 100000) {
+            return false;
+        }
+        
+        // Check if player has completed enough trades (500)
+        int tradeCount = getTradeCount(player);
+        if (tradeCount < 500) {
+            return false;
+        }
+        
+        return true;
+    }
+    
+    /**
+     * Predicts seasonal items for deity-level players.
+     *
+     * @param player The player
+     * @return True if prediction was shown
+     */
+    public boolean predictSeasonalItems(Player player) {
+        // Only rebirth level 4+ can predict seasonal items
+        if (getRebirthLevel(player) < 4) {
+            player.sendMessage(ChatColor.RED + "You need rebirth level 4 or higher to predict seasonal items.");
+            return false;
+        }
+        
+        // Show prediction
+        player.sendMessage(ChatColor.GOLD + "== Seasonal Trader Preview ==");
+        player.sendMessage(ChatColor.YELLOW + "The following items will be available tomorrow:");
+        
+        // In a real implementation, this would load from a schedule
+        // For now, provide a simulated preview
+        player.sendMessage(ChatColor.WHITE + "- " + ChatColor.GREEN + "Green Elderberry Seeds " + 
+                ChatColor.GRAY + "(350 coins)");
+        player.sendMessage(ChatColor.WHITE + "- " + ChatColor.GREEN + "Premium Fertilizer " + 
+                ChatColor.GRAY + "(275 coins)");
+        player.sendMessage(ChatColor.WHITE + "- " + ChatColor.GREEN + "Magical Growth Potion " + 
+                ChatColor.GRAY + "(520 coins)");
+        
+        return true;
     }
     
     /**

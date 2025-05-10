@@ -133,7 +133,8 @@ public class BDTouchCommand implements CommandExecutor {
                         // crop growth logic to advance the crop's growth stage.
                         
                         // For now, just show particles to simulate growth
-                        block.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, 
+                        // Use HEART as Paper 1.21 renamed or changed the villager happy particle
+                        block.getWorld().spawnParticle(Particle.HEART, 
                                 block.getLocation().add(0.5, 0.5, 0.5), 
                                 5, 0.25, 0.25, 0.25, 0);
                         

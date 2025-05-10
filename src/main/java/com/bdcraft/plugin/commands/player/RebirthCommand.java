@@ -4,7 +4,7 @@ import com.bdcraft.plugin.BDCraft;
 import com.bdcraft.plugin.commands.CommandBase;
 import com.bdcraft.plugin.commands.SubCommand;
 import com.bdcraft.plugin.modules.progression.BDProgressionModule;
-import com.bdcraft.plugin.modules.progression.BDRebirthManager;
+import com.bdcraft.plugin.modules.progression.rebirth.BDRebirthManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;

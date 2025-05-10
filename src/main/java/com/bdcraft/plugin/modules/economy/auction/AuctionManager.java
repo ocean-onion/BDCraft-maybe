@@ -33,6 +33,16 @@ public class AuctionManager {
     }
     
     /**
+     * Creates a new auction manager.
+     * 
+     * @param plugin The plugin instance
+     * @param economyModule The economy module
+     */
+    public AuctionManager(BDCraft plugin, com.bdcraft.plugin.modules.economy.BDEconomyModule economyModule) {
+        this(plugin);
+    }
+    
+    /**
      * Lists an item for auction.
      * 
      * @param player The player

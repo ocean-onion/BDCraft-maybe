@@ -10,8 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.MerchantRecipe;
 
 import com.bdcraft.plugin.BDCraft;
-import com.bdcraft.plugin.modules.economy.items.crops.BDCrop;
-import com.bdcraft.plugin.modules.economy.items.crops.BDCrop.CropType;
+import com.bdcraft.plugin.modules.economy.items.CropType;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -19,8 +19,7 @@ import java.util.logging.Logger;
 /**
  * Module that manages permissions, groups, and chat formatting.
  */
-public class BDPermsModule implements BDModule {
-    private final BDCraft plugin;
+public class BDPermsModule extends BDModule {
     private final ModuleManager moduleManager;
     private final Logger logger;
     private ConfigurationSection config;
@@ -33,7 +32,7 @@ public class BDPermsModule implements BDModule {
      * @param moduleManager The module manager
      */
     public BDPermsModule(BDCraft plugin, ModuleManager moduleManager) {
-        this.plugin = plugin;
+        super(plugin, "perms");
         this.moduleManager = moduleManager;
         this.logger = plugin.getLogger();
         this.playerGroups = new HashMap<>();
@@ -73,7 +72,7 @@ public class BDPermsModule implements BDModule {
     }
     
     @Override
-    public void onReload() {
+    public void reload() {
         logger.info("Reloading Permissions Module...");
         
         // Reload configuration
@@ -83,17 +82,6 @@ public class BDPermsModule implements BDModule {
         loadGroups();
         
         logger.info("Permissions Module reloaded!");
-    }
-    
-    @Override
-    public String getName() {
-        return "perms";
-    }
-    
-    @Override
-    public List<String> getDependencies() {
-        // Permissions module has no dependencies
-        return Collections.emptyList();
     }
     
     /**

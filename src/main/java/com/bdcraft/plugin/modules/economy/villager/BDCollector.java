@@ -2,6 +2,7 @@ package com.bdcraft.plugin.modules.economy.villager;
 
 import com.bdcraft.plugin.BDCraft;
 import com.bdcraft.plugin.modules.economy.items.CropType;
+import com.bdcraft.plugin.modules.economy.market.Market;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -17,6 +18,7 @@ import java.util.List;
  */
 public class BDCollector extends BDVillager {
     public static final String TYPE = "COLLECTOR";
+    private Market market;
     
     /**
      * Creates a new BD collector.
@@ -34,6 +36,44 @@ public class BDCollector extends BDVillager {
      */
     public BDCollector(BDCraft plugin, Villager villager) {
         super(plugin, villager);
+    }
+    
+    /**
+     * Creates a new BD collector associated with a market.
+     * @param plugin The plugin instance
+     * @param location The spawn location
+     * @param market The associated market
+     */
+    public BDCollector(BDCraft plugin, Location location, Market market) {
+        super(plugin, location, "BD Collector", Villager.Profession.LIBRARIAN, Villager.Type.PLAINS);
+        this.market = market;
+    }
+    
+    /**
+     * Creates a new BD collector from an existing villager with a market.
+     * @param plugin The plugin instance
+     * @param villager The villager
+     * @param market The associated market
+     */
+    public BDCollector(BDCraft plugin, Villager villager, Market market) {
+        super(plugin, villager);
+        this.market = market;
+    }
+    
+    /**
+     * Gets the associated market.
+     * @return The market, or null if none
+     */
+    public Market getMarket() {
+        return market;
+    }
+    
+    /**
+     * Sets the associated market.
+     * @param market The market
+     */
+    public void setMarket(Market market) {
+        this.market = market;
     }
     
     @Override

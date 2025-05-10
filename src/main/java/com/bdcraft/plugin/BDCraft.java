@@ -4,11 +4,13 @@ import com.bdcraft.plugin.compat.PluginConflictManager;
 import com.bdcraft.plugin.modules.BDModule;
 import com.bdcraft.plugin.modules.display.BDDisplayModule;
 import com.bdcraft.plugin.modules.economy.BDEconomyModule;
-import com.bdcraft.plugin.modules.economy.market.BDMarketManager;
+import com.bdcraft.plugin.modules.economy.market.MarketManager;
+import com.bdcraft.plugin.modules.economy.villager.VillagerManager;
 import com.bdcraft.plugin.modules.progression.BDProgressionModule;
 import com.bdcraft.plugin.util.PluginBlocker;
 
 import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
@@ -118,8 +120,17 @@ public class BDCraft extends JavaPlugin {
      *
      * @return The market manager
      */
-    public BDMarketManager getMarketManager() {
+    public MarketManager getMarketManager() {
         return economyModule.getMarketManager();
+    }
+    
+    /**
+     * Gets the villager manager.
+     *
+     * @return The villager manager
+     */
+    public VillagerManager getVillagerManager() {
+        return economyModule.getVillagerManager();
     }
     
     /**
@@ -145,6 +156,34 @@ public class BDCraft extends JavaPlugin {
         }
         
         return null;
+    }
+    
+    /**
+     * Gets a module manager by class.
+     *
+     * @param <T> The module type
+     * @param clazz The module class
+     * @return The module, or null if not found
+     */
+    @SuppressWarnings("unchecked")
+    public <T extends BDModule> T getModule(Class<T> clazz) {
+        for (BDModule module : modules) {
+            if (clazz.isInstance(module)) {
+                return (T) module;
+            }
+        }
+        
+        return null;
+    }
+    
+    /**
+     * Creates a NamespacedKey for this plugin.
+     * 
+     * @param key The key string
+     * @return The NamespacedKey
+     */
+    public NamespacedKey getNamespacedKey(String key) {
+        return new NamespacedKey(this, key);
     }
     
     /**

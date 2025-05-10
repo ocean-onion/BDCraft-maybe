@@ -2,6 +2,7 @@ package com.bdcraft.plugin.modules.economy;
 
 import com.bdcraft.plugin.BDCraft;
 import com.bdcraft.plugin.modules.BDModule;
+import com.bdcraft.plugin.modules.economy.items.BDItemManager;
 import com.bdcraft.plugin.modules.economy.market.MarketManager;
 import com.bdcraft.plugin.modules.economy.trade.BDTrade;
 import com.bdcraft.plugin.modules.economy.trade.BDTradeManager;
@@ -29,9 +30,11 @@ public class BDEconomyModule extends BDModule {
     private File dataFile;
     private FileConfiguration data;
     
-    // Market and villager managers
+    // Managers
     private MarketManager marketManager;
     private VillagerManager villagerManager;
+    private BDItemManager itemManager;
+    private com.bdcraft.plugin.modules.economy.auction.AuctionManager auctionManager;
     
     // Player balances
     private final Map<UUID, Integer> playerBalances;
@@ -57,8 +60,10 @@ public class BDEconomyModule extends BDModule {
         loadData();
         
         // Initialize managers
+        itemManager = new BDItemManager(plugin);
         marketManager = new MarketManager(plugin, this);
         villagerManager = new VillagerManager(plugin);
+        auctionManager = new com.bdcraft.plugin.modules.economy.auction.AuctionManager(plugin, this);
         
         // Load villagers
         villagerManager.loadAllVillagers();
@@ -96,6 +101,24 @@ public class BDEconomyModule extends BDModule {
      */
     public VillagerManager getVillagerManager() {
         return villagerManager;
+    }
+    
+    /**
+     * Gets the item manager.
+     *
+     * @return The item manager
+     */
+    public BDItemManager getItemManager() {
+        return itemManager;
+    }
+    
+    /**
+     * Gets the auction manager.
+     *
+     * @return The auction manager
+     */
+    public com.bdcraft.plugin.modules.economy.auction.AuctionManager getAuctionManager() {
+        return auctionManager;
     }
     
     /**
