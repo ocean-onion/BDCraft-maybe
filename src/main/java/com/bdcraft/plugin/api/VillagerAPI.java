@@ -1,112 +1,68 @@
 package com.bdcraft.plugin.api;
 
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 
 /**
- * API for BD villager operations.
+ * API for accessing villager data.
  */
 public interface VillagerAPI {
-    /**
-     * Creates a BD dealer villager.
-     * @param location The location
-     * @param marketId The market ID
-     * @return The created villager
-     */
-    Villager createDealer(Location location, String marketId);
-    
-    /**
-     * Creates a BD collector villager.
-     * @param location The location
-     * @param marketId The market ID
-     * @return The created villager
-     */
-    Villager createCollector(Location location, String marketId);
-    
-    /**
-     * Creates a BD market owner villager.
-     * @param location The location
-     * @param marketId The market ID
-     * @return The created villager
-     */
-    Villager createMarketOwner(Location location, String marketId);
-    
-    /**
-     * Creates a BD seasonal trader villager.
-     * @param location The location
-     * @param marketId The market ID
-     * @return The created villager
-     */
-    Villager createSeasonalTrader(Location location, String marketId);
-    
-    /**
-     * Checks if a villager is a BD villager.
-     * @param villager The villager
-     * @return Whether the villager is a BD villager
-     */
-    boolean isBDVillager(Villager villager);
-    
-    /**
-     * Gets the BD villager type.
-     * @param villager The villager
-     * @return The BD villager type, or null if not a BD villager
-     */
-    String getBDVillagerType(Villager villager);
     
     /**
      * Gets a player's reputation with a villager.
+     *
      * @param player The player
      * @param villager The villager
-     * @return The reputation value
+     * @return The reputation
      */
     int getReputation(Player player, Villager villager);
     
     /**
-     * Sets a player's reputation with a villager.
-     * @param player The player
-     * @param villager The villager
-     * @param reputation The new reputation value
-     */
-    void setReputation(Player player, Villager villager, int reputation);
-    
-    /**
      * Changes a player's reputation with a villager.
+     *
      * @param player The player
      * @param villager The villager
-     * @param change The reputation change (positive or negative)
-     * @return The new reputation value
+     * @param change The change
+     * @return The new reputation
      */
     int changeReputation(Player player, Villager villager, int change);
     
     /**
-     * Gets a player's reputation in a market.
+     * Sets a player's reputation with a villager.
+     *
      * @param player The player
-     * @param marketId The market ID
-     * @return The average reputation across all market villagers
+     * @param villager The villager
+     * @param reputation The reputation
      */
-    int getMarketReputation(Player player, String marketId);
+    void setReputation(Player player, Villager villager, int reputation);
     
     /**
-     * Registers an existing villager as a BD villager.
-     * @param villager The villager
-     * @param marketId The market ID
-     * @param type The BD villager type
-     * @return Whether the registration was successful
+     * Gets the maximum reputation a player can have with a villager.
+     *
+     * @return The maximum reputation
      */
-    boolean registerVillager(Villager villager, String marketId, String type);
+    int getMaxReputation();
     
     /**
-     * Unregisters a BD villager.
-     * @param villager The villager
-     * @return Whether the unregistration was successful
+     * Gets the minimum reputation a player can have with a villager.
+     *
+     * @return The minimum reputation
      */
-    boolean unregisterVillager(Villager villager);
+    int getMinReputation();
     
     /**
-     * Gets the market ID of a villager.
-     * @param villager The villager
-     * @return The market ID, or null if not in a market
+     * Checks if a villager is a BDVillager.
+     *
+     * @param villager The villager to check
+     * @return True if the villager is a BDVillager
      */
-    String getMarketId(Villager villager);
+    boolean isBDVillager(Villager villager);
+    
+    /**
+     * Gets the type of a BDVillager.
+     *
+     * @param villager The villager
+     * @return The villager type, or null if not a BDVillager
+     */
+    String getBDVillagerType(Villager villager);
 }

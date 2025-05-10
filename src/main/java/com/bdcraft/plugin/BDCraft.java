@@ -1,7 +1,11 @@
 package com.bdcraft.plugin;
 
+import com.bdcraft.plugin.api.EconomyAPI;
+import com.bdcraft.plugin.api.ProgressionAPI;
+import com.bdcraft.plugin.api.VillagerAPI;
 import com.bdcraft.plugin.compat.PluginConflictManager;
 import com.bdcraft.plugin.modules.BDModule;
+import com.bdcraft.plugin.modules.ModuleManager;
 import com.bdcraft.plugin.modules.display.BDDisplayModule;
 import com.bdcraft.plugin.modules.economy.BDEconomyModule;
 import com.bdcraft.plugin.modules.economy.market.MarketManager;
@@ -27,6 +31,9 @@ public class BDCraft extends JavaPlugin {
     private BDProgressionModule progressionModule;
     private BDDisplayModule displayModule;
     
+    // Module management
+    private ModuleManager moduleManager;
+    
     // Plugin conflict management
     private PluginConflictManager conflictManager;
     
@@ -37,6 +44,9 @@ public class BDCraft extends JavaPlugin {
         
         // Initialize modules list
         modules = new ArrayList<>();
+        
+        // Initialize module manager
+        moduleManager = new ModuleManager(this);
         
         // Initialize plugin conflict manager
         boolean blockCompetingPlugins = getConfig().getBoolean("plugin.block-competing-plugins", true);
@@ -134,12 +144,48 @@ public class BDCraft extends JavaPlugin {
     }
     
     /**
+     * Gets the module manager.
+     *
+     * @return The module manager
+     */
+    public ModuleManager getModuleManager() {
+        return moduleManager;
+    }
+    
+    /**
      * Gets the plugin conflict manager.
      *
      * @return The plugin conflict manager
      */
     public PluginConflictManager getConflictManager() {
         return conflictManager;
+    }
+    
+    /**
+     * Gets the progression API.
+     *
+     * @return The progression API
+     */
+    public ProgressionAPI getProgressionAPI() {
+        return progressionModule;
+    }
+    
+    /**
+     * Gets the economy API.
+     *
+     * @return The economy API
+     */
+    public EconomyAPI getEconomyAPI() {
+        return economyModule;
+    }
+    
+    /**
+     * Gets the villager API.
+     *
+     * @return The villager API
+     */
+    public VillagerAPI getVillagerAPI() {
+        return economyModule.getVillagerManager();
     }
     
     /**

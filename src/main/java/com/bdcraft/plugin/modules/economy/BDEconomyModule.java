@@ -1,7 +1,9 @@
 package com.bdcraft.plugin.modules.economy;
 
 import com.bdcraft.plugin.BDCraft;
+import com.bdcraft.plugin.api.EconomyAPI;
 import com.bdcraft.plugin.modules.BDModule;
+import com.bdcraft.plugin.modules.economy.auction.AuctionManager;
 import com.bdcraft.plugin.modules.economy.items.BDItemManager;
 import com.bdcraft.plugin.modules.economy.market.MarketManager;
 import com.bdcraft.plugin.modules.economy.trade.BDTrade;
@@ -25,7 +27,7 @@ import java.util.logging.Level;
 /**
  * Module for managing the BD economy, including currency and markets.
  */
-public class BDEconomyModule extends BDModule {
+public class BDEconomyModule extends BDModule implements EconomyAPI {
     private final BDCraft plugin;
     private File dataFile;
     private FileConfiguration data;
@@ -119,6 +121,51 @@ public class BDEconomyModule extends BDModule {
      */
     public com.bdcraft.plugin.modules.economy.auction.AuctionManager getAuctionManager() {
         return auctionManager;
+    }
+    
+    /**
+     * Implements EconomyAPI.getPlayerBalance
+     */
+    @Override
+    public double getPlayerBalance(UUID playerUuid) {
+        return getCurrency(playerUuid);
+    }
+    
+    /**
+     * Implements EconomyAPI.depositPlayer
+     */
+    @Override
+    public double depositPlayer(UUID playerUuid, double amount) {
+        int intAmount = (int) amount;
+        int currentBalance = getCurrency(playerUuid);
+        int newBalance = currentBalance + intAmount;
+        setCurrency(playerUuid, newBalance);
+        return newBalance;
+    }
+    
+    /**
+     * Implements EconomyAPI.withdrawPlayer
+     */
+    @Override
+    public double withdrawPlayer(UUID playerUuid, double amount) {
+        int intAmount = (int) amount;
+        int currentBalance = getCurrency(playerUuid);
+        
+        if (currentBalance < intAmount) {
+            return -1;
+        }
+        
+        int newBalance = currentBalance - intAmount;
+        setCurrency(playerUuid, newBalance);
+        return newBalance;
+    }
+    
+    /**
+     * Implements EconomyAPI.hasEnough
+     */
+    @Override
+    public boolean hasEnough(UUID playerUuid, double amount) {
+        return getCurrency(playerUuid) >= (int) amount;
     }
     
     /**

@@ -1,8 +1,10 @@
 package com.bdcraft.plugin.modules.progression;
 
 import com.bdcraft.plugin.BDCraft;
+import com.bdcraft.plugin.api.ProgressionAPI;
 import com.bdcraft.plugin.modules.BDModule;
 import com.bdcraft.plugin.modules.progression.rebirth.BDRebirthManager;
+import com.bdcraft.plugin.modules.progression.BDRankManager;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -20,7 +22,7 @@ import java.util.logging.Level;
 /**
  * Module for player progression including ranks and rebirth.
  */
-public class BDProgressionModule extends BDModule {
+public class BDProgressionModule extends BDModule implements ProgressionAPI {
     private final BDCraft plugin;
     private File dataFile;
     private FileConfiguration data;
@@ -29,8 +31,9 @@ public class BDProgressionModule extends BDModule {
     private final Map<UUID, Integer> playerRanks;
     private final Map<UUID, Integer> playerRebirthLevels;
     
-    // Rebirth manager
+    // Managers
     private BDRebirthManager rebirthManager;
+    private BDRankManager rankManager;
     
     // Rank names
     private final String[] rankNames = {
@@ -58,8 +61,9 @@ public class BDProgressionModule extends BDModule {
         // Load data
         loadData();
         
-        // Initialize rebirth manager
+        // Initialize managers
         rebirthManager = new BDRebirthManager(plugin);
+        rankManager = new BDRankManager(plugin);
         
         // Register commands
         // Will be implemented in the future
@@ -261,6 +265,15 @@ public class BDProgressionModule extends BDModule {
     }
     
     /**
+     * Gets the rank manager.
+     *
+     * @return The rank manager
+     */
+    public BDRankManager getRankManager() {
+        return rankManager;
+    }
+    
+    /**
      * Performs rebirth for a player.
      *
      * @param player The player
@@ -326,6 +339,145 @@ public class BDProgressionModule extends BDModule {
      */
     public BDRankManager getRankManager() {
         return rankManager;
+    }
+    
+    /**
+     * Implements ProgressionAPI.getPlayerRank
+     */
+    @Override
+    public Rank getPlayerRank(UUID playerUuid) {
+        int rankValue = playerRanks.getOrDefault(playerUuid, 0);
+        switch (rankValue) {
+            case 0: return Rank.NEWCOMER;
+            case 1: return Rank.FARMER;
+            case 2: return Rank.EXPERT_FARMER;
+            case 3: return Rank.MASTER_FARMER;
+            case 4: return Rank.AGRICULTURAL_EXPERT;
+            default: return Rank.NEWCOMER;
+        }
+    }
+    
+    /**
+     * Implements ProgressionAPI.getRankDisplayName
+     */
+    @Override
+    public String getRankDisplayName(Rank rank) {
+        String[] rankNames = {
+            "Newcomer",
+            "Farmer",
+            "Expert Farmer",
+            "Master Farmer",
+            "Agricultural Expert"
+        };
+        return rankNames[rank.ordinal()];
+    }
+    
+    /**
+     * Implements ProgressionAPI.getPlayerRebirthLevel
+     */
+    @Override
+    public int getPlayerRebirthLevel(UUID playerUuid) {
+        return playerRebirth.getOrDefault(playerUuid, 0);
+    }
+    
+    /**
+     * Implements ProgressionAPI.getPlayerExperience
+     */
+    @Override
+    public int getPlayerExperience(UUID playerUuid) {
+        return playerExperience.getOrDefault(playerUuid, 0);
+    }
+    
+    /**
+     * Implements ProgressionAPI.addPlayerExperience
+     */
+    @Override
+    public int addPlayerExperience(UUID playerUuid, int amount) {
+        int current = getPlayerExperience(playerUuid);
+        int newTotal = current + amount;
+        playerExperience.put(playerUuid, newTotal);
+        
+        // Check for rank up
+        checkForRankUp(playerUuid);
+        
+        // Save data
+        saveData();
+        
+        return newTotal;
+    }
+    
+    /**
+     * Implements ProgressionAPI.getNextRank
+     */
+    @Override
+    public Rank getNextRank(UUID playerUuid) {
+        int currentRank = playerRanks.getOrDefault(playerUuid, 0);
+        
+        // If player is at max rank, return null
+        if (currentRank >= Rank.values().length - 1) {
+            return null;
+        }
+        
+        // Return the next rank
+        return Rank.values()[currentRank + 1];
+    }
+    
+    /**
+     * Implements ProgressionAPI.getProgressPercentage
+     */
+    @Override
+    public double getProgressPercentage(UUID playerUuid) {
+        int exp = getPlayerExperience(playerUuid);
+        int currentRank = playerRanks.getOrDefault(playerUuid, 0);
+        
+        // Experience thresholds for each rank
+        int[] rankThresholds = {0, 100, 500, 2000, 10000};
+        
+        // If player is at max rank, return 100%
+        if (currentRank >= rankThresholds.length - 1) {
+            return 100.0;
+        }
+        
+        // Calculate next rank threshold
+        int nextRankThreshold = rankThresholds[currentRank + 1];
+        int currentRankThreshold = rankThresholds[currentRank];
+        
+        // Calculate progress percentage
+        double expNeeded = nextRankThreshold - currentRankThreshold;
+        double expProgress = exp - currentRankThreshold;
+        
+        return Math.min(100.0, Math.max(0.0, (expProgress / expNeeded) * 100.0));
+    }
+    
+    /**
+     * Checks if a player has enough experience to rank up.
+     *
+     * @param playerUuid The player's UUID
+     */
+    private void checkForRankUp(UUID playerUuid) {
+        int exp = getPlayerExperience(playerUuid);
+        int currentRank = playerRanks.getOrDefault(playerUuid, 0);
+        
+        // Experience thresholds for each rank
+        int[] rankThresholds = {0, 100, 500, 2000, 10000};
+        
+        // Check if player meets requirements for next rank
+        for (int rank = rankThresholds.length - 1; rank > currentRank; rank--) {
+            if (exp >= rankThresholds[rank]) {
+                // Rank up the player
+                playerRanks.put(playerUuid, rank);
+                
+                // Notify online player if possible
+                Player player = Bukkit.getPlayer(playerUuid);
+                if (player != null && player.isOnline()) {
+                    player.sendMessage(ChatColor.GREEN + "Congratulations! You've ranked up to " + 
+                                      ChatColor.GOLD + getRankDisplayName(getPlayerRank(playerUuid)) + 
+                                      ChatColor.GREEN + "!");
+                }
+                
+                break;
+            }
+        }
     }
     
     /**

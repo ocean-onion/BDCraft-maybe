@@ -70,14 +70,14 @@ public class PlaceholderManager {
         // Economy placeholders
         registerPlaceholder("balance", player -> {
             EconomyAPI economyAPI = plugin.getEconomyAPI();
-            double balance = economyAPI != null ? economyAPI.getBalance(player.getUniqueId()) : 0;
+            double balance = economyAPI != null ? economyAPI.getPlayerBalance(player.getUniqueId()) : 0;
             return formatNumber(balance);
         });
         
         // Rebirth placeholders
         registerPlaceholder("rebirth", player -> {
             ProgressionAPI progressAPI = plugin.getProgressionAPI();
-            int rebirthCount = progressAPI != null ? progressAPI.getRebirthCount(player.getUniqueId()) : 0;
+            int rebirthCount = progressAPI != null ? progressAPI.getPlayerRebirthLevel(player.getUniqueId()) : 0;
             return String.valueOf(rebirthCount);
         });
         
