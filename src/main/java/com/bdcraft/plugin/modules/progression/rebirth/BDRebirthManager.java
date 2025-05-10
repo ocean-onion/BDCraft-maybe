@@ -1,6 +1,7 @@
 package com.bdcraft.plugin.modules.progression.rebirth;
 
 import com.bdcraft.plugin.BDCraft;
+import com.bdcraft.plugin.util.ParticleHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -35,6 +36,8 @@ public class BDRebirthManager {
     private final Map<UUID, Map<String, Long>> commandUseTimes;
     private final Map<UUID, Long> blessingEffects;
     private final Map<UUID, ExpBoost> expBoosts;
+    private final Map<UUID, Double> tradeBonuses;
+    private final Map<UUID, Long> tradeBonusExpirations;
     
     // Aura task
     private BukkitTask auraTask;
@@ -51,6 +54,8 @@ public class BDRebirthManager {
         this.commandUseTimes = new HashMap<>();
         this.blessingEffects = new HashMap<>();
         this.expBoosts = new HashMap<>();
+        this.tradeBonuses = new HashMap<>();
+        this.tradeBonusExpirations = new HashMap<>();
         
         // Load data
         loadData();
@@ -339,7 +344,7 @@ public class BDRebirthManager {
         Location location = player.getLocation();
         
         // Play particles
-        location.getWorld().spawnParticle(Particle.SPELL_WITCH, location, 100, 1, 2, 1, 0.5);
+        ParticleHelper.spawnWitchParticles(location, 100, 1, 2, 1, 0.5);
         location.getWorld().spawnParticle(Particle.PORTAL, location, 200, 1, 2, 1, 1);
         
         // Play sound
@@ -566,6 +571,47 @@ public class BDRebirthManager {
      *
      * @param player The player
      */
+    /**
+     * Sets a trade bonus for a player.
+     *
+     * @param playerId The player's UUID
+     * @param bonusMultiplier The bonus multiplier (1.0 = no bonus)
+     * @param durationMillis The duration of the bonus in milliseconds
+     */
+    public void setPlayerTradeBonus(UUID playerId, double bonusMultiplier, long durationMillis) {
+        tradeBonuses.put(playerId, bonusMultiplier);
+        tradeBonusExpirations.put(playerId, System.currentTimeMillis() + durationMillis);
+        
+        // Save the data
+        saveData();
+        
+        // Notify if player is online
+        Player player = Bukkit.getPlayer(playerId);
+        if (player != null && player.isOnline()) {
+            player.sendMessage(ChatColor.GREEN + "You received a trade bonus: " + 
+                    ChatColor.GOLD + String.format("%.0f%%", (bonusMultiplier - 1.0) * 100) + 
+                    ChatColor.GREEN + " for " + formatDuration(durationMillis / 1000));
+        }
+    }
+    
+    /**
+     * Formats a duration in seconds to a readable format.
+     *
+     * @param seconds The duration in seconds
+     * @return The formatted duration
+     */
+    private String formatDuration(long seconds) {
+        if (seconds < 60) {
+            return seconds + " seconds";
+        } else if (seconds < 3600) {
+            return (seconds / 60) + " minutes";
+        } else if (seconds < 86400) {
+            return (seconds / 3600) + " hours";
+        } else {
+            return (seconds / 86400) + " days";
+        }
+    }
+    
     private void showAuraEffect(Player player) {
         Location location = player.getLocation().add(0, 1, 0);
         int rebirthLevel = rebirthLevels.get(player.getUniqueId());
@@ -573,13 +619,13 @@ public class BDRebirthManager {
         // Different effects based on rebirth level
         if (rebirthLevel <= 3) {
             // Basic aura
-            location.getWorld().spawnParticle(Particle.ENCHANTMENT_TABLE, location, 10, 0.5, 0.5, 0.5, 0);
+            ParticleHelper.spawnEnchantmentParticles(location, 10, 0.5, 0.5, 0.5, 0);
         } else if (rebirthLevel <= 7) {
             // Intermediate aura
             location.getWorld().spawnParticle(Particle.PORTAL, location, 10, 0.5, 0.5, 0.5, 0.05);
         } else {
             // Advanced aura
-            location.getWorld().spawnParticle(Particle.SPELL_WITCH, location, 10, 0.5, 0.5, 0.5, 0.05);
+            ParticleHelper.spawnWitchParticles(location, 10, 0.5, 0.5, 0.5, 0.05);
         }
     }
     

@@ -5,6 +5,7 @@ import com.bdcraft.plugin.modules.economy.villagers.SeasonalBDTraderVillager;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Villager;
+import org.bukkit.entity.Villager.Profession;
 
 import java.util.UUID;
 
@@ -23,7 +24,7 @@ public class BDSeasonalTrader extends BDVillager {
      */
     public BDSeasonalTrader(BDCraft plugin, Location location) {
         super(plugin, location, "Seasonal BD Trader", Villager.Profession.NITWIT, Villager.Type.PLAINS);
-        this.delegate = new SeasonalBDTraderVillager(plugin, villager.getUniqueId(), villager);
+        this.delegate = new SeasonalBDTraderVillager(plugin, getVillager().getUniqueId(), getVillager());
     }
     
     /**
@@ -79,5 +80,35 @@ public class BDSeasonalTrader extends BDVillager {
     @Override
     protected ChatColor getNameColor() {
         return ChatColor.LIGHT_PURPLE;
+    }
+    
+    /**
+     * Gets the villager level.
+     * 
+     * @return The villager level
+     */
+    @Override
+    protected int getVillagerLevel() {
+        return 3;  // Seasonal trader level
+    }
+    
+    /**
+     * Gets the villager type name.
+     * 
+     * @return The villager type name
+     */
+    @Override
+    public String getVillagerTypeName() {
+        return "Seasonal Trader";
+    }
+    
+    /**
+     * Gets the Bukkit profession for this villager.
+     * 
+     * @return The Bukkit profession
+     */
+    @Override
+    protected Profession getBukkitProfession() {
+        return Profession.NITWIT; // Using NITWIT for seasonal traders
     }
 }

@@ -9,6 +9,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Villager;
+import org.bukkit.entity.Villager.Profession;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.MerchantRecipe;
@@ -141,7 +142,7 @@ public class BDDealer extends BDVillager {
         recipes.add(ultimateHarvesterRecipe);
         
         // Set recipes
-        villager.setRecipes(recipes);
+        getVillager().setRecipes(recipes);
     }
     
     /**
@@ -299,5 +300,35 @@ public class BDDealer extends BDVillager {
     @Override
     protected ChatColor getNameColor() {
         return ChatColor.GOLD;
+    }
+    
+    /**
+     * Gets the villager level.
+     * 
+     * @return The villager level
+     */
+    @Override
+    protected int getVillagerLevel() {
+        return 1;  // Default level
+    }
+    
+    /**
+     * Gets the villager type name.
+     * 
+     * @return The villager type name
+     */
+    @Override
+    public String getVillagerTypeName() {
+        return "Dealer";
+    }
+    
+    /**
+     * Gets the Bukkit profession for this villager.
+     * 
+     * @return The Bukkit profession
+     */
+    @Override
+    protected Profession getBukkitProfession() {
+        return Profession.FARMER; // Using FARMER for dealers
     }
 }

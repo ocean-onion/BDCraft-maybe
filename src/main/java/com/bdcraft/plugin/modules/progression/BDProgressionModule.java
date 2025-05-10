@@ -8,9 +8,13 @@ import com.bdcraft.plugin.modules.progression.BDRankManager;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Sound;
+import org.bukkit.Particle;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import com.bdcraft.plugin.events.market.PlayerRebirthEvent;
+import com.bdcraft.plugin.util.ParticleHelper;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,6 +34,7 @@ public class BDProgressionModule extends BDModule implements ProgressionAPI {
     // Player ranks and rebirth data
     private final Map<UUID, Integer> playerRanks;
     private final Map<UUID, Integer> playerRebirthLevels;
+    private final Map<UUID, Integer> playerExperience;
     
     // Managers
     private BDRebirthManager rebirthManager;
@@ -54,6 +59,7 @@ public class BDProgressionModule extends BDModule implements ProgressionAPI {
         this.plugin = plugin;
         this.playerRanks = new HashMap<>();
         this.playerRebirthLevels = new HashMap<>();
+        this.playerExperience = new HashMap<>();
     }
     
     @Override
@@ -377,7 +383,7 @@ public class BDProgressionModule extends BDModule implements ProgressionAPI {
      */
     @Override
     public int getPlayerRebirthLevel(UUID playerUuid) {
-        return playerRebirth.getOrDefault(playerUuid, 0);
+        return playerRebirthLevels.getOrDefault(playerUuid, 0);
     }
     
     /**
@@ -619,12 +625,11 @@ public class BDProgressionModule extends BDModule implements ProgressionAPI {
         player.sendMessage(ChatColor.LIGHT_PURPLE + "You have been reborn! You are now at rebirth level " + rebirthLevel + ".");
         player.sendMessage(ChatColor.YELLOW + "You have received special bonuses and abilities!");
         
-        // Play effects
-        player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 0.5f);
-        player.playSound(player.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 0.7f, 0.8f);
+        // Play effects - using sounds that are available in all Minecraft versions
+        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.0f, 0.5f);
+        player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.7f, 0.8f);
         
         // Spawn particles
-        player.getWorld().spawnParticle(Particle.TOTEM, player.getLocation().add(0, 1, 0), 
-                100, 0.5, 1.0, 0.5, 0.2);
+        ParticleHelper.spawnTotemParticles(player.getLocation().add(0, 1, 0), 100, 0.5, 1.0, 0.5, 0.2);
     }
 }

@@ -7,6 +7,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Villager;
+import org.bukkit.entity.Villager.Profession;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.MerchantRecipe;
 
@@ -127,7 +128,7 @@ public class BDCollector extends BDVillager {
         recipes.add(bulkRegularCropRecipe);
         
         // Set recipes
-        villager.setRecipes(recipes);
+        getVillager().setRecipes(recipes);
     }
     
     /**
@@ -226,5 +227,35 @@ public class BDCollector extends BDVillager {
     @Override
     protected ChatColor getNameColor() {
         return ChatColor.BLUE;
+    }
+    
+    /**
+     * Gets the villager level.
+     * 
+     * @return The villager level
+     */
+    @Override
+    protected int getVillagerLevel() {
+        return 2;  // Collector level
+    }
+    
+    /**
+     * Gets the villager type name.
+     * 
+     * @return The villager type name
+     */
+    @Override
+    public String getVillagerTypeName() {
+        return "Collector";
+    }
+    
+    /**
+     * Gets the Bukkit profession for this villager.
+     * 
+     * @return The Bukkit profession
+     */
+    @Override
+    protected Profession getBukkitProfession() {
+        return Profession.LIBRARIAN; // Using LIBRARIAN for collectors
     }
 }

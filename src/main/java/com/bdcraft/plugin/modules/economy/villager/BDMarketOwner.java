@@ -6,6 +6,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Villager;
+import org.bukkit.entity.Villager.Profession;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.MerchantRecipe;
 
@@ -93,7 +94,7 @@ public class BDMarketOwner extends BDVillager {
         }
         
         // Set recipes
-        villager.setRecipes(recipes);
+        getVillager().setRecipes(recipes);
     }
     
     /**
@@ -291,5 +292,35 @@ public class BDMarketOwner extends BDVillager {
     @Override
     protected ChatColor getNameColor() {
         return ChatColor.GREEN;
+    }
+    
+    /**
+     * Gets the villager level.
+     * 
+     * @return The villager level
+     */
+    @Override
+    protected int getVillagerLevel() {
+        return marketLevel; // Use the market level as villager level
+    }
+    
+    /**
+     * Gets the villager type name.
+     * 
+     * @return The villager type name
+     */
+    @Override
+    public String getVillagerTypeName() {
+        return "Market Owner";
+    }
+    
+    /**
+     * Gets the Bukkit profession for this villager.
+     * 
+     * @return The Bukkit profession
+     */
+    @Override
+    protected Profession getBukkitProfession() {
+        return Profession.NITWIT; // Using NITWIT for market owners
     }
 }
