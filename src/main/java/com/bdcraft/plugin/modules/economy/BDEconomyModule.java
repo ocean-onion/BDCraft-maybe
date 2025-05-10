@@ -2,13 +2,11 @@ package com.bdcraft.plugin.modules.economy;
 
 import com.bdcraft.plugin.BDCraft;
 import com.bdcraft.plugin.modules.BDModule;
-import com.bdcraft.plugin.modules.economy.market.BDMarketManager;
+import com.bdcraft.plugin.modules.economy.market.MarketManager;
 import com.bdcraft.plugin.modules.economy.trade.BDTrade;
 import com.bdcraft.plugin.modules.economy.trade.BDTradeManager;
+import com.bdcraft.plugin.modules.economy.villager.VillagerManager;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -16,14 +14,10 @@ import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.TreeMap;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -35,8 +29,9 @@ public class BDEconomyModule extends BDModule {
     private File dataFile;
     private FileConfiguration data;
     
-    // Market manager
-    private BDMarketManager marketManager;
+    // Market and villager managers
+    private MarketManager marketManager;
+    private VillagerManager villagerManager;
     
     // Player balances
     private final Map<UUID, Integer> playerBalances;
@@ -61,8 +56,12 @@ public class BDEconomyModule extends BDModule {
         // Load data
         loadData();
         
-        // Initialize market manager
-        marketManager = new BDMarketManager(plugin, this);
+        // Initialize managers
+        marketManager = new MarketManager(plugin, this);
+        villagerManager = new VillagerManager(plugin);
+        
+        // Load villagers
+        villagerManager.loadAllVillagers();
         
         // Register commands
         // Will be implemented in the future
@@ -86,8 +85,17 @@ public class BDEconomyModule extends BDModule {
      *
      * @return The market manager
      */
-    public BDMarketManager getMarketManager() {
+    public MarketManager getMarketManager() {
         return marketManager;
+    }
+    
+    /**
+     * Gets the villager manager.
+     *
+     * @return The villager manager
+     */
+    public VillagerManager getVillagerManager() {
+        return villagerManager;
     }
     
     /**
