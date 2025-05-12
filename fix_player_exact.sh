@@ -1,15 +1,29 @@
 #!/bin/bash
 
-# Update Bukkit.getServer().getPlayer() to Bukkit.getPlayerExact() in TeleportCommands.java
-sed -i '71s/Bukkit.getServer().getPlayer(targetName)/Bukkit.getPlayerExact(targetName)/' src/main/java/com/bdcraft/plugin/modules/vital/commands/TeleportCommands.java 
-sed -i '227s/Bukkit.getServer().getPlayer(targetName)/Bukkit.getPlayerExact(targetName)/' src/main/java/com/bdcraft/plugin/modules/vital/commands/TeleportCommands.java
+# Fix deprecated Player lookup methods
+# This script replaces Bukkit.getPlayer(String) with Bukkit.getPlayerExact(String)
 
-# Add comment above each line
-sed -i '70a\                \/\/ Use the more specific method for exact player name matching' src/main/java/com/bdcraft/plugin/modules/vital/commands/TeleportCommands.java
-sed -i '226a\                \/\/ Use the more specific method for exact player name matching' src/main/java/com/bdcraft/plugin/modules/vital/commands/TeleportCommands.java
+echo "Checking for Player lookup methods..."
 
-# Remove the now redundant isOnline check since getPlayerExact already guarantees an online player
-sed -i '72,74d' src/main/java/com/bdcraft/plugin/modules/vital/commands/TeleportCommands.java
-sed -i '228,230d' src/main/java/com/bdcraft/plugin/modules/vital/commands/TeleportCommands.java
+# Look for Bukkit.getPlayer(String) patterns
+FILES=$(grep -l "Bukkit\.getPlayer(" $(find src -name "*.java" | grep -v "TeleportCommands.java" | grep -v "BDEconomyAPI.java"))
 
-echo "Updated to getPlayerExact() in TeleportCommands.java"
+if [ -z "$FILES" ]; then
+    echo "No files found using deprecated player lookups."
+    exit 0
+fi
+
+for FILE in $FILES; do
+    echo "Processing file: $FILE"
+    
+    # Replace lookups with getPlayerExact
+    # This only replaces simple string parameter cases, complex cases require manual review
+    sed -i 's/Bukkit\.getPlayer(\([^)]*\))/Bukkit.getPlayerExact(\1)/g' $FILE
+    
+    # Add explanatory comment
+    sed -i '/Bukkit\.getPlayerExact/i\\n    \/\/ Use getPlayerExact for exact name matching' $FILE
+    
+    echo "Updated $FILE"
+done
+
+echo "Player lookup fixes completed."

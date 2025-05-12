@@ -1,19 +1,67 @@
 #!/bin/bash
 
-# Fix all instances of deprecated Bukkit.getPlayer(UUID) method
-echo "Fixing Bukkit.getPlayer(UUID) methods..."
-find src -type f -name "*.java" -exec sed -i 's/Player \([a-zA-Z0-9]*\) = Bukkit.getPlayer(\([a-zA-Z0-9_.()]*\));/Player \1 = Bukkit.getServer().getPlayer(\2);\n        if (\1 != null \&\& !\1.isOnline()) {\n            \1 = null; \/\/ Ensure consistency with old behavior\n        }/g' {} \;
+# Fix deprecated methods in the BDCraft codebase
 
-# Fix all instances of deprecated Player.getItemInHand() method
-echo "Fixing getItemInHand methods..."
-find src -type f -name "*.java" -exec sed -i 's/\(event\|player\).getItemInHand()/\1.getInventory().getItemInMainHand()/g' {} \;
+echo "Checking for deprecated methods..."
 
-# Fix all instances of deprecated player.updateInventory() method
-echo "Fixing updateInventory methods..."
-find src -type f -name "*.java" -exec sed -i 's/player.updateInventory()/player.getInventory().setContents(player.getInventory().getContents())/g' {} \;
+# Define patterns and their replacements
+declare -A replacements=(
+  ["player\.getItemInHand()"]="player.getInventory().getItemInMainHand()"
+  ["player\.setItemInHand"]="player.getInventory().setItemInMainHand"
+  ["event\.getPlayer()\.getItemInHand()"]="event.getPlayer().getInventory().getItemInMainHand()"
+  ["getInventory()\.addItem"]="getInventory().addItem" # No change, but we'll add proper return handling
+)
 
-# Fix all instances of setting null in inventory.setItem
-echo "Fixing inventory null references..."
-find src -type f -name "*.java" -exec sed -i 's/inventory.setItem([^,]*,[ ]*null)/inventory.setItem(\1, new ItemStack(Material.AIR))/g' {} \;
+# Loop through all Java files
+find src -name "*.java" | while read FILE; do
+  modified=false
+  
+  # Check each pattern
+  for pattern in "${!replacements[@]}"; do
+    replacement="${replacements[$pattern]}"
+    
+    # If the file contains the pattern
+    if grep -q "$pattern" "$FILE"; then
+      echo "Processing $FILE for pattern: $pattern"
+      
+      # Replace the pattern
+      sed -i "s/$pattern/$replacement/g" "$FILE"
+      
+      # For inventory.addItem, add code to handle return HashMap
+      if [[ "$pattern" == *"getInventory()\.addItem"* ]]; then
+        # Find all lines with addItem and check if they handle the return
+        while read -r line_num; do
+          # Get the line content
+          line=$(sed -n "${line_num}p" "$FILE")
+          
+          # If the line doesn't handle the return HashMap
+          if ! echo "$line" | grep -q "HashMap<Integer, ItemStack>" && ! echo "$line" | grep -q "Map<Integer, ItemStack>"; then
+            indent=$(echo "$line" | sed 's/[^ ].*//')
+            
+            # Add a comment above the line
+            sed -i "${line_num}i\\${indent}// Handle inventory overflow return" "$FILE"
+            
+            # Add code to handle return below the line
+            sed -i "${line_num}a\\${indent}// TODO: Add proper handling for items that couldn't fit in inventory" "$FILE"
+          fi
+        done < <(grep -n "getInventory()\.addItem" "$FILE" | cut -d: -f1)
+      fi
+      
+      modified=true
+    fi
+  done
+  
+  # Check for getItemInHand method in event
+  if grep -q "getItemInHand()" "$FILE" && ! grep -q "getInventory()\.getItemInMainHand()" "$FILE"; then
+    echo "Adding import for EquipmentSlot in $FILE"
+    sed -i '/^import/a import org.bukkit.inventory.EquipmentSlot;' "$FILE"
+    modified=true
+  fi
+  
+  # If any modifications were made
+  if [ "$modified" = true ]; then
+    echo "Updated $FILE"
+  fi
+done
 
-echo "Done fixing deprecated methods."
+echo "Deprecated method fixes completed."
