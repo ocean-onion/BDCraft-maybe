@@ -33,5 +33,5 @@ echo "no" | gradle clean build --no-daemon --stacktrace
 
 # Copy the JAR to a known location
 echo "Build complete. Copying JAR file..."
-find build/libs -name "*.jar" -not -name "*unshaded*" -exec cp {} build/libs/BDCraft-1.0.0.jar \;
-echo "Plugin JAR saved to build/libs/BDCraft-1.0.0.jar"
+find build/libs -name "*.jar" -not -name "*unshaded*" -exec cp {} build/libs/BDCraft-1.1.0.jar \;
+echo "Plugin JAR saved to build/libs/BDCraft-1.1.0.jar"

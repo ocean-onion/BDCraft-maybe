@@ -3,7 +3,7 @@ plugins {
 }
 
 group = 'com.bdcraft'
-version = '1.0.0'
+version = '1.1.0'
 description = 'BDCraft - A comprehensive Minecraft server management plugin'
 
 sourceCompatibility = JavaVersion.VERSION_21
