@@ -28,8 +28,8 @@ gradle --version
 # Ensure build directory exists
 mkdir -p build/libs
 
-# Run the Gradle build using Gradle 8.14 with detailed logging
-gradle clean build --no-daemon --stacktrace --info --scan
+# Run the Gradle build using Gradle 8.14
+echo "no" | gradle clean build --no-daemon --stacktrace
 
 # Copy the JAR to a known location
 echo "Build complete. Copying JAR file..."
