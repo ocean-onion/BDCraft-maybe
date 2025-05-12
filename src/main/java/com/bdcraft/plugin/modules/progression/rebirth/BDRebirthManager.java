@@ -364,7 +364,9 @@ public class BDRebirthManager {
             auraTask.cancel();
         }
         
-        auraTask = Bukkit.getScheduler().runTaskTimer(plugin, this::showAuraEffects, 20L, 20L);
+        // Get update interval from config
+        int updateInterval = plugin.getConfig().getInt("progression.rebirth.aura.update-interval", 100);
+        auraTask = Bukkit.getScheduler().runTaskTimer(plugin, this::showAuraEffects, 20L, updateInterval);
     }
     
     /**
@@ -441,7 +443,8 @@ public class BDRebirthManager {
         }
         
         long lastUse = cooldowns.get("bless");
-        long cooldownTime = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+        // Get blessing cooldown from config (in seconds, convert to milliseconds)
+        long cooldownTime = plugin.getConfig().getLong("progression.rebirth.bonuses.blessing-cooldown", 7200) * 1000;
         return System.currentTimeMillis() - lastUse < cooldownTime;
     }
     
@@ -462,7 +465,8 @@ public class BDRebirthManager {
         }
         
         long lastUse = cooldowns.get("bless");
-        long cooldownTime = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+        // Get blessing cooldown from config (in seconds, convert to milliseconds)
+        long cooldownTime = plugin.getConfig().getLong("progression.rebirth.bonuses.blessing-cooldown", 7200) * 1000;
         long elapsed = System.currentTimeMillis() - lastUse;
         
         return Math.max(0, cooldownTime - elapsed);
@@ -516,21 +520,28 @@ public class BDRebirthManager {
      * @return True if eligible
      */
     public boolean isEligibleForRebirth(Player player) {
-        // Check if player is at maximum rank (5 - Agricultural Expert)
+        // Get config values
+        FileConfiguration config = plugin.getConfig();
+        int requiredRank = config.getInt("progression.rebirth.rank-requirement", 5);
+        int requiredCurrency = config.getInt("progression.rebirth.currency-requirement", 100000);
+        int requiredTrades = config.getInt("progression.rebirth.trades-requirement", 500);
+        
+        // Check if player is at the required rank
         int currentRank = plugin.getProgressionModule().getPlayerRank(player);
-        if (currentRank < 4) { // 0-indexed, so 4 is Agricultural Expert (Rank 5)
+        // Convert from 1-based (config) to 0-based (internal)
+        if (currentRank < requiredRank - 1) {
             return false;
         }
         
-        // Check if player has enough currency (100,000)
+        // Check if player has enough currency
         int balance = plugin.getEconomyModule().getPlayerBalance(player);
-        if (balance < 100000) {
+        if (balance < requiredCurrency) {
             return false;
         }
         
-        // Check if player has completed enough trades (500)
+        // Check if player has completed enough trades
         int tradeCount = getTradeCount(player);
-        if (tradeCount < 500) {
+        if (tradeCount < requiredTrades) {
             return false;
         }
         
@@ -615,20 +626,32 @@ public class BDRebirthManager {
         }
     }
     
+    /**
+     * Shows the aura effect for a player.
+     * 
+     * @param player The player
+     */
     private void showAuraEffect(Player player) {
         Location location = player.getLocation().add(0, 1, 0);
         int rebirthLevel = rebirthLevels.get(player.getUniqueId());
         
+        // Get aura settings from config
+        int radius = plugin.getConfig().getInt("progression.rebirth.aura.radius", 10);
+        int particleCount = plugin.getConfig().getInt("progression.rebirth.aura.particle-count", 15);
+        
+        // Calculate radius based on settings and player level
+        double particleRadius = radius * 0.05; // Convert blocks to particle spread
+        
         // Different effects based on rebirth level
         if (rebirthLevel <= 3) {
             // Basic aura
-            ParticleHelper.spawnEnchantmentParticles(location, 10, 0.5, 0.5, 0.5, 0);
+            ParticleHelper.spawnEnchantmentParticles(location, particleCount, particleRadius, particleRadius, particleRadius, 0);
         } else if (rebirthLevel <= 7) {
             // Intermediate aura
-            location.getWorld().spawnParticle(Particle.PORTAL, location, 10, 0.5, 0.5, 0.5, 0.05);
+            location.getWorld().spawnParticle(Particle.PORTAL, location, particleCount, particleRadius, particleRadius, particleRadius, 0.05);
         } else {
             // Advanced aura
-            ParticleHelper.spawnWitchParticles(location, 10, 0.5, 0.5, 0.5, 0.05);
+            ParticleHelper.spawnWitchParticles(location, particleCount, particleRadius, particleRadius, particleRadius, 0.05);
         }
     }
     
@@ -775,8 +798,8 @@ public class BDRebirthManager {
             return 1.0;
         }
         
-        // Get bonus per level from config
-        double bonusPerLevel = plugin.getConfig().getDouble("progression.rebirth.bonus-per-level", 5) / 100.0;
+        // Get experience multiplier from config (used as bonus per level)
+        double bonusPerLevel = plugin.getConfig().getDouble("progression.rebirth.experience-multiplier", 0.1);
         
         // Apply additional bonus from blessing
         double blessingBonus = hasActiveBlessing(uuid) ? 0.1 : 0.0; // 10% extra if blessed

@@ -92,47 +92,68 @@ public class BDDealer extends BDVillager {
     public void updateTrades() {
         List<MerchantRecipe> recipes = new ArrayList<>();
         
-        // Add regular BD seeds trade (5 seeds for 1 emerald)
+        // Get configuration values from economy.yml
+        FileConfiguration economyConfig = plugin.getConfigManager().getConfig("economy.yml");
+        
+        // Get trade configuration values
+        int regularSeedAmount = economyConfig.getInt("villager.trades.regular-seeds.amount", 5);
+        int regularSeedCost = economyConfig.getInt("villager.trades.regular-seeds.cost", 1);
+        
+        int greenSeedAmount = economyConfig.getInt("villager.trades.green-seeds.amount", 2);
+        int greenSeedCost = economyConfig.getInt("villager.trades.green-seeds.cost", 5);
+        
+        int purpleSeedAmount = economyConfig.getInt("villager.trades.purple-seeds.amount", 1);
+        int purpleSeedCost = economyConfig.getInt("villager.trades.purple-seeds.cost", 25);
+        
+        int harvesterUses = economyConfig.getInt("villager.trades.harvester.uses", 10);
+        int harvesterEmeralds = economyConfig.getInt("villager.trades.harvester.emerald-cost", 16);
+        int harvesterDiamonds = economyConfig.getInt("villager.trades.harvester.diamond-cost", 1);
+        
+        int ultimateHarvesterUses = economyConfig.getInt("villager.trades.ultimate-harvester.uses", 5);
+        int ultimateHarvesterEmeralds = economyConfig.getInt("villager.trades.ultimate-harvester.emerald-cost", 32);
+        int ultimateHarvesterDiamonds = economyConfig.getInt("villager.trades.ultimate-harvester.diamond-cost", 5);
+        
+        // Add regular BD seeds trade
         MerchantRecipe regularSeedRecipe = new MerchantRecipe(
-                createBDSeedItem("Regular BD Seeds", 5), 
+                createBDSeedItem("Regular BD Seeds", regularSeedAmount), 
                 Integer.MAX_VALUE); // Unlimited uses
         
-        // Set ingredients (1 emerald)
-        regularSeedRecipe.addIngredient(new ItemStack(Material.EMERALD, 1));
+        // Set ingredients
+        regularSeedRecipe.addIngredient(new ItemStack(Material.EMERALD, regularSeedCost));
         
-        // Add green BD seeds trade (2 seeds for 5 emeralds)
+        // Add green BD seeds trade
         MerchantRecipe greenSeedRecipe = new MerchantRecipe(
-                createBDSeedItem("Green BD Seeds", 2), 
+                createBDSeedItem("Green BD Seeds", greenSeedAmount), 
                 Integer.MAX_VALUE);
         
-        // Set ingredients (5 emeralds)
-        greenSeedRecipe.addIngredient(new ItemStack(Material.EMERALD, 5));
+        // Set ingredients
+        greenSeedRecipe.addIngredient(new ItemStack(Material.EMERALD, greenSeedCost));
         
-        // Add purple BD seeds trade (1 seed for 25 emeralds)
+        // Add purple BD seeds trade
         MerchantRecipe purpleSeedRecipe = new MerchantRecipe(
-                createBDSeedItem("Purple BD Seeds", 1), 
+                createBDSeedItem("Purple BD Seeds", purpleSeedAmount), 
                 Integer.MAX_VALUE);
         
-        // Set ingredients (25 emeralds)
-        purpleSeedRecipe.addIngredient(new ItemStack(Material.EMERALD, 25));
+        // Set ingredients
+        purpleSeedRecipe.addIngredient(new ItemStack(Material.EMERALD, purpleSeedCost));
         
-        // Add BD harvester trade (1 harvester for 16 emeralds + 1 diamond)
+        // Add BD harvester trade
         MerchantRecipe harvesterRecipe = new MerchantRecipe(
                 createBDHarvesterItem("BD Harvester", 1), 
-                10); // Limited uses
+                harvesterUses);
         
-        // Set ingredients (16 emeralds + 1 diamond)
-        harvesterRecipe.addIngredient(new ItemStack(Material.EMERALD, 16));
-        harvesterRecipe.addIngredient(new ItemStack(Material.DIAMOND, 1));
+        // Set ingredients
+        harvesterRecipe.addIngredient(new ItemStack(Material.EMERALD, harvesterEmeralds));
+        harvesterRecipe.addIngredient(new ItemStack(Material.DIAMOND, harvesterDiamonds));
         
-        // Add Ultimate BD harvester trade (1 harvester for 32 emeralds + 5 diamonds)
+        // Add Ultimate BD harvester trade
         MerchantRecipe ultimateHarvesterRecipe = new MerchantRecipe(
                 createBDHarvesterItem("Ultimate BD Harvester", 1), 
-                5); // Very limited uses
+                ultimateHarvesterUses);
         
-        // Set ingredients (32 emeralds + 5 diamonds)
-        ultimateHarvesterRecipe.addIngredient(new ItemStack(Material.EMERALD, 32));
-        ultimateHarvesterRecipe.addIngredient(new ItemStack(Material.DIAMOND, 5));
+        // Set ingredients
+        ultimateHarvesterRecipe.addIngredient(new ItemStack(Material.EMERALD, ultimateHarvesterEmeralds));
+        ultimateHarvesterRecipe.addIngredient(new ItemStack(Material.DIAMOND, ultimateHarvesterDiamonds));
         
         // Add recipes to list
         recipes.add(regularSeedRecipe);
@@ -216,19 +237,22 @@ public class BDDealer extends BDVillager {
      * @return The value
      */
     private int getSeedValue(SeedType type) {
+        // Get configuration values from economy.yml
+        FileConfiguration economyConfig = plugin.getConfigManager().getConfig("economy.yml");
+        
         switch (type) {
             case REGULAR:
-                return 5;
+                return economyConfig.getInt("seeds.values.regular", 5);
             case GREEN:
-                return 15;
+                return economyConfig.getInt("seeds.values.green", 15);
             case BLUE:
-                return 30;
+                return economyConfig.getInt("seeds.values.blue", 30);
             case PURPLE:
-                return 50;
+                return economyConfig.getInt("seeds.values.purple", 50);
             case LEGENDARY:
-                return 100;
+                return economyConfig.getInt("seeds.values.legendary", 100);
             default:
-                return 1;
+                return economyConfig.getInt("seeds.values.default", 1);
         }
     }
     
@@ -262,16 +286,27 @@ public class BDDealer extends BDVillager {
         
         // Add lore
         List<String> lore = new ArrayList<>();
+        // Get configuration values from economy.yml
+        FileConfiguration economyConfig = plugin.getConfigManager().getConfig("economy.yml");
+        
         if (toolType == ToolType.ULTIMATE_HARVESTER) {
-            lore.add(ChatColor.GRAY + "+100% bonus yield when harvesting BD crops");
+            int ultimateBonus = economyConfig.getInt("tools.ultimate-harvester.bonus-yield", 100);
+            int ultimateDurability = economyConfig.getInt("tools.ultimate-harvester.durability", 60);
+            String ultimateRank = economyConfig.getString("tools.ultimate-harvester.required-rank", "Agricultural Expert");
+            
+            lore.add(ChatColor.GRAY + "+" + ultimateBonus + "% bonus yield when harvesting BD crops");
             lore.add(ChatColor.GRAY + "Creates purple particles when harvesting");
-            lore.add(ChatColor.GRAY + "Durability: 60 uses");
-            lore.add(ChatColor.RED + "Requires rank: Agricultural Expert");
+            lore.add(ChatColor.GRAY + "Durability: " + ultimateDurability + " uses");
+            lore.add(ChatColor.RED + "Requires rank: " + ultimateRank);
         } else {
-            lore.add(ChatColor.GRAY + "+50% bonus yield when harvesting BD crops");
+            int regularBonus = economyConfig.getInt("tools.harvester.bonus-yield", 50);
+            int regularDurability = economyConfig.getInt("tools.harvester.durability", 20);
+            String regularRank = economyConfig.getString("tools.harvester.required-rank", "Expert Farmer");
+            
+            lore.add(ChatColor.GRAY + "+" + regularBonus + "% bonus yield when harvesting BD crops");
             lore.add(ChatColor.GRAY + "Creates blue particles when harvesting");
-            lore.add(ChatColor.GRAY + "Durability: 20 uses");
-            lore.add(ChatColor.RED + "Requires rank: Expert Farmer");
+            lore.add(ChatColor.GRAY + "Durability: " + regularDurability + " uses");
+            lore.add(ChatColor.RED + "Requires rank: " + regularRank);
         }
         
         meta.setLore(lore);

@@ -1,9 +1,9 @@
 # BDCraft Economy Configuration
 
 # Currency Settings
-currency-name: "Coins"
-currency-name-plural: "Coins"
-currency-symbol: "$"
+currency-name: "BD Coin"
+currency-name-plural: "BD Coins"
+currency-symbol: "§6BD§r"
 decimal-format: "#,##0.00"
 starting-balance: 0
 max-balance: 1000000000
@@ -21,6 +21,48 @@ prices:
     amount: 1
   bd-harvester: 16
   ultimate-harvester: 32
+
+# Seed Values
+seeds:
+  values:
+    regular: 5
+    green: 15
+    blue: 30
+    purple: 50
+    legendary: 100
+    default: 1
+
+# Villager trade configuration
+villager:
+  trades:
+    regular-seeds:
+      amount: 5
+      cost: 1
+    green-seeds:
+      amount: 2
+      cost: 5
+    purple-seeds:
+      amount: 1
+      cost: 25
+    harvester:
+      uses: 10
+      emerald-cost: 16
+      diamond-cost: 1
+    ultimate-harvester:
+      uses: 5
+      emerald-cost: 32
+      diamond-cost: 5
+
+# Tool configurations
+tools:
+  harvester:
+    bonus-yield: 50
+    durability: 20
+    required-rank: "Expert Farmer"
+  ultimate-harvester:
+    bonus-yield: 100
+    durability: 60
+    required-rank: "Agricultural Expert"
 
 # Trade Values
 trade-values:
@@ -84,7 +126,10 @@ rebirth:
   enabled: true
   currency-requirement: 100000
   trades-requirement: 500
-  crop-value-multiplier: 0.1
+  rank-requirement: 5
+  experience-multiplier: 0.1
+  crop-yield-multiplier: 0.05
+  trade-value-multiplier: 0.08
   max-rebirth-level: 10
   deity-abilities:
     golden-touch: true

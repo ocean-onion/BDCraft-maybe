@@ -521,19 +521,24 @@ public class BDProgressionModule extends BDModule implements ProgressionAPI {
             return false;
         }
         
-        // Check if player is at maximum rank (Agricultural Expert, rank 5)
-        if (getPlayerRank(player) != 5) {
+        // Get config values for rebirth requirements
+        int requiredRank = plugin.getConfig().getInt("progression.rebirth.rank-requirement", 5);
+        int requiredCurrency = plugin.getConfig().getInt("progression.rebirth.currency-requirement", 100000);
+        int requiredTrades = plugin.getConfig().getInt("progression.rebirth.trades-requirement", 500);
+        
+        // Check if player is at required rank
+        if (getPlayerRank(player) < requiredRank) {
             return false;
         }
         
-        // Check if player has enough currency (100,000)
-        if (!plugin.getEconomyModule().hasCurrency(player.getUniqueId(), 100000)) {
+        // Check if player has enough currency
+        if (!plugin.getEconomyModule().hasCurrency(player.getUniqueId(), requiredCurrency)) {
             return false;
         }
         
-        // Check if player has completed enough trades (500)
+        // Check if player has completed enough trades
         int completedTrades = plugin.getEconomyModule().getCompletedTradesCount(player.getUniqueId());
-        if (completedTrades < 500) {
+        if (completedTrades < requiredTrades) {
             return false;
         }
         

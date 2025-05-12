@@ -108,34 +108,45 @@ public class RebirthCommand extends CommandBase {
                 
                 sender.sendMessage(ChatColor.GOLD + "===== Rebirth Eligibility =====");
                 
+                // Get config value for required rank
+                int requiredRank = plugin.getConfig().getInt("progression.rebirth.rank-requirement", 5);
+                
                 // Rank check
                 int rank = plugin.getProgressionModule().getRankManager().getPlayerRank(player);
-                if (rank >= 5) {
-                    sender.sendMessage(ChatColor.GREEN + "✓ Rank: Agricultural Expert (Rank 5)");
+                String requiredRankName = plugin.getProgressionModule().getRankManager().getRankName(requiredRank);
+                
+                if (rank >= requiredRank) {
+                    sender.sendMessage(ChatColor.GREEN + "✓ Rank: " + 
+                            plugin.getProgressionModule().getRankManager().getRankName(rank) + 
+                            " (Rank " + rank + ")");
                 } else {
                     sender.sendMessage(ChatColor.RED + "✗ Rank: " + 
                             plugin.getProgressionModule().getRankManager().getRankName(rank) + 
-                            " (Need Agricultural Expert)");
+                            " (Need " + requiredRankName + ", Rank " + requiredRank + ")");
                 }
+                
+                // Get config values
+                int requiredCurrency = plugin.getConfig().getInt("progression.rebirth.currency-requirement", 100000);
+                int requiredTrades = plugin.getConfig().getInt("progression.rebirth.trades-requirement", 500);
                 
                 // Currency check
                 int balance = plugin.getEconomyModule().getPlayerBalance(player);
-                if (balance >= 100000) {
+                if (balance >= requiredCurrency) {
                     sender.sendMessage(ChatColor.GREEN + "✓ Currency: " + balance + 
-                            ChatColor.GREEN + "/100,000 BD coins");
+                            ChatColor.GREEN + "/" + requiredCurrency + " BD coins");
                 } else {
                     sender.sendMessage(ChatColor.RED + "✗ Currency: " + balance + 
-                            ChatColor.RED + "/100,000 BD coins");
+                            ChatColor.RED + "/" + requiredCurrency + " BD coins");
                 }
                 
                 // Trade check
                 int trades = rebirthManager.getTradeCount(player);
-                if (trades >= 500) {
+                if (trades >= requiredTrades) {
                     sender.sendMessage(ChatColor.GREEN + "✓ Trades: " + trades + 
-                            ChatColor.GREEN + "/500 trades");
+                            ChatColor.GREEN + "/" + requiredTrades + " trades");
                 } else {
                     sender.sendMessage(ChatColor.RED + "✗ Trades: " + trades + 
-                            ChatColor.RED + "/500 trades");
+                            ChatColor.RED + "/" + requiredTrades + " trades");
                 }
                 
                 if (eligible) {

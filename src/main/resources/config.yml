@@ -58,8 +58,16 @@ progression:
     currency-requirement: 100000
     # Number of trades required for rebirth
     trades-requirement: 500
-    # Bonus per rebirth level (in percent)
-    bonus-per-level: 5
+    # Minimum rank required for rebirth
+    rank-requirement: 5
+    # Experience multiplier per rebirth level
+    experience-multiplier: 0.1
+    # Crop yield multiplier per rebirth level
+    crop-yield-multiplier: 0.05
+    # Trade value multiplier per rebirth level
+    trade-value-multiplier: 0.08
+    # Maximum rebirth level
+    max-rebirth-level: 10
 
 # Display settings
 display:
