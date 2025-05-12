@@ -900,7 +900,7 @@ public class BDItemManager {
      * @param type The tool type
      * @return The tool
      */
-    public ItemStack createLegacyBDTool(ToolType type) {
+    public ItemStack createBDTool(ToolType type) {
         return createLegacyBDTool(com.bdcraft.plugin.modules.economy.items.tools.ToolType.valueOf(type.name()));
     }
     

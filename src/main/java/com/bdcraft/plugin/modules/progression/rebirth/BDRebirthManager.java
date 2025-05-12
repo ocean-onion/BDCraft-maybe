@@ -706,27 +706,7 @@ public class BDRebirthManager {
         saveData();
     }
     
-    /**
-     * Checks if a player has an active blessing.
-     *
-     * @param uuid The player's UUID
-     * @return True if the player has an active blessing
-     */
-    public boolean hasActiveBlessing(UUID uuid) {
-        if (!blessingEffects.containsKey(uuid)) {
-            return false;
-        }
-        
-        long endTime = blessingEffects.get(uuid);
-        
-        // Check if expired
-        if (endTime <= System.currentTimeMillis()) {
-            blessingEffects.remove(uuid);
-            return false;
-        }
-        
-        return true;
-    }
+    // Duplicate method removed - already defined above
     
     /**
      * Gets the expiration time of a player's blessing.

@@ -5,7 +5,7 @@ channel = "stable-24_05"
 packages = ["unzip", "zip", "jdk", "openjdk17", "gradle"]
 
 [workflows]
-runButton = "build_plugin"
+runButton = "Project"
 
 [[workflows.workflow]]
 name = "Project"
@@ -22,7 +22,7 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "gradle clean build"
+args = "bash ./build-plugin.sh"
 
 [deployment]
 run = ["sh", "-c", "chmod +x ./gradlew && ./gradlew build"]

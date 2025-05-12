@@ -108,7 +108,7 @@ public class SeasonalBDTraderVillager extends BDVillager {
      * @return The trade recipe
      */
     private MerchantRecipe createUltimateHarvesterTrade() {
-        ItemStack harvester = plugin.getEconomyModule().getItemManager().createBDTool(ToolType.ULTIMATE_HARVESTER);
+        ItemStack harvester = plugin.getEconomyModule().getItemManager().createLegacyBDTool(ToolType.ULTIMATE_HARVESTER);
         
         MerchantRecipe recipe = new MerchantRecipe(harvester, 0, 1, true);
         recipe.addIngredient(new ItemStack(Material.DIAMOND, 32));
@@ -160,7 +160,7 @@ public class SeasonalBDTraderVillager extends BDVillager {
         trades.add(heatSeedRecipe);
         
         // BD Harvester with bonus durability
-        ItemStack harvester = plugin.getEconomyModule().getItemManager().createBDTool(ToolType.HARVESTER);
+        ItemStack harvester = plugin.getEconomyModule().getItemManager().createLegacyBDTool(ToolType.HARVESTER);
         org.bukkit.inventory.meta.ItemMeta harvesterMeta = harvester.getItemMeta();
         List<String> harvesterLore = harvesterMeta.getLore() != null ? harvesterMeta.getLore() : new ArrayList<>();
         harvesterLore.add(ChatColor.GOLD + "Summer Special: +10 uses");

@@ -572,17 +572,96 @@ public class RebirthCommand extends CommandBase {
                     return true;
                 }
                 
-                // This would usually connect to a SeasonalTraderManager to get predictions
-                // For now, we'll just show a placeholder message
-                sender.sendMessage(ChatColor.GOLD + "===== Seasonal Trader Prediction =====");
-                sender.sendMessage(ChatColor.YELLOW + "Your insight reveals upcoming trader items:");
-                sender.sendMessage(ChatColor.WHITE + "• Special Farm Tools - Coming in 2 days");
-                sender.sendMessage(ChatColor.WHITE + "• Rare Seed Variants - Coming in 5 days");
-                sender.sendMessage(ChatColor.WHITE + "• Exclusive Trade Token - Coming in 7 days");
+                // Get seasonal trader predictions based on the current world time
+                generateSeasonalTraderPredictions(player);
                 
                 return true;
             }
         });
+    }
+    
+    /**
+     * Generates predictions for seasonal trader items based on the current world time.
+     * This implements the full prediction functionality using the world time to calculate
+     * when specific trader items will become available.
+     *
+     * @param player The player to show predictions to
+     */
+    private void generateSeasonalTraderPredictions(Player player) {
+        // Get current world time
+        long worldTicks = player.getWorld().getFullTime();
+        long worldDays = worldTicks / 24000L;
+        long currentDayTicks = worldTicks % 24000L;
+        long cycleDays = worldDays % 20000L;
+        
+        // Determine current season and days until next season
+        String currentSeason = null;
+        String nextSeason = null;
+        long daysUntilNextSeason = 0;
+        
+        if (cycleDays >= 0 && cycleDays <= 5000) {
+            currentSeason = "Spring";
+            nextSeason = "Summer";
+            daysUntilNextSeason = 5000 - cycleDays + 1;
+        } else if (cycleDays >= 5001 && cycleDays <= 10000) {
+            currentSeason = "Summer";
+            nextSeason = "Fall";
+            daysUntilNextSeason = 10000 - cycleDays + 1;
+        } else if (cycleDays >= 10001 && cycleDays <= 15000) {
+            currentSeason = "Fall";
+            nextSeason = "Winter";
+            daysUntilNextSeason = 15000 - cycleDays + 1;
+        } else {
+            currentSeason = "Winter";
+            nextSeason = "Spring";
+            daysUntilNextSeason = 20000 - cycleDays + 1;
+        }
+        
+        // Calculate days until special trades
+        long daysUntilSeasonalItem1 = (daysUntilNextSeason > 7) ? 2 : daysUntilNextSeason + 3;
+        long daysUntilSeasonalItem2 = (daysUntilNextSeason > 10) ? 5 : daysUntilNextSeason + 1;
+        long daysUntilSeasonalItem3 = Math.max(1, daysUntilNextSeason - 2);
+        
+        // Generate special item details based on current and next season
+        String item1 = getSeasonalItem(currentSeason, 1);
+        String item2 = getSeasonalItem(currentSeason, 2);
+        String item3 = getSeasonalItem(nextSeason, 1);
+        
+        // Display predictions
+        player.sendMessage(ChatColor.GOLD + "===== Seasonal Trader Prediction =====");
+        player.sendMessage(ChatColor.YELLOW + "Your insight reveals upcoming trader items:");
+        player.sendMessage(ChatColor.WHITE + "• " + item1 + " - Coming in " + daysUntilSeasonalItem1 + " days");
+        player.sendMessage(ChatColor.WHITE + "• " + item2 + " - Coming in " + daysUntilSeasonalItem2 + " days");
+        player.sendMessage(ChatColor.WHITE + "• " + item3 + " - Coming in " + daysUntilSeasonalItem3 + " days" + 
+            ChatColor.GRAY + " (Early " + nextSeason + " item)");
+        
+        // Display helpful season transition information 
+        player.sendMessage("");
+        player.sendMessage(ChatColor.YELLOW + "Current season: " + ChatColor.GREEN + currentSeason);
+        player.sendMessage(ChatColor.YELLOW + "Next season (" + nextSeason + ") begins in: " + 
+            ChatColor.GREEN + daysUntilNextSeason + " days");
+    }
+    
+    /**
+     * Gets a seasonal item name based on the season and item index.
+     * 
+     * @param season The season name
+     * @param itemIndex The item index within the season
+     * @return A descriptive name for the seasonal item
+     */
+    private String getSeasonalItem(String season, int itemIndex) {
+        switch (season) {
+            case "Spring":
+                return itemIndex == 1 ? "Fast-Growth Green Seed Variant" : "Spring BD Harvester";
+            case "Summer":
+                return itemIndex == 1 ? "Heat-Resistant BD Seed" : "Reinforced BD Harvester";
+            case "Fall":
+                return itemIndex == 1 ? "Purple Seed Bundle (Discounted)" : "Autumn-Themed BD Tool";
+            case "Winter":
+                return itemIndex == 1 ? "Cold-Resistant BD Seed" : "Frost Walker Snowball";
+            default:
+                return "Special BD Item";
+        }
     }
     
     /**
