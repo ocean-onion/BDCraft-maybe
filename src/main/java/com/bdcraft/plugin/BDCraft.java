@@ -20,6 +20,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -51,9 +52,21 @@ public class BDCraft extends JavaPlugin {
         try {
             getLogger().info("Starting BDCraft plugin...");
             
-            // Save default config
+            // Save default configs
             saveDefaultConfig();
-            getLogger().info("Default configuration saved.");
+            getLogger().info("Default main configuration saved.");
+            
+            // Save other default configs
+            String[] configFiles = {"economy.yml", "rebirth.yml", "vital.yml", "messages.yml", "permissions.yml"};
+            for (String configFile : configFiles) {
+                if (!new File(getDataFolder(), configFile).exists()) {
+                    saveResource(configFile, false);
+                    getLogger().info("Saved default configuration: " + configFile);
+                } else {
+                    getLogger().info("Configuration already exists: " + configFile);
+                }
+            }
+            getLogger().info("All default configurations saved.");
             
             // Initialize modules list
             modules = new ArrayList<>();
