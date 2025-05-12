@@ -20,7 +20,7 @@ public class PluginConflictManager {
     // Lists of competing plugins
     private final List<String> economyPlugins = Arrays.asList(
             "Vault", 
-            "EssentialsX", 
+            "EssentialsX", // Block EssentialsX as BDVital will replace it entirely
             "CMI", 
             "GemsEconomy", 
             "TokenManager",
@@ -65,7 +65,14 @@ public class PluginConflictManager {
         for (String pluginName : economyPlugins) {
             Plugin conflictingPlugin = Bukkit.getPluginManager().getPlugin(pluginName);
             if (conflictingPlugin != null && conflictingPlugin.isEnabled()) {
-                plugin.getLogger().warning("Found conflicting economy plugin: " + pluginName);
+                // Special message for EssentialsX
+                if (pluginName.equals("EssentialsX")) {
+                    plugin.getLogger().warning("Found EssentialsX - BDVital module will replace its functionality");
+                    plugin.getLogger().warning("Attempting to disable EssentialsX to prevent conflicts");
+                } else {
+                    plugin.getLogger().warning("Found conflicting economy plugin: " + pluginName);
+                }
+                
                 PluginBlocker.disablePlugin(conflictingPlugin);
                 blockedPlugins.add(pluginName);
                 conflicts++;
@@ -95,11 +102,13 @@ public class PluginConflictManager {
         }
         
         if (conflicts > 0) {
-            plugin.getLogger().warning("Disabled " + conflicts + " conflicting plugins.");
+            plugin.getLogger().warning("Handled " + conflicts + " conflicting plugins.");
         } else {
             plugin.getLogger().info("No plugin conflicts found.");
         }
     }
+    
+    // Method removed as we no longer handle EssentialsX specially
     
     /**
      * Gets the list of blocked plugins.
