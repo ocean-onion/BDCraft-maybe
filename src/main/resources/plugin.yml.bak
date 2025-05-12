@@ -58,63 +58,60 @@ commands:
   # BDVital module commands
   bdhome:
     description: Teleport to your homes
-    usage: /bdhome [set|del|list|<n>]
-    aliases: [bdhomes, home, homes]
+    usage: /bdhome [set|del|list|<name>]
+    aliases: [bdhomes]
     permission: bdvital.home
   bdtp:
     description: Teleport to a player or coordinates
     usage: /bdtp <player> or /bdtp <x> <y> <z>
-    aliases: [bdteleport, tp, teleport]
+    aliases: [bdteleport]
     permission: bdvital.teleport
   bdtpa:
     description: Request to teleport to a player
     usage: /bdtpa <player>
-    aliases: [bdteleportask, bdtpask, tpa, teleportask, tpask]
+    aliases: [bdteleportask, bdtpask]
     permission: bdvital.teleport.ask
   bdtpd:
     description: Deny teleport requests
     usage: /bdtpd
-    aliases: [bdtpdeny, bdteleportdeny, tpd, tpdeny, teleportdeny]
+    aliases: [bdtpdeny, bdteleportdeny]
     permission: bdvital.teleport.deny
   bdtpr:
     description: Teleport to a random location
     usage: /bdtpr
-    aliases: [bdtprandom, bdteleportrandom, tpr, tprandom, rtp]
+    aliases: [bdtprandom, bdteleportrandom]
     permission: bdvital.teleport.random
   bdback:
     description: Teleport to your previous location
     usage: /bdback
-    aliases: [back]
     permission: bdvital.teleport.back
   bdspawn:
     description: Teleport to the server spawn point
     usage: /bdspawn
-    aliases: [spawn]
     permission: bdvital.teleport.spawn
   bdmsg:
     description: Send a private message to a player
     usage: /bdmsg <player> <message>
-    aliases: [bdtell, bdwhisper, bdw, msg, tell, whisper, w, pm]
+    aliases: [bdtell, bdwhisper, bdw]
     permission: bdvital.message
   bdr:
     description: Reply to the last private message
     usage: /bdr <message>
-    aliases: [bdreply, r, reply]
+    aliases: [bdreply]
     permission: bdvital.message.reply
   bdmail:
     description: Send and receive mail
     usage: /bdmail [read|send|clear]
-    aliases: [mail]
     permission: bdvital.mail
   bddeathinfo:
     description: View information about your last death
     usage: /bddeathinfo
-    aliases: [bddeath, deathinfo, death]
+    aliases: [bddeath]
     permission: bdvital.death
   bdmarketwarp:
     description: Warp to a market
     usage: /bdmarketwarp [list|<market>]
-    aliases: [bdmwarp, marketwarp, mwarp]
+    aliases: [bdmwarp]
     permission: bdvital.market.warp
 
 permissions:

@@ -8,6 +8,7 @@ import com.bdcraft.plugin.modules.vital.commands.HomeCommand;
 import com.bdcraft.plugin.modules.vital.commands.MarketWarpCommand;
 import com.bdcraft.plugin.modules.vital.commands.MessageCommands;
 import com.bdcraft.plugin.modules.vital.commands.TeleportCommands;
+import com.bdcraft.plugin.modules.vital.config.VitalConfig;
 import com.bdcraft.plugin.modules.vital.home.HomeManager;
 import com.bdcraft.plugin.modules.vital.listeners.PlayerListener;
 import com.bdcraft.plugin.modules.vital.message.MessageManager;
@@ -18,6 +19,7 @@ import java.util.logging.Logger;
 
 /**
  * The BD Vital Module providing essential server functionality.
+ * This is a complete replacement for EssentialsX.
  */
 public class BDVitalModule implements Module {
     private final BDCraft plugin;
@@ -25,6 +27,7 @@ public class BDVitalModule implements Module {
     private final Logger logger;
     private boolean enabled = false;
     
+    private VitalConfig vitalConfig;
     private HomeManager homeManager;
     private TeleportManager teleportManager;
     private MessageManager messageManager;
@@ -60,7 +63,10 @@ public class BDVitalModule implements Module {
             return;
         }
         
-        logger.info("Enabling BD Vital Module");
+        logger.info("Enabling BD Vital Module (EssentialsX replacement)");
+        
+        // Load configuration
+        this.vitalConfig = new VitalConfig(plugin);
         
         // Initialize managers
         this.homeManager = new HomeManager(plugin);
@@ -79,6 +85,8 @@ public class BDVitalModule implements Module {
         this.playerListener = new PlayerListener(plugin, this);
         plugin.getServer().getPluginManager().registerEvents(playerListener, plugin);
         
+        logger.info("BDVital module enabled successfully - EssentialsX functionality available");
+        
         enabled = true;
     }
     
@@ -96,6 +104,14 @@ public class BDVitalModule implements Module {
         marketWarpManager.saveWarps();
         
         enabled = false;
+    }
+    
+    /**
+     * Gets the vital configuration.
+     * @return The vital configuration
+     */
+    public VitalConfig getVitalConfig() {
+        return vitalConfig;
     }
     
     /**

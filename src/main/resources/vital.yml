@@ -1,40 +1,66 @@
-bdvital:
-  teleportation:
-    delay: 3                   # Seconds before teleport occurs
-    cooldown: 60               # Seconds between teleport commands
-    request-expiry: 30         # Seconds before request expires
-    spawn-location:
-      world: "world"          # World name for the spawn location
-      x: 0                     # X coordinate
-      y: 100                   # Y coordinate
-      z: 0                     # Z coordinate
-  
-  homes:
-    max-per-rank:              # Maximum homes per rank
-      1: 1
-      2: 2
-      3: 3
-      4: 4
-      5: 5
-    cooldown: 120              # Seconds between home teleports
-  
-  messaging:
-    disabled-worlds: []        # Worlds where messaging is disabled
-    mail-expiry: 7             # Days before mail expires
-  
-  market-warps:
-    enabled: true              # Enable market warp system
-    cooldowns:                 # Cooldowns per market level (minutes)
-      1: 90
-      2: 60
-      3: 30
-      4: 15
-  
-  protection:
-    log-blocks: true           # Log block changes in protected areas
-    log-retention: 30          # Days to keep logs
-    disable-pvp-in-markets: true # Disable PvP in markets
+# BDVital Module Configuration - EssentialsX Replacement
+# -----------------------------------------------------
 
-  death:
-    back-cooldown: 300         # Seconds between death back commands
-    save-inventory: false      # Save inventory on death (admin recovery)
+# Teleportation Settings
+teleport:
+  # Cooldown in seconds between teleports
+  cooldown: 30
+  
+  # Warmup time in seconds before teleportation
+  warmup: 3
+  
+  # Allow the use of /back command
+  enable-back: true
+  
+  # Random teleport settings
+  random:
+    # Maximum attempts to find a safe location
+    max-attempts: 10
+    
+    # Maximum teleport range
+    max-range: 5000
+    
+    # Minimum teleport range
+    min-range: 500
+    
+    # Only teleport to safe locations
+    safe: true
+
+# Home Settings
+home:
+  # Default maximum homes (can be overridden with permissions)
+  max-homes: 3
+
+# Mail Settings
+mail:
+  # Maximum mails per player
+  max-mails: 10
+  
+  # Maximum retention days for mail
+  retention-days: 30
+
+# Warp Settings
+warps:
+  # Maximum warps that can be created
+  max-warps: 20
+
+# Message Settings
+messages:
+  # Color scheme for message commands
+  colors:
+    primary: "&a"
+    secondary: "&e"
+    error: "&c"
+    info: "&b"
+
+# Format strings
+formats:
+  mail-header: "&e----- Your Mail ({0}/{1}) -----"
+  mail-separator: "&7--------------------"
+  mail-message: "&7From: &e{0} &7[&a{1}&7]\n&f{2}"
+  teleport-request: "&e{0} &7has requested to teleport to you."
+  teleport-accept: "&7Use &a/tpaccept &7to accept, or &c/tpdeny &7to deny."
+  home-list: "&e----- Your Homes ({0}/{1}) -----"
+  home-entry: "&7- &e{0}: &f{1}, {2}, {3}"
+  warp-list: "&e----- Available Warps -----"
+  warp-entry: "&7- &e{0}"
