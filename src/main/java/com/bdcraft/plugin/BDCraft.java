@@ -48,66 +48,84 @@ public class BDCraft extends JavaPlugin {
     
     @Override
     public void onEnable() {
-        // Save default config
-        saveDefaultConfig();
-        
-        // Initialize modules list
-        modules = new ArrayList<>();
-        
-        // Initialize config manager
-        configManager = new ConfigManager(this);
-        
-        // Initialize module manager
-        moduleManager = new ModuleManager(this);
-        
-        // Initialize plugin conflict manager
-        boolean blockCompetingPlugins = getConfig().getBoolean("plugin.block-competing-plugins", true);
-        if (blockCompetingPlugins) {
-            getLogger().info("Plugin conflict management is enabled");
-            conflictManager = new PluginConflictManager(this);
-            conflictManager.checkForConflicts();
-        }
-        
-        // Initialize modules
         try {
+            getLogger().info("Starting BDCraft plugin...");
+            
+            // Save default config
+            saveDefaultConfig();
+            getLogger().info("Default configuration saved.");
+            
+            // Initialize modules list
+            modules = new ArrayList<>();
+            getLogger().info("Module list initialized.");
+            
+            // Initialize config manager
+            configManager = new ConfigManager(this);
+            getLogger().info("Config manager initialized.");
+            
+            // Initialize module manager
+            moduleManager = new ModuleManager(this);
+            getLogger().info("Module manager initialized.");
+        
+            // Initialize plugin conflict manager
+            boolean blockCompetingPlugins = getConfig().getBoolean("plugin.block-competing-plugins", true);
+            if (blockCompetingPlugins) {
+                getLogger().info("Plugin conflict management is enabled");
+                conflictManager = new PluginConflictManager(this);
+                conflictManager.checkForConflicts();
+            }
+        
             // Initialize economy module
+            getLogger().info("Initializing economy module...");
             economyModule = new BDEconomyModule(this);
             modules.add(economyModule);
             
             // Initialize progression module
+            getLogger().info("Initializing progression module...");
             progressionModule = new BDProgressionModule(this);
             modules.add(progressionModule);
             
             // Initialize display module (depends on economy and progression)
+            getLogger().info("Initializing display module...");
             displayModule = new BDDisplayModule(this, economyModule, progressionModule);
             modules.add(displayModule);
             
             // Enable all modules
             for (BDModule module : modules) {
+                getLogger().info("Enabling module: " + module.getName());
                 module.onEnable();
             }
             
-            getLogger().info("BDCraft has been enabled!");
+            getLogger().info("BDCraft has been enabled successfully!");
         } catch (Exception e) {
             getLogger().log(Level.SEVERE, "Failed to enable BDCraft:", e);
+            e.printStackTrace();
             Bukkit.getPluginManager().disablePlugin(this);
         }
     }
     
     @Override
     public void onDisable() {
+        getLogger().info("Disabling BDCraft plugin...");
+        
         // Disable all modules in reverse order
         if (modules != null) {
+            getLogger().info("Disabling " + modules.size() + " modules in reverse order...");
             for (int i = modules.size() - 1; i >= 0; i--) {
                 try {
-                    modules.get(i).onDisable();
+                    BDModule module = modules.get(i);
+                    getLogger().info("Disabling module: " + module.getName());
+                    module.onDisable();
                 } catch (Exception e) {
                     getLogger().log(Level.SEVERE, "Error disabling module: " + modules.get(i).getName(), e);
+                    e.printStackTrace();
                 }
             }
+        } else {
+            getLogger().warning("No modules to disable (modules list is null)");
         }
         
-        getLogger().info("BDCraft has been disabled!");
+        getLogger().info("BDCraft has been disabled successfully!");
     }
     
     /**
