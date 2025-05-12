@@ -76,7 +76,11 @@ public class MarketTokenListener implements Listener {
         // Check if the structure meets requirements
         if (!checkMarketStructure(clickedBlock)) {
             player.sendMessage(ChatColor.RED + "The area does not meet the requirements for a market.");
-            player.sendMessage(ChatColor.YELLOW + "You need a 3x3 flat area of solid blocks with at least 3 blocks of open space above.");
+            player.sendMessage(ChatColor.YELLOW + "Requirements:");
+            player.sendMessage(ChatColor.YELLOW + "• 3x3 solid blocks for foundation");
+            player.sendMessage(ChatColor.YELLOW + "• 3x3 solid blocks for roof");
+            player.sendMessage(ChatColor.YELLOW + "• Walls with at least one door");
+            player.sendMessage(ChatColor.YELLOW + "• A bed placed inside");
             return;
         }
         
@@ -118,28 +122,94 @@ public class MarketTokenListener implements Listener {
      * @return Whether the area meets the requirements
      */
     private boolean checkMarketStructure(Block centerBlock) {
-        // Check 3x3 area
+        // Check that we have a valid foundation (3x3 solid blocks)
+        boolean hasValidFoundation = true;
         for (int x = -1; x <= 1; x++) {
             for (int z = -1; z <= 1; z++) {
-                Block block = centerBlock.getRelative(x, 0, z);
-                
-                // Check if block is solid
-                if (!block.getType().isSolid()) {
-                    return false;
+                Block foundationBlock = centerBlock.getRelative(x, 0, z);
+                if (!foundationBlock.getType().isSolid()) {
+                    hasValidFoundation = false;
+                    break;
                 }
+            }
+            if (!hasValidFoundation) break;
+        }
+        
+        if (!hasValidFoundation) {
+            return false;
+        }
+        
+        // Check for a roof (3x3 solid blocks at some height)
+        boolean foundRoof = false;
+        roofSearch:
+        for (int y = 2; y <= 5; y++) {  // Search up to 5 blocks high for roof
+            boolean completeRoof = true;
+            for (int x = -1; x <= 1; x++) {
+                for (int z = -1; z <= 1; z++) {
+                    Block roofBlock = centerBlock.getRelative(x, y, z);
+                    if (!roofBlock.getType().isSolid()) {
+                        completeRoof = false;
+                        break;
+                    }
+                }
+                if (!completeRoof) break;
+            }
+            
+            if (completeRoof) {
+                foundRoof = true;
+                break roofSearch;
+            }
+        }
+        
+        if (!foundRoof) {
+            return false;
+        }
+        
+        // Check for walls with a door
+        boolean hasWalls = false;
+        boolean hasDoor = false;
+        
+        // Check perimeter for walls and door
+        for (int x = -1; x <= 1; x++) {
+            for (int z = -1; z <= 1; z++) {
+                // Skip interior blocks and corners
+                if (Math.abs(x) != 1 && Math.abs(z) != 1) continue;
                 
-                // Check for open space above
-                for (int y = 1; y <= 3; y++) {
-                    Block above = block.getRelative(0, y, 0);
+                // Check perimeter blocks
+                for (int y = 1; y <= 2; y++) {
+                    Block wallBlock = centerBlock.getRelative(x, y, z);
                     
-                    if (!above.getType().isAir()) {
-                        return false;
+                    // If it's a door
+                    if (wallBlock.getType().toString().contains("DOOR")) {
+                        hasDoor = true;
+                    } 
+                    // If it's a solid block (part of wall)
+                    else if (wallBlock.getType().isSolid()) {
+                        hasWalls = true;
                     }
                 }
             }
         }
         
-        return true;
+        if (!hasWalls || !hasDoor) {
+            return false;
+        }
+        
+        // Check for a bed inside
+        boolean hasBed = false;
+        for (int x = -1; x <= 1; x++) {
+            for (int z = -1; z <= 1; z++) {
+                // Check interior blocks
+                Block interiorBlock = centerBlock.getRelative(x, 1, z);
+                if (interiorBlock.getType().toString().contains("BED")) {
+                    hasBed = true;
+                    break;
+                }
+            }
+            if (hasBed) break;
+        }
+        
+        return hasBed;
     }
     
     /**
