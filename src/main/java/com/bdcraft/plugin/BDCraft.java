@@ -274,6 +274,16 @@ public class BDCraft extends JavaPlugin {
     }
     
     /**
+     * Gets a configuration file by its type.
+     * 
+     * @param configType The configuration type
+     * @return The configuration
+     */
+    public org.bukkit.configuration.file.FileConfiguration getConfig(com.bdcraft.plugin.config.ConfigType configType) {
+        return this.configManager.getConfig(configType);
+    }
+    
+    /**
      * Sets the permission API.
      *
      * @param permissionAPI The permission API
