@@ -2,61 +2,54 @@ package com.bdcraft.plugin.modules;
 
 import com.bdcraft.plugin.BDCraft;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
- * Manages all modules in the plugin.
+ * Interface for all main module managers.
  */
-public class ModuleManager {
-    private final BDCraft plugin;
-    private final Map<String, BDModule> modules;
+public interface ModuleManager {
     
     /**
-     * Creates a new module manager.
-     *
+     * Gets the name of this module.
+     * 
+     * @return The name
+     */
+    String getName();
+    
+    /**
+     * Enables this module.
+     * 
      * @param plugin The plugin instance
      */
-    public ModuleManager(BDCraft plugin) {
-        this.plugin = plugin;
-        this.modules = new HashMap<>();
-    }
+    void enable(BDCraft plugin);
     
     /**
-     * Registers a module.
-     *
-     * @param module The module to register
+     * Disables this module.
      */
-    public void registerModule(BDModule module) {
-        modules.put(module.getName().toLowerCase(), module);
-    }
+    void disable();
     
     /**
-     * Gets a module by name.
-     *
-     * @param name The module name
-     * @return The module, or null if not found
+     * Reloads this module.
      */
-    public BDModule getModule(String name) {
-        return modules.get(name.toLowerCase());
-    }
+    void reload();
     
     /**
-     * Checks if a module is registered.
-     *
-     * @param name The module name
-     * @return Whether the module is registered
+     * Checks if this module is enabled.
+     * 
+     * @return Whether this module is enabled
      */
-    public boolean hasModule(String name) {
-        return modules.containsKey(name.toLowerCase());
-    }
+    boolean isEnabled();
     
     /**
-     * Gets all registered modules.
-     *
-     * @return All registered modules
+     * Gets a submodule by name.
+     * 
+     * @param name The name of the submodule
+     * @return The submodule, or null if not found
      */
-    public Map<String, BDModule> getModules() {
-        return modules;
-    }
+    Object getSubmodule(String name);
+    
+    /**
+     * Registers a submodule.
+     * 
+     * @param submodule The submodule to register
+     */
+    void registerSubmodule(Object submodule);
 }

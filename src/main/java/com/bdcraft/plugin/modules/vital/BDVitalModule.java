@@ -1,55 +1,34 @@
 package com.bdcraft.plugin.modules.vital;
 
 import com.bdcraft.plugin.BDCraft;
-import com.bdcraft.plugin.modules.Module;
+import com.bdcraft.plugin.config.ConfigType;
 import com.bdcraft.plugin.modules.ModuleManager;
-import com.bdcraft.plugin.modules.vital.commands.DeathInfoCommand;
-import com.bdcraft.plugin.modules.vital.commands.HomeCommand;
-import com.bdcraft.plugin.modules.vital.commands.MarketWarpCommand;
-import com.bdcraft.plugin.modules.vital.commands.MessageCommands;
-import com.bdcraft.plugin.modules.vital.commands.TeleportCommands;
-import com.bdcraft.plugin.modules.vital.config.VitalConfig;
-import com.bdcraft.plugin.modules.vital.home.HomeManager;
-import com.bdcraft.plugin.modules.vital.listeners.PlayerListener;
-import com.bdcraft.plugin.modules.vital.message.MessageManager;
-import com.bdcraft.plugin.modules.vital.teleport.TeleportManager;
-import com.bdcraft.plugin.modules.vital.warp.MarketWarpManager;
+import com.bdcraft.plugin.modules.SubmoduleBase;
+import com.bdcraft.plugin.modules.vital.modules.chat.ChatModule;
+import com.bdcraft.plugin.modules.vital.modules.home.HomeModule;
+import com.bdcraft.plugin.modules.vital.modules.tab.TabModule;
+import com.bdcraft.plugin.modules.vital.modules.teleport.TeleportModule;
+import com.bdcraft.plugin.modules.vital.modules.message.MessageModule;
 
-import java.util.logging.Logger;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
 
 /**
- * The BD Vital Module providing essential server functionality.
- * This is a complete replacement for EssentialsX.
+ * Main vital module that replaces EssentialsX functionality.
  */
-public class BDVitalModule implements Module {
+public class BDVitalModule implements ModuleManager {
     private final BDCraft plugin;
-    private final ModuleManager moduleManager;
-    private final Logger logger;
     private boolean enabled = false;
-    
-    private VitalConfig vitalConfig;
-    private HomeManager homeManager;
-    private TeleportManager teleportManager;
-    private MessageManager messageManager;
-    private MarketWarpManager marketWarpManager;
-    
-    private HomeCommand homeCommand;
-    private TeleportCommands teleportCommands;
-    private MessageCommands messageCommands;
-    private DeathInfoCommand deathInfoCommand;
-    private MarketWarpCommand marketWarpCommand;
-    
-    private PlayerListener playerListener;
+    private final Map<String, SubmoduleBase> submodules = new HashMap<>();
     
     /**
-     * Creates a new BD vital module.
+     * Creates a new vital module.
+     * 
      * @param plugin The plugin instance
-     * @param moduleManager The module manager
      */
-    public BDVitalModule(BDCraft plugin, ModuleManager moduleManager) {
+    public BDVitalModule(BDCraft plugin) {
         this.plugin = plugin;
-        this.moduleManager = moduleManager;
-        this.logger = plugin.getLogger();
     }
     
     @Override
@@ -58,34 +37,15 @@ public class BDVitalModule implements Module {
     }
     
     @Override
-    public void enable() {
+    public void enable(BDCraft plugin) {
         if (enabled) {
             return;
         }
         
-        logger.info("Enabling BD Vital Module (EssentialsX replacement)");
+        plugin.getLogger().info("Enabling BDVital module");
         
-        // Load configuration
-        this.vitalConfig = new VitalConfig(plugin);
-        
-        // Initialize managers
-        this.homeManager = new HomeManager(plugin);
-        this.teleportManager = new TeleportManager(plugin);
-        this.messageManager = new MessageManager(plugin);
-        this.marketWarpManager = new MarketWarpManager(plugin);
-        
-        // Register commands
-        this.homeCommand = new HomeCommand(plugin, this);
-        this.teleportCommands = new TeleportCommands(plugin, this);
-        this.messageCommands = new MessageCommands(plugin, this);
-        this.deathInfoCommand = new DeathInfoCommand(plugin, this);
-        this.marketWarpCommand = new MarketWarpCommand(plugin, this, marketWarpManager);
-        
-        // Register listeners
-        this.playerListener = new PlayerListener(plugin, this);
-        plugin.getServer().getPluginManager().registerEvents(playerListener, plugin);
-        
-        logger.info("BDVital module enabled successfully - EssentialsX functionality available");
+        // Register and enable submodules
+        registerSubmodules();
         
         enabled = true;
     }
@@ -96,53 +56,134 @@ public class BDVitalModule implements Module {
             return;
         }
         
-        logger.info("Disabling BD Vital Module");
+        plugin.getLogger().info("Disabling BDVital module");
         
-        // Save data
-        homeManager.saveHomes();
-        messageManager.saveMail();
-        marketWarpManager.saveWarps();
+        // Disable submodules
+        for (SubmoduleBase submodule : submodules.values()) {
+            try {
+                submodule.disable();
+            } catch (Exception e) {
+                plugin.getLogger().log(Level.SEVERE, "Error disabling submodule " + submodule.getName(), e);
+            }
+        }
         
         enabled = false;
     }
     
-    /**
-     * Gets the vital configuration.
-     * @return The vital configuration
-     */
-    public VitalConfig getVitalConfig() {
-        return vitalConfig;
+    @Override
+    public void reload() {
+        // Reload submodules
+        for (SubmoduleBase submodule : submodules.values()) {
+            try {
+                submodule.reload();
+            } catch (Exception e) {
+                plugin.getLogger().log(Level.SEVERE, "Error reloading submodule " + submodule.getName(), e);
+            }
+        }
+    }
+    
+    @Override
+    public boolean isEnabled() {
+        return enabled;
+    }
+    
+    @Override
+    public Object getSubmodule(String name) {
+        return submodules.get(name);
+    }
+    
+    @Override
+    public void registerSubmodule(Object submodule) {
+        if (!(submodule instanceof SubmoduleBase)) {
+            throw new IllegalArgumentException("Submodule must implement SubmoduleBase");
+        }
+        
+        SubmoduleBase base = (SubmoduleBase) submodule;
+        submodules.put(base.getName(), base);
+        
+        if (enabled) {
+            // Enable the submodule if the parent module is already enabled
+            base.enable(this);
+        }
     }
     
     /**
-     * Gets the home manager.
-     * @return The home manager
+     * Registers all submodules.
      */
-    public HomeManager getHomeManager() {
-        return homeManager;
+    private void registerSubmodules() {
+        // Register chat module
+        registerSubmodule(new ChatModule(plugin));
+        
+        // Register tab module
+        registerSubmodule(new TabModule(plugin));
+        
+        // Register home module
+        registerSubmodule(new HomeModule(plugin));
+        
+        // Register teleport module
+        registerSubmodule(new TeleportModule(plugin));
+        
+        // Register message module
+        registerSubmodule(new MessageModule(plugin));
+        
+        // Enable all submodules
+        for (SubmoduleBase submodule : submodules.values()) {
+            boolean enableSubmodule = plugin.getConfig(ConfigType.CONFIG)
+                    .getBoolean("modules.vital." + submodule.getName().toLowerCase() + ".enabled", true);
+            
+            if (enableSubmodule) {
+                try {
+                    submodule.enable(this);
+                    plugin.getLogger().info("Enabled " + submodule.getName() + " submodule");
+                } catch (Exception e) {
+                    plugin.getLogger().log(Level.SEVERE, "Error enabling submodule " + submodule.getName(), e);
+                }
+            }
+        }
     }
     
     /**
-     * Gets the teleport manager.
-     * @return The teleport manager
+     * Gets the chat module.
+     * 
+     * @return The chat module
      */
-    public TeleportManager getTeleportManager() {
-        return teleportManager;
+    public ChatModule getChatModule() {
+        return (ChatModule) getSubmodule("Chat");
     }
     
     /**
-     * Gets the message manager.
-     * @return The message manager
+     * Gets the tab module.
+     * 
+     * @return The tab module
      */
-    public MessageManager getMessageManager() {
-        return messageManager;
+    public TabModule getTabModule() {
+        return (TabModule) getSubmodule("Tab");
     }
     
     /**
-     * Gets the market warp manager.
-     * @return The market warp manager
+     * Gets the home module.
+     * 
+     * @return The home module
      */
-    public MarketWarpManager getMarketWarpManager() {
-        return marketWarpManager;
+    public HomeModule getHomeModule() {
+        return (HomeModule) getSubmodule("Home");
+    }
+    
+    /**
+     * Gets the teleport module.
+     * 
+     * @return The teleport module
+     */
+    public TeleportModule getTeleportModule() {
+        return (TeleportModule) getSubmodule("Teleport");
+    }
+    
+    /**
+     * Gets the message module.
+     * 
+     * @return The message module
+     */
+    public MessageModule getMessageModule() {
+        return (MessageModule) getSubmodule("Message");
     }
 }
