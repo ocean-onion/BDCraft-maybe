@@ -96,4 +96,15 @@ public class ConfigManager {
         // Load fresh
         return getModuleConfig(moduleName);
     }
+    
+    /**
+     * Gets a configuration file by name.
+     * This is an alias for getModuleConfig to be more consistent with naming conventions.
+     *
+     * @param configName The configuration file name
+     * @return The configuration
+     */
+    public FileConfiguration getConfig(String configName) {
+        return getModuleConfig(configName.replace(".yml", ""));
+    }
 }
