@@ -72,7 +72,8 @@ public class BDBlessCommand implements CommandExecutor, TabCompleter {
             return true;
         }
         
-        Player target = Bukkit.getPlayer(args[0]);
+        // Use getPlayerExact for exact name matching
+        Player target = Bukkit.getPlayerExact(args[0]);
         
         if (target == null || !target.isOnline()) {
             player.sendMessage(ChatColor.RED + "Player not found or is offline.");

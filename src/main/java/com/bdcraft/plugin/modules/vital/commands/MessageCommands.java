@@ -64,7 +64,7 @@ public class MessageCommands {
                 }
                 
                 String targetName = args[0];
-                Player target = Bukkit.getPlayer(targetName);
+                Player target = Bukkit.getPlayerExact(targetName);
                 
                 if (target == null) {
                     player.sendMessage(ChatColor.RED + "Player '" + targetName + "' is not online.");
@@ -133,7 +133,10 @@ public class MessageCommands {
                     return true;
                 }
                 
-                Player target = Bukkit.getPlayer(lastSenderUuid);
+                Player target = Bukkit.getServer().getPlayer(lastSenderUuid);
+        if (target != null && !target.isOnline()) {
+            target = null; // Ensure consistency with old behavior
+        }
                 
                 if (target == null) {
                     player.sendMessage(ChatColor.RED + "The player you're trying to reply to is no longer online.");
@@ -264,7 +267,7 @@ public class MessageCommands {
             player.sendMessage(ChatColor.GREEN + "Mail sent to " + targetName + ".");
             
             // Notify target if online
-            Player target = Bukkit.getPlayer(targetName);
+            Player target = Bukkit.getPlayerExact(targetName);
             
             if (target != null) {
                 target.sendMessage(ChatColor.YELLOW + "You have new mail from " + player.getName() + ".");

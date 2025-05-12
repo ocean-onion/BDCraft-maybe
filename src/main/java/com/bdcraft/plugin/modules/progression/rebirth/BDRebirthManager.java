@@ -586,7 +586,10 @@ public class BDRebirthManager {
         saveData();
         
         // Notify if player is online
-        Player player = Bukkit.getPlayer(playerId);
+        Player player = Bukkit.getServer().getPlayer(playerId);
+        if (player != null && !player.isOnline()) {
+            player = null; // Ensure consistency with old behavior
+        }
         if (player != null && player.isOnline()) {
             player.sendMessage(ChatColor.GREEN + "You received a trade bonus: " + 
                     ChatColor.GOLD + String.format("%.0f%%", (bonusMultiplier - 1.0) * 100) + 

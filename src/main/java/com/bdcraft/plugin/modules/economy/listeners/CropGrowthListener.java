@@ -105,7 +105,7 @@ public class CropGrowthListener implements Listener {
         if (item.getAmount() > 1) {
             item.setAmount(item.getAmount() - 1);
         } else {
-            player.getInventory().setItemInMainHand(null);
+            player.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
         }
         
         // Notify player

@@ -115,15 +115,19 @@ public class Market {
     
     /**
      * Gets the owner name.
+     * First attempts to get the name from an online player,
+     * then falls back to offline player data if necessary.
      * 
-     * @return The owner name
+     * @return The owner name, or "Unknown" if not retrievable
      */
     public String getOwnerName() {
-        Player owner = Bukkit.getPlayer(ownerId);
-        if (owner != null) {
+        // Use the non-deprecated method to get online player
+        Player owner = Bukkit.getServer().getPlayer(ownerId);
+        if (owner != null && owner.isOnline()) {
             return owner.getName();
         }
         
+        // Fall back to offline player data
         String ownerName = Bukkit.getOfflinePlayer(ownerId).getName();
         return ownerName != null ? ownerName : "Unknown";
     }

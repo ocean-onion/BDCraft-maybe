@@ -541,7 +541,10 @@ public class BDLoggingModule implements Module {
                         }
                     }
                     
-                    Player player = Bukkit.getPlayer(playerName);
+                    Player player = Bukkit.getServer().getPlayer(playerName);
+        if (player != null && !player.isOnline()) {
+            player = null; // Ensure consistency with old behavior
+        }
                     UUID playerId = player != null ? player.getUniqueId() : null;
                     
                     List<LogEntry> playerLogs;

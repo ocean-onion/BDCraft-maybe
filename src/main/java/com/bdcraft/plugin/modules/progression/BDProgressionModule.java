@@ -456,7 +456,10 @@ public class BDProgressionModule extends BDModule implements ProgressionAPI {
                 playerRanks.put(playerUuid, rank);
                 
                 // Notify online player if possible
-                Player player = Bukkit.getPlayer(playerUuid);
+                Player player = Bukkit.getServer().getPlayer(playerUuid);
+        if (player != null && !player.isOnline()) {
+            player = null; // Ensure consistency with old behavior
+        }
                 if (player != null && player.isOnline()) {
                     player.sendMessage(ChatColor.GREEN + "Congratulations! You've ranked up to " + 
                                       ChatColor.GOLD + getRankDisplayName(getPlayerRank(playerUuid)) + 

@@ -13,6 +13,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -531,7 +532,15 @@ public class BDItemManager {
         
         // If item was created, give it to the player
         if (item != null) {
-            player.getInventory().addItem(item);
+            // Handle potential overflow items that couldn't fit in inventory
+            HashMap<Integer, ItemStack> overflow = player.getInventory().addItem(item);
+            if (!overflow.isEmpty()) {
+                // Drop overflow items at player's feet
+                for (ItemStack dropItem : overflow.values()) {
+                    player.getWorld().dropItemNaturally(player.getLocation(), dropItem);
+                }
+                player.sendMessage(ChatColor.YELLOW + "Some items were dropped at your feet because your inventory is full.");
+            }
             return true;
         }
         

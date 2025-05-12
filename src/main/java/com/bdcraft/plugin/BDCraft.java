@@ -1,6 +1,7 @@
 package com.bdcraft.plugin;
 
 import com.bdcraft.plugin.api.EconomyAPI;
+import com.bdcraft.plugin.api.MarketAPI;
 import com.bdcraft.plugin.api.ProgressionAPI;
 import com.bdcraft.plugin.api.VillagerAPI;
 import com.bdcraft.plugin.compat.PluginConflictManager;
@@ -188,6 +189,27 @@ public class BDCraft extends JavaPlugin {
      */
     public EconomyAPI getEconomyAPI() {
         return economyModule;
+    }
+    
+    // MarketAPI instance
+    private MarketAPI marketAPI;
+    
+    /**
+     * Gets the market API.
+     *
+     * @return The market API
+     */
+    public MarketAPI getMarketAPI() {
+        return marketAPI;
+    }
+    
+    /**
+     * Sets the market API.
+     *
+     * @param marketAPI The market API
+     */
+    public void setMarketAPI(MarketAPI marketAPI) {
+        this.marketAPI = marketAPI;
     }
     
     // VillagerAPI instance

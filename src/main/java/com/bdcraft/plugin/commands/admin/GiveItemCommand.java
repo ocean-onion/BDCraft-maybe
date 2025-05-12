@@ -70,7 +70,7 @@ public class GiveItemCommand extends CommandBase {
                 
                 // Get the target player
                 String playerName = args[0];
-                Player targetPlayer = Bukkit.getPlayer(playerName);
+                Player targetPlayer = Bukkit.getPlayerExact(playerName);
                 
                 if (targetPlayer == null) {
                     sender.sendMessage(ChatColor.RED + "Player not found: " + playerName);

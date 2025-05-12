@@ -255,7 +255,8 @@ public class RebirthCommand extends CommandBase {
                     displayRebirthStats(sender, player);
                 } else {
                     // Show another player's stats
-                    Player target = Bukkit.getPlayer(args[0]);
+                    // Use getPlayerExact for exact name matching
+                    Player target = Bukkit.getPlayerExact(args[0]);
                     
                     if (target == null) {
                         // Try to get offline player
@@ -381,7 +382,10 @@ public class RebirthCommand extends CommandBase {
                     int rebirthLevel = entry.getValue();
                     
                     String playerName = "Unknown";
-                    Player onlinePlayer = Bukkit.getPlayer(playerId);
+                    Player onlinePlayer = Bukkit.getServer().getPlayer(playerId);
+        if (onlinePlayer != null && !onlinePlayer.isOnline()) {
+            onlinePlayer = null; // Ensure consistency with old behavior
+        }
                     
                     if (onlinePlayer != null) {
                         playerName = onlinePlayer.getName();
@@ -507,7 +511,8 @@ public class RebirthCommand extends CommandBase {
                     return true;
                 }
                 
-                Player target = Bukkit.getPlayer(args[0]);
+                // Use getPlayerExact for exact name matching
+                Player target = Bukkit.getPlayerExact(args[0]);
                 
                 if (target == null) {
                     sender.sendMessage(ChatColor.RED + "Player not found: " + args[0]);

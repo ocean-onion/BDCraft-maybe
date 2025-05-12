@@ -2,10 +2,12 @@ package com.bdcraft.plugin.modules.economy;
 
 import com.bdcraft.plugin.BDCraft;
 import com.bdcraft.plugin.api.EconomyAPI;
+import com.bdcraft.plugin.api.MarketAPI;
 import com.bdcraft.plugin.api.VillagerAPI;
 import com.bdcraft.plugin.modules.BDModule;
 import com.bdcraft.plugin.modules.economy.auction.AuctionManager;
 import com.bdcraft.plugin.modules.economy.items.BDItemManager;
+import com.bdcraft.plugin.modules.economy.market.MarketAPIImpl;
 import com.bdcraft.plugin.modules.economy.market.MarketManager;
 import com.bdcraft.plugin.modules.economy.trade.BDTrade;
 import com.bdcraft.plugin.modules.economy.trade.BDTradeManager;
@@ -68,6 +70,11 @@ public class BDEconomyModule extends BDModule implements EconomyAPI {
         marketManager = new MarketManager(plugin, this);
         villagerManager = new VillagerManager(plugin);
         auctionManager = new com.bdcraft.plugin.modules.economy.auction.AuctionManager(plugin, this);
+        
+        // Initialize and set MarketAPI
+        MarketAPI marketAPI = new MarketAPIImpl(plugin, marketManager);
+        plugin.setMarketAPI(marketAPI);
+        plugin.getLogger().info("MarketAPI initialized.");
         
         // Initialize and set VillagerAPI
         VillagerAPI villagerAPI = new VillagerAPIImpl(plugin, villagerManager);

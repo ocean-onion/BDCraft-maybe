@@ -140,6 +140,6 @@ public class HouseTokenListener implements Listener {
             player.getInventory().setItemInMainHand(null);
         }
         
-        player.updateInventory();
+        player.getInventory().setContents(player.getInventory().getContents());
     }
 }

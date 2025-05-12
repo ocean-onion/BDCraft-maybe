@@ -69,7 +69,7 @@ public class BDStickHandler {
         
         if (!toolSurvived) {
             // Tool broke
-            player.getInventory().setItemInMainHand(null);
+            player.getInventory().setItemInMainHand(new ItemStack(org.bukkit.Material.AIR));
             player.playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 1.0f, 1.0f);
             player.sendMessage(ChatColor.RED + "Your BD Stick has broken!");
         }

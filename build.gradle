@@ -40,10 +40,13 @@ tasks.withType(Javadoc) {
 
 processResources {
     def props = [version: version]
-    inputs.properties props
+    
+    // Modern approach for inputs
+    inputs.property('version', version)
+    
     filteringCharset 'UTF-8'
     filesMatching('plugin.yml') {
-        expand props
+        expand(props)
     }
 }
 
@@ -53,7 +56,11 @@ test {
 
 jar {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    
+    // Modern approach for adding runtime dependencies to JAR
     from {
-        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+        configurations.runtimeClasspath.collect { 
+            it.isDirectory() ? it : zipTree(it) 
+        }
     }
 }

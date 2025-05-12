@@ -112,7 +112,8 @@ public class BDCropManager implements Listener {
      */
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
-        ItemStack item = event.getItemInHand();
+        // Use non-deprecated method to get the item in hand
+        ItemStack item = event.getPlayer().getInventory().getItemInMainHand();
         if (!BDSeed.isBDSeed(item)) {
             return;
         }

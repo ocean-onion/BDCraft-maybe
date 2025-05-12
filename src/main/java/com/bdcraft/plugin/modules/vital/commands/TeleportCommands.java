@@ -68,7 +68,8 @@ public class TeleportCommands {
                 }
                 
                 String targetName = args[0];
-                Player target = Bukkit.getPlayer(targetName);
+                // Use the more specific method for exact player name matching
+                Player target = Bukkit.getPlayerExact(targetName);
                 
                 if (target == null) {
                     player.sendMessage(ChatColor.RED + "Player '" + targetName + "' is not online.");
@@ -130,7 +131,11 @@ public class TeleportCommands {
                     return true;
                 }
                 
-                Player requester = Bukkit.getPlayer(request.getRequesterUuid());
+                // Use the server method for UUID-based player lookup
+                Player requester = Bukkit.getServer().getPlayer(request.getRequesterUuid());
+                if (requester != null && !requester.isOnline()) {
+                    requester = null; // Ensure consistency with old behavior
+                }
                 
                 if (requester == null) {
                     player.sendMessage(ChatColor.RED + "The player who sent the request is no longer online.");
@@ -172,8 +177,11 @@ public class TeleportCommands {
                     player.sendMessage(ChatColor.RED + "You don't have any pending teleport requests.");
                     return true;
                 }
-                
-                Player requester = Bukkit.getPlayer(request.getRequesterUuid());
+                // Use the server method for UUID-based player lookup
+                Player requester = Bukkit.getServer().getPlayer(request.getRequesterUuid());
+                if (requester != null && !requester.isOnline()) {
+                    requester = null; // Ensure consistency with old behavior
+                }
                 
                 // Remove request
                 teleportManager.removePendingRequest(player.getUniqueId());
@@ -215,7 +223,8 @@ public class TeleportCommands {
                 }
                 
                 String targetName = args[0];
-                Player target = Bukkit.getPlayer(targetName);
+                // Use the more specific method for exact player name matching
+                Player target = Bukkit.getPlayerExact(targetName);
                 
                 if (target == null) {
                     player.sendMessage(ChatColor.RED + "Player '" + targetName + "' is not online.");

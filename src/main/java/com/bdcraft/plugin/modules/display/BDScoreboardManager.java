@@ -152,7 +152,10 @@ public class BDScoreboardManager implements Listener {
      */
     public void updateAllScoreboards() {
         for (UUID uuid : playerScoreboards.keySet()) {
-            Player player = Bukkit.getPlayer(uuid);
+            Player player = Bukkit.getServer().getPlayer(uuid);
+        if (player != null && !player.isOnline()) {
+            player = null; // Ensure consistency with old behavior
+        }
             if (player != null && player.isOnline()) {
                 updateScoreboard(player);
             }
@@ -213,7 +216,10 @@ public class BDScoreboardManager implements Listener {
         
         // Reset all player scoreboards
         for (UUID uuid : playerScoreboards.keySet()) {
-            Player player = Bukkit.getPlayer(uuid);
+            Player player = Bukkit.getServer().getPlayer(uuid);
+        if (player != null && !player.isOnline()) {
+            player = null; // Ensure consistency with old behavior
+        }
             if (player != null && player.isOnline()) {
                 removeScoreboard(player);
             }
