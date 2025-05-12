@@ -7,6 +7,7 @@ import com.bdcraft.plugin.modules.economy.auction.AuctionHouseGUI;
 import com.bdcraft.plugin.modules.economy.auction.AuctionItem;
 import com.bdcraft.plugin.modules.economy.auction.AuctionManager;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -127,7 +128,7 @@ public class AuctionHouseCommand extends CommandBase {
                     
                     if (itemId != null) {
                         // Remove the item from player's hand
-                        player.getInventory().setItemInMainHand(null);
+                        player.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
                         
                         sender.sendMessage(ChatColor.GREEN + "Item listed for " + price + " BD coins!");
                         sender.sendMessage(ChatColor.GREEN + "Listing ID: " + itemId);

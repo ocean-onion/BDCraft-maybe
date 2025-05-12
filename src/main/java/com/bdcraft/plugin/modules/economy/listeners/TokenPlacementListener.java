@@ -122,7 +122,7 @@ public class TokenPlacementListener implements Listener {
             if (token.getAmount() > 1) {
                 token.setAmount(token.getAmount() - 1);
             } else {
-                player.getInventory().setItemInMainHand(null);
+                player.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
             }
             
             player.sendMessage(ChatColor.GREEN + "Market created successfully!");
@@ -165,7 +165,7 @@ public class TokenPlacementListener implements Listener {
             if (token.getAmount() > 1) {
                 token.setAmount(token.getAmount() - 1);
             } else {
-                player.getInventory().setItemInMainHand(null);
+                player.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
             }
             
             player.sendMessage(ChatColor.GREEN + "Collector house added to your market!");
@@ -195,7 +195,7 @@ public class TokenPlacementListener implements Listener {
         if (stick.getAmount() > 1) {
             stick.setAmount(stick.getAmount() - 1);
         } else {
-            player.getInventory().setItemInMainHand(null);
+            player.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
         }
     }
     

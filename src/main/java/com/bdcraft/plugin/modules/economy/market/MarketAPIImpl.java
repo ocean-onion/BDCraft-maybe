@@ -1,6 +1,7 @@
 package com.bdcraft.plugin.modules.economy.market;
 
 import com.bdcraft.plugin.BDCraft;
+import com.bdcraft.plugin.api.EconomyAPI;
 import com.bdcraft.plugin.api.MarketAPI;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -186,7 +187,7 @@ public class MarketAPIImpl implements MarketAPI {
             }
             
             // Save changes
-            marketManager.saveMarkets();
+            marketManager.saveMarketsData();
             
             logger.info("Successfully transferred market " + marketId + " ownership to " + ownerName);
             return true;
@@ -239,7 +240,7 @@ public class MarketAPIImpl implements MarketAPI {
             boolean result = market.addAssociate(associate);
             
             if (result) {
-                marketManager.saveMarkets();
+                marketManager.saveMarketsData();
             }
             
             return result;
@@ -272,7 +273,7 @@ public class MarketAPIImpl implements MarketAPI {
             boolean result = market.removeAssociate(associate);
             
             if (result) {
-                marketManager.saveMarkets();
+                marketManager.saveMarketsData();
             }
             
             return result;
@@ -389,7 +390,7 @@ public class MarketAPIImpl implements MarketAPI {
             
             if (upgraded) {
                 // Save the changes
-                marketManager.saveMarkets();
+                marketManager.saveMarketsData();
                 
                 // Notify player
                 player.sendMessage("Market upgraded to level " + market.getLevel() + "!");

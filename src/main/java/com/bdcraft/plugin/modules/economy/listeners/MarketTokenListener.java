@@ -221,7 +221,7 @@ public class MarketTokenListener implements Listener {
         if (item.getAmount() > 1) {
             item.setAmount(item.getAmount() - 1);
         } else {
-            player.getInventory().setItemInMainHand(null);
+            player.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
         }
         
         player.getInventory().setContents(player.getInventory().getContents());

@@ -121,8 +121,8 @@ public class Market {
      * @return The owner name, or "Unknown" if not retrievable
      */
     public String getOwnerName() {
-        // Use the non-deprecated method to get online player
-        Player owner = Bukkit.getServer().getPlayer(ownerId);
+        // Use PlayerExact for exact UUID matching to avoid ambiguity
+        Player owner = Bukkit.getServer().getPlayerExact(ownerId.toString());
         if (owner != null && owner.isOnline()) {
             return owner.getName();
         }

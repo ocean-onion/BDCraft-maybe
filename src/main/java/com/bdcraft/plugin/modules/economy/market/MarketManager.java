@@ -441,4 +441,12 @@ public class MarketManager {
     public void reloadData() {
         loadData();
     }
+    
+    /**
+     * Save market data to file.
+     * This public method provides other classes access to save market data.
+     */
+    public void saveMarketsData() {
+        saveData();
+    }
 }
