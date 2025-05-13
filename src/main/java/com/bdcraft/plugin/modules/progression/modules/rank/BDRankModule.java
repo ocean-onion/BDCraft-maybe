@@ -285,13 +285,37 @@ public class BDRankModule implements SubmoduleBase, Listener, CommandExecutor {
     }
     
     /**
+     * Gets a player's current experience points by UUID.
+     * 
+     * @param playerId The player's UUID
+     * @return The player's experience points
+     */
+    public int getPlayerExperience(UUID playerId) {
+        return playerExperience.getOrDefault(playerId, 0);
+    }
+    
+    /**
      * Gets a player's current experience points.
      * 
      * @param player The player
      * @return The player's experience points
      */
     public int getPlayerExperience(Player player) {
-        return playerExperience.getOrDefault(player.getUniqueId(), 0);
+        return getPlayerExperience(player.getUniqueId());
+    }
+    
+    /**
+     * Gets a player's rebirth count by UUID.
+     * 
+     * @param playerId The player's UUID
+     * @return The player's rebirth count
+     */
+    public int getPlayerRebirths(UUID playerId) {
+        BDRebirthModule rebirthModule = (BDRebirthModule) parentModule.getSubmodule("Rebirth");
+        if (rebirthModule != null && rebirthModule.isEnabled()) {
+            return rebirthModule.getRebirthLevel(playerId);
+        }
+        return 0;
     }
     
     /**
@@ -301,11 +325,24 @@ public class BDRankModule implements SubmoduleBase, Listener, CommandExecutor {
      * @return The player's rebirth count
      */
     public int getPlayerRebirths(Player player) {
-        BDRebirthModule rebirthModule = (BDRebirthModule) parentModule.getSubmodule("Rebirth");
-        if (rebirthModule != null && rebirthModule.isEnabled()) {
-            return rebirthModule.getRebirthLevel(player.getUniqueId());
+        return getPlayerRebirths(player.getUniqueId());
+    }
+    
+    /**
+     * Sets a player's experience points by UUID.
+     * 
+     * @param playerId The player's UUID
+     * @param experience The new experience points
+     */
+    public void setPlayerExperience(UUID playerId, int experience) {
+        if (experience < 0) {
+            experience = 0;
         }
-        return 0;
+        
+        playerExperience.put(playerId, experience);
+        
+        // We can't check for rank up directly with just a UUID
+        // Client code should call checkRankUp if a Player object is available
     }
     
     /**
@@ -315,14 +352,37 @@ public class BDRankModule implements SubmoduleBase, Listener, CommandExecutor {
      * @param experience The new experience points
      */
     public void setPlayerExperience(Player player, int experience) {
-        if (experience < 0) {
-            experience = 0;
-        }
-        
-        playerExperience.put(player.getUniqueId(), experience);
+        setPlayerExperience(player.getUniqueId(), experience);
         
         // Check for rank up
         checkRankUp(player);
+    }
+    
+    /**
+     * Adds experience points to a player by UUID.
+     * 
+     * @param playerId The player's UUID
+     * @param experienceToAdd The experience points to add
+     * @return The player's new experience points
+     */
+    public int addPlayerExperience(UUID playerId, int experienceToAdd) {
+        if (experienceToAdd <= 0) {
+            return getPlayerExperience(playerId);
+        }
+        
+        // Apply rebirth bonus if applicable
+        int rebirths = getPlayerRebirths(playerId);
+        if (rebirths > 0) {
+            // 10% bonus per rebirth
+            experienceToAdd += (int)(experienceToAdd * (rebirths * 0.10));
+        }
+        
+        int currentExperience = getPlayerExperience(playerId);
+        int newExperience = currentExperience + experienceToAdd;
+        
+        setPlayerExperience(playerId, newExperience);
+        
+        return newExperience;
     }
     
     /**
@@ -333,23 +393,7 @@ public class BDRankModule implements SubmoduleBase, Listener, CommandExecutor {
      * @return The player's new experience points
      */
     public int addPlayerExperience(Player player, int experienceToAdd) {
-        if (experienceToAdd <= 0) {
-            return getPlayerExperience(player);
-        }
-        
-        // Apply rebirth bonus if applicable
-        int rebirths = getPlayerRebirths(player);
-        if (rebirths > 0) {
-            // 10% bonus per rebirth
-            experienceToAdd += (int)(experienceToAdd * (rebirths * 0.10));
-        }
-        
-        int currentExperience = getPlayerExperience(player);
-        int newExperience = currentExperience + experienceToAdd;
-        
-        setPlayerExperience(player, newExperience);
-        
-        return newExperience;
+        return addPlayerExperience(player.getUniqueId(), experienceToAdd);
     }
     
     /**

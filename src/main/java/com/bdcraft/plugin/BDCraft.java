@@ -8,12 +8,15 @@ import com.bdcraft.plugin.compat.PluginConflictManager;
 import com.bdcraft.plugin.config.ConfigManager;
 import com.bdcraft.plugin.modules.BDModule;
 import com.bdcraft.plugin.modules.ModuleManager;
+import com.bdcraft.plugin.modules.BDModuleManager;
 import com.bdcraft.plugin.modules.perms.BDPermissionAPI;
 import com.bdcraft.plugin.modules.display.BDDisplayModule;
 import com.bdcraft.plugin.modules.economy.BDEconomyModule;
-import com.bdcraft.plugin.modules.economy.modules.market.impl.MarketManager;
+import com.bdcraft.plugin.modules.economy.BDEconomyAPI;
+import com.bdcraft.plugin.modules.economy.modules.market.MarketManager;
 import com.bdcraft.plugin.modules.economy.modules.villager.impl.VillagerManager;
 import com.bdcraft.plugin.modules.progression.BDProgressionModule;
+
 import com.bdcraft.plugin.util.PluginBlocker;
 
 import org.bukkit.Bukkit;
@@ -30,7 +33,7 @@ import java.util.logging.Level;
  */
 public class BDCraft extends JavaPlugin {
     // Modules
-    private List<BDModule> modules;
+    private List<Object> modules;
     private BDEconomyModule economyModule;
     private BDProgressionModule progressionModule;
     private BDDisplayModule displayModule;
@@ -43,6 +46,10 @@ public class BDCraft extends JavaPlugin {
     
     // Permission API for other plugins
     private BDPermissionAPI permissionAPI;
+    
+    // API implementations
+    private BDEconomyAPI economyAPI;
+    private ProgressionAPI progressionAPI;
     
     // Plugin conflict management
     private PluginConflictManager conflictManager;
@@ -69,7 +76,7 @@ public class BDCraft extends JavaPlugin {
             getLogger().info("All default configurations saved.");
             
             // Initialize modules list
-            modules = new ArrayList<>();
+            modules = new ArrayList<Object>();
             getLogger().info("Module list initialized.");
             
             // Initialize config manager
@@ -77,7 +84,7 @@ public class BDCraft extends JavaPlugin {
             getLogger().info("Config manager initialized.");
             
             // Initialize module manager
-            moduleManager = new ModuleManager(this);
+            moduleManager = new BDModuleManager(this);
             getLogger().info("Module manager initialized.");
         
             // Initialize plugin conflict manager
@@ -103,10 +110,19 @@ public class BDCraft extends JavaPlugin {
             displayModule = new BDDisplayModule(this, economyModule, progressionModule);
             modules.add(displayModule);
             
+            // Initialize API implementations
+            getLogger().info("Initializing API implementations...");
+            economyAPI = new BDEconomyAPI(this, economyModule);
+            progressionAPI = progressionModule; // BDProgressionModule already implements ProgressionAPI
+            getLogger().info("API implementations initialized");
+            
             // Enable all modules
-            for (BDModule module : modules) {
-                getLogger().info("Enabling module: " + module.getName());
-                module.onEnable();
+            for (Object moduleObj : modules) {
+                if (moduleObj instanceof ModuleManager) {
+                    ModuleManager module = (ModuleManager) moduleObj;
+                    getLogger().info("Enabling module: " + module.getName());
+                    module.enable(this);
+                }
             }
             
             getLogger().info("BDCraft has been enabled successfully!");
@@ -126,11 +142,14 @@ public class BDCraft extends JavaPlugin {
             getLogger().info("Disabling " + modules.size() + " modules in reverse order...");
             for (int i = modules.size() - 1; i >= 0; i--) {
                 try {
-                    BDModule module = modules.get(i);
-                    getLogger().info("Disabling module: " + module.getName());
-                    module.onDisable();
+                    Object moduleObj = modules.get(i);
+                    if (moduleObj instanceof ModuleManager) {
+                        ModuleManager module = (ModuleManager) moduleObj;
+                        getLogger().info("Disabling module: " + module.getName());
+                        module.disable();
+                    }
                 } catch (Exception e) {
-                    getLogger().log(Level.SEVERE, "Error disabling module: " + modules.get(i).getName(), e);
+                    getLogger().log(Level.SEVERE, "Error disabling module at index " + i, e);
                     e.printStackTrace();
                 }
             }
@@ -210,7 +229,7 @@ public class BDCraft extends JavaPlugin {
      * @return The progression API
      */
     public ProgressionAPI getProgressionAPI() {
-        return progressionModule;
+        return progressionAPI;
     }
     
     /**
@@ -219,7 +238,7 @@ public class BDCraft extends JavaPlugin {
      * @return The economy API
      */
     public EconomyAPI getEconomyAPI() {
-        return economyModule;
+        return economyAPI;
     }
     
     // MarketAPI instance
@@ -305,12 +324,15 @@ public class BDCraft extends JavaPlugin {
      * Gets a module by name.
      *
      * @param name The module name
-     * @return The module, or null if not found
+     * @return The module as a ModuleManager, or null if not found
      */
-    public BDModule getModule(String name) {
-        for (BDModule module : modules) {
-            if (module.getName().equalsIgnoreCase(name)) {
-                return module;
+    public ModuleManager getModule(String name) {
+        for (Object moduleObj : modules) {
+            if (moduleObj instanceof ModuleManager) {
+                ModuleManager module = (ModuleManager) moduleObj;
+                if (module.getName().equalsIgnoreCase(name)) {
+                    return module;
+                }
             }
         }
         
@@ -325,10 +347,10 @@ public class BDCraft extends JavaPlugin {
      * @return The module, or null if not found
      */
     @SuppressWarnings("unchecked")
-    public <T extends BDModule> T getModule(Class<T> clazz) {
-        for (BDModule module : modules) {
-            if (clazz.isInstance(module)) {
-                return (T) module;
+    public <T> T getModule(Class<T> clazz) {
+        for (Object moduleObj : modules) {
+            if (clazz.isInstance(moduleObj)) {
+                return (T) moduleObj;
             }
         }
         

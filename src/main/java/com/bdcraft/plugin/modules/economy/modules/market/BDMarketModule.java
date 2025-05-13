@@ -30,7 +30,7 @@ public class BDMarketModule implements SubmoduleBase, CommandExecutor, Listener 
     
     // Components
     private MarketManager marketManager;
-    private ItemManager itemManager;
+    private MarketAPIImpl marketAPI;
     
     /**
      * Creates a new market module.
@@ -57,8 +57,8 @@ public class BDMarketModule implements SubmoduleBase, CommandExecutor, Listener 
         logger.info("Enabling Market submodule");
         
         // Initialize components
-        this.itemManager = new ItemManager(plugin);
-        this.marketManager = new MarketManager(plugin, itemManager);
+        this.marketManager = new MarketManager(plugin);
+        this.marketAPI = new MarketAPIImpl(marketManager);
         
         // Register events
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
@@ -124,12 +124,12 @@ public class BDMarketModule implements SubmoduleBase, CommandExecutor, Listener 
     }
     
     /**
-     * Gets the item manager instance.
+     * Gets the market API implementation.
      * 
-     * @return The item manager
+     * @return The market API
      */
-    public ItemManager getItemManager() {
-        return itemManager;
+    public MarketAPIImpl getMarketAPI() {
+        return marketAPI;
     }
     
     /**
@@ -141,24 +141,22 @@ public class BDMarketModule implements SubmoduleBase, CommandExecutor, Listener 
      */
     public Market createMarket(Player player, String marketName) {
         if (marketManager != null) {
-            return marketManager.createMarket(player, marketName, player.getLocation());
+            return marketManager.createMarket(player, marketName);
         }
         return null;
     }
     
     /**
-     * Gets all markets owned by a player.
+     * Gets a player's market.
      * 
      * @param player The player
-     * @return A list of markets owned by the player
+     * @return The player's market, or null if none
      */
-    public java.util.List<Market> getPlayerMarkets(Player player) {
+    public PlayerMarket getPlayerMarket(Player player) {
         if (marketManager != null) {
-            return marketManager.getMarkets().stream()
-                .filter(market -> market.getOwner().equals(player.getUniqueId()))
-                .collect(java.util.stream.Collectors.toList());
+            return marketManager.getPlayerMarket(player);
         }
-        return java.util.Collections.emptyList();
+        return null;
     }
     
     /**
@@ -175,21 +173,54 @@ public class BDMarketModule implements SubmoduleBase, CommandExecutor, Listener 
     }
     
     /**
-     * Opens a market interface for a player.
-     * This would typically open a GUI but is just a placeholder for now.
+     * Opens a market GUI for a player.
      * 
      * @param player The player
      * @param marketId The market ID
      * @return Whether the market was opened
      */
     public boolean openMarket(Player player, UUID marketId) {
-        Market market = getMarket(marketId);
-        if (market != null) {
-            player.sendMessage("§aOpening market: §e" + market.getName());
-            // TODO: Implement actual GUI opening
-            return true;
+        if (marketManager != null) {
+            return marketManager.openMarket(player, marketId);
         }
         return false;
+    }
+    
+    /**
+     * Gets a player's currency amount.
+     * 
+     * @param uuid The player's UUID
+     * @return The currency amount
+     */
+    public int getPlayerCurrency(UUID uuid) {
+        if (marketManager != null) {
+            return marketManager.getPlayerCurrency(uuid);
+        }
+        return 0;
+    }
+    
+    /**
+     * Sets a player's currency amount.
+     * 
+     * @param uuid The player's UUID
+     * @param amount The amount to set
+     */
+    public void setPlayerCurrency(UUID uuid, int amount) {
+        if (marketManager != null) {
+            marketManager.setPlayerCurrency(uuid, amount);
+        }
+    }
+    
+    /**
+     * Gets the item manager.
+     * 
+     * @return The item manager
+     */
+    public ItemManager getItemManager() {
+        if (marketManager != null) {
+            return marketManager.getItemManager();
+        }
+        return null;
     }
     
     /**
