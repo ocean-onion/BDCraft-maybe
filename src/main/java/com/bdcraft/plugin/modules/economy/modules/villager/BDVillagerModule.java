@@ -201,14 +201,16 @@ public class BDVillagerModule implements SubmoduleBase, CommandExecutor, Listene
      */
     @EventHandler
     public void onVillagerAcquireTrade(VillagerAcquireTradeEvent event) {
-        Villager villager = event.getEntity();
-        UUID villagerUUID = villager.getUniqueId();
-        
-        // Check if this is a custom villager
-        BDVillager bdVillager = getVillager(villagerUUID);
-        if (bdVillager != null) {
-            // Custom villagers have fixed trades, don't let them acquire random trades
-            event.setCancelled(true);
+        if (event.getEntity() instanceof Villager) {
+            Villager villager = (Villager) event.getEntity();
+            UUID villagerUUID = villager.getUniqueId();
+            
+            // Check if this is a custom villager
+            BDVillager bdVillager = getVillager(villagerUUID);
+            if (bdVillager != null) {
+                // Custom villagers have fixed trades, don't let them acquire random trades
+                event.setCancelled(true);
+            }
         }
     }
     

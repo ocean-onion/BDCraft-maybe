@@ -2,8 +2,8 @@ package com.bdcraft.plugin.modules.vital.listeners;
 
 import com.bdcraft.plugin.BDCraft;
 import com.bdcraft.plugin.modules.vital.BDVitalModule;
-import com.bdcraft.plugin.modules.vital.modules.message.MessageManager;
-import com.bdcraft.plugin.modules.vital.modules.teleport.TeleportManager;
+import com.bdcraft.plugin.modules.vital.modules.message.MessageModule;
+import com.bdcraft.plugin.modules.vital.modules.teleport.TeleportModule;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -23,8 +23,8 @@ import java.util.List;
 public class PlayerListener implements Listener {
     private final BDCraft plugin;
     private final BDVitalModule vitalModule;
-    private final TeleportManager teleportManager;
-    private final MessageManager messageManager;
+    private final TeleportModule teleportModule;
+    private final MessageModule messageModule;
     
     /**
      * Creates a new player listener.
@@ -34,8 +34,8 @@ public class PlayerListener implements Listener {
     public PlayerListener(BDCraft plugin, BDVitalModule vitalModule) {
         this.plugin = plugin;
         this.vitalModule = vitalModule;
-        this.teleportManager = vitalModule.getTeleportManager();
-        this.messageManager = vitalModule.getMessageManager();
+        this.teleportModule = vitalModule.getTeleportModule();
+        this.messageModule = vitalModule.getMessageModule();
     }
     
     @EventHandler(priority = EventPriority.NORMAL)
@@ -43,7 +43,7 @@ public class PlayerListener implements Listener {
         Player player = event.getPlayer();
         
         // Check for mail
-        List<MessageManager.Mail> mails = messageManager.getMail(player.getName());
+        List<MessageModule.Mail> mails = messageModule.getMail(player.getName());
         
         if (!mails.isEmpty()) {
             player.sendMessage(ChatColor.YELLOW + "You have " + mails.size() + " unread mail messages.");
@@ -57,7 +57,7 @@ public class PlayerListener implements Listener {
         Player player = event.getPlayer();
         
         // Clear teleport requests
-        teleportManager.removePendingRequest(player.getUniqueId());
+        teleportModule.removePendingRequest(player.getUniqueId());
     }
     
     @EventHandler(priority = EventPriority.HIGH)
@@ -69,7 +69,7 @@ public class PlayerListener implements Listener {
         }
         
         // Save last location
-        teleportManager.saveLastLocation(event.getPlayer());
+        teleportModule.saveLastLocation(event.getPlayer());
     }
     
     @EventHandler(priority = EventPriority.NORMAL)
@@ -77,7 +77,7 @@ public class PlayerListener implements Listener {
         Player player = event.getEntity();
         
         // Save death location
-        teleportManager.saveDeathLocation(player);
+        teleportModule.saveDeathLocation(player);
         
         // Inform player
         if (player.hasPermission("bdvital.deathinfo")) {

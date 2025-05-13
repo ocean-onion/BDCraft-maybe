@@ -222,7 +222,7 @@ public class ChatModule implements SubmoduleBase, Listener, CommandExecutor {
                 if (rank.equals("Player")) {
                     BDPermsModule permsModule = (BDPermsModule) plugin.getModule("Perms");
                     if (permsModule != null) {
-                        String group = permsModule.getPlayerGroup(player);
+                        String group = permsModule.getPlayerGroup(player.getUniqueId());
                         if (group != null && !group.isEmpty()) {
                             rank = group;
                         }

@@ -575,7 +575,7 @@ public class MessageModule implements SubmoduleBase, Listener, CommandExecutor {
             
             for (int i = 0; i < mail.size(); i++) {
                 Mail m = mail.get(i);
-                player.sendMessage(ChatColor.YELLOW + (i + 1) + ". " + ChatColor.WHITE + "From: " + 
+                player.sendMessage(ChatColor.YELLOW.toString() + (i + 1) + ". " + ChatColor.WHITE + "From: " + 
                         m.getSender() + ", Date: " + m.getDate());
                 player.sendMessage(ChatColor.GRAY + "  " + m.getMessage());
             }

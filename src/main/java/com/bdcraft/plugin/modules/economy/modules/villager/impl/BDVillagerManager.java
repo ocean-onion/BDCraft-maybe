@@ -24,6 +24,17 @@ public class BDVillagerManager {
      * Creates a new BDVillagerManager.
      *
      * @param plugin The BDCraft plugin instance
+     */
+    public BDVillagerManager(BDCraft plugin) {
+        this.plugin = plugin;
+        this.logger = plugin.getLogger();
+        this.villagerManager = new VillagerManager(plugin);
+    }
+    
+    /**
+     * Creates a new BDVillagerManager with an existing VillagerManager.
+     *
+     * @param plugin The BDCraft plugin instance
      * @param villagerManager The basic VillagerManager instance
      */
     public BDVillagerManager(BDCraft plugin, VillagerManager villagerManager) {
@@ -38,6 +49,24 @@ public class BDVillagerManager {
     public void initialize() {
         logger.info("Initializing BDVillagerManager...");
         registerVillagerTypes();
+    }
+    
+    /**
+     * Loads villagers from configuration.
+     */
+    public void loadVillagers() {
+        logger.info("Loading custom villagers...");
+        // Implementation would load villagers from configuration
+        // For now, this is just a placeholder
+    }
+    
+    /**
+     * Saves villagers to configuration.
+     */
+    public void saveVillagers() {
+        logger.info("Saving custom villagers...");
+        // Implementation would save villager data to configuration
+        // For now, this is just a placeholder
     }
     
     /**
@@ -103,6 +132,57 @@ public class BDVillagerManager {
      */
     public Map<String, VillagerType> getVillagerTypes() {
         return new HashMap<>(villagerTypes);
+    }
+    
+    /**
+     * Gets a BDVillager by its entity UUID.
+     *
+     * @param uuid The UUID of the villager entity
+     * @return The BDVillager, or null if not found
+     */
+    public BDVillager getVillager(UUID uuid) {
+        return villagerManager.getVillager(uuid);
+    }
+    
+    /**
+     * Removes villagers within a certain radius of a location.
+     *
+     * @param location The center location
+     * @param radius The radius to check within
+     * @return The number of villagers removed
+     */
+    public int removeNearbyVillagers(Location location, int radius) {
+        return villagerManager.removeNearbyVillagers(location, radius);
+    }
+    
+    /**
+     * Creates a BDCraft villager at a specific location.
+     *
+     * @param location The location to create the villager at
+     * @param typeId The type ID of the villager to create
+     * @return The created BDVillager, or null if creation failed
+     */
+    public BDVillager createVillager(Location location, String typeId) {
+        if (!villagerTypes.containsKey(typeId)) {
+            logger.warning("Unknown villager type: " + typeId);
+            return null;
+        }
+        
+        BDVillager villager = villagerManager.createVillager(location, typeId);
+        if (villager != null && location.getWorld() != null) {
+            // Spawn the actual entity
+            Villager entity = location.getWorld().spawn(location, Villager.class);
+            
+            // Apply type-specific settings
+            VillagerType type = villagerTypes.get(typeId);
+            entity.setProfession(type.getProfession());
+            entity.setCustomName(type.getDisplayName());
+            entity.setCustomNameVisible(true);
+            
+            villager.setEntity(entity);
+        }
+        
+        return villager;
     }
     
     /**

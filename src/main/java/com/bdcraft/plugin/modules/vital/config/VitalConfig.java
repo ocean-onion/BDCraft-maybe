@@ -2,6 +2,7 @@ package com.bdcraft.plugin.modules.vital.config;
 
 import com.bdcraft.plugin.BDCraft;
 import com.bdcraft.plugin.config.ConfigManager;
+import com.bdcraft.plugin.config.ConfigType;
 import org.bukkit.configuration.file.FileConfiguration;
 
 /**
@@ -29,7 +30,7 @@ public class VitalConfig {
      */
     public VitalConfig(BDCraft plugin) {
         this.plugin = plugin;
-        this.config = plugin.getConfig(ConfigManager.ConfigType.VITAL);
+        this.config = plugin.getConfig(ConfigType.VITAL);
         loadConfig();
     }
     

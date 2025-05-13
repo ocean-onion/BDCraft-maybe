@@ -1,6 +1,7 @@
 package com.bdcraft.plugin.modules.progression;
 
 import com.bdcraft.plugin.BDCraft;
+import com.bdcraft.plugin.modules.progression.modules.rank.BDRankModule;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -53,14 +54,14 @@ public class PlayerProgressionListener implements Listener {
             
             // Show progress to next rank if applicable
             int currentRank = rankManager.getPlayerRank(player);
-            if (currentRank < BDRankManager.RANK_MASTER_FARMER) {
+            if (currentRank < BDRankModule.RANK_MASTER_FARMER) {
                 int expForNextRank = rankManager.getExperienceForNextRank(player);
                 int currentExp = rankManager.getPlayerExperience(player);
                 
                 player.sendMessage(ChatColor.GREEN + "Progress to next rank: " + 
                         currentExp + "/" + expForNextRank + " XP (" + rankManager.getProgressPercentage(player) + "%)");
                 player.sendMessage(rankManager.getProgressBar(player));
-            } else if (currentRank == BDRankManager.RANK_MASTER_FARMER) {
+            } else if (currentRank == BDRankModule.RANK_MASTER_FARMER) {
                 player.sendMessage(ChatColor.GREEN + "You are a " + rankManager.getPlayerColoredRankName(player) + 
                         ChatColor.GREEN + "! Type " + ChatColor.GOLD + "/bdrank rebirth" + 
                         ChatColor.GREEN + " to reset your rank and gain a permanent experience bonus.");

@@ -93,4 +93,19 @@ public class BDVillager {
     public void setEntity(Villager entity) {
         this.entity = entity;
     }
+    
+    /**
+     * Handles player interaction with this villager.
+     *
+     * @param player The player interacting with the villager
+     */
+    public void onInteract(Player player) {
+        // Open custom trading menu or perform other actions
+        player.sendMessage("§6Interacting with a " + type + " villager.");
+        
+        if (entity != null) {
+            // Update location if needed
+            location = entity.getLocation();
+        }
+    }
 }

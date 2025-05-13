@@ -186,4 +186,24 @@ public class BDVitalModule implements ModuleManager {
     public MessageModule getMessageModule() {
         return (MessageModule) getSubmodule("Message");
     }
+    
+    /**
+     * Gets the teleport manager.
+     * This is a compatibility method for legacy code.
+     * 
+     * @return The teleport module as a manager
+     */
+    public TeleportModule getTeleportManager() {
+        return getTeleportModule();
+    }
+    
+    /**
+     * Gets the message manager.
+     * This is a compatibility method for legacy code.
+     * 
+     * @return The message module as a manager
+     */
+    public MessageModule getMessageManager() {
+        return getMessageModule();
+    }
 }

@@ -1,0 +1,1124 @@
+package com.bdcraft.plugin.modules.vital.modules.teleport;
+
+import com.bdcraft.plugin.BDCraft;
+import com.bdcraft.plugin.config.ConfigType;
+import com.bdcraft.plugin.modules.perms.BDPermissionAPI;
+import com.bdcraft.plugin.modules.perms.PermNode;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+import org.bukkit.scheduler.BukkitRunnable;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
+
+/**
+ * Advanced manager for all teleportation-related functionality.
+ */
+public class TeleportManager {
+    private final BDCraft plugin;
+    private final Logger logger;
+    private BDPermissionAPI permissionAPI;
+    
+    // Teleport cooldown tracking
+    private final Map<UUID, Map<TeleportType, Long>> lastTeleportTime = new ConcurrentHashMap<>();
+    private final Map<UUID, Location> lastLocation = new ConcurrentHashMap<>();
+    private final Map<UUID, Location> pendingTeleports = new ConcurrentHashMap<>();
+    
+    // Teleport request system
+    private final Map<UUID, TeleportRequest> incomingRequests = new ConcurrentHashMap<>();
+    private final Map<UUID, Set<UUID>> outgoingRequests = new ConcurrentHashMap<>();
+    
+    // Configuration values
+    private int teleportCooldown;
+    private int backCooldown;
+    private int tpaCooldown;
+    private int teleportWarmup;
+    private int requestTimeout;
+    private boolean allowCrossDimensional;
+    private boolean cancelOnMove;
+    private boolean cancelOnDamage;
+    private Set<String> restrictedWorlds;
+    private Map<String, Integer> worldCooldowns;
+    private Map<String, Boolean> worldPerms;
+    private boolean economyEnabled;
+    private double teleportBaseCost;
+    private double tpaCost;
+    private double backCost;
+    private boolean scaleCostByDistance;
+    private double costPerBlock;
+    private double costMultiplierCrossDimension;
+    
+    /**
+     * Creates a new TeleportManager.
+     *
+     * @param plugin The plugin instance
+     */
+    public TeleportManager(BDCraft plugin) {
+        this.plugin = plugin;
+        this.logger = plugin.getLogger();
+        // Uncomment when PermissionAPI is available
+        // this.permissionAPI = plugin.getPermissionAPI();
+        loadConfiguration();
+        startCleanupTask();
+    }
+    
+    /**
+     * Loads configuration settings for teleportation.
+     */
+    private void loadConfiguration() {
+        File teleportConfig = new File(plugin.getDataFolder(), "teleport.yml");
+        FileConfiguration config;
+        
+        // Create default config if it doesn't exist
+        if (!teleportConfig.exists()) {
+            try {
+                teleportConfig.getParentFile().mkdirs();
+                teleportConfig.createNewFile();
+                config = YamlConfiguration.loadConfiguration(teleportConfig);
+                
+                // Set default values
+                config.set("cooldown.teleport", 30);
+                config.set("cooldown.back", 60);
+                config.set("cooldown.tpa", 60);
+                config.set("teleport.warmup", 3);
+                config.set("teleport.request_timeout", 120);
+                config.set("teleport.allow_cross_dimensional", true);
+                config.set("teleport.cancel_on_move", true);
+                config.set("teleport.cancel_on_damage", true);
+                
+                List<String> restricted = new ArrayList<>();
+                restricted.add("world_the_end");
+                config.set("worlds.restricted", restricted);
+                
+                ConfigurationSection worldCooldownSection = config.createSection("worlds.cooldowns");
+                worldCooldownSection.set("world_nether", 60);
+                worldCooldownSection.set("world_the_end", 120);
+                
+                ConfigurationSection worldPermSection = config.createSection("worlds.permissions");
+                worldPermSection.set("world", true);
+                worldPermSection.set("world_nether", false);
+                worldPermSection.set("world_the_end", false);
+                
+                // Economy settings
+                config.set("economy.enabled", false);
+                config.set("economy.base_cost", 100.0);
+                config.set("economy.tpa_cost", 50.0);
+                config.set("economy.back_cost", 75.0);
+                config.set("economy.scale_by_distance", true);
+                config.set("economy.cost_per_block", 0.01);
+                config.set("economy.cross_dimension_multiplier", 2.0);
+                
+                config.save(teleportConfig);
+            } catch (IOException e) {
+                logger.log(Level.SEVERE, "Could not create default teleport.yml", e);
+                // Use default values
+                teleportCooldown = 30;
+                backCooldown = 60;
+                tpaCooldown = 60;
+                teleportWarmup = 3;
+                requestTimeout = 120;
+                allowCrossDimensional = true;
+                cancelOnMove = true;
+                cancelOnDamage = true;
+                restrictedWorlds = new HashSet<>();
+                restrictedWorlds.add("world_the_end");
+                worldCooldowns = new HashMap<>();
+                worldPerms = new HashMap<>();
+                economyEnabled = false;
+                teleportBaseCost = 100.0;
+                tpaCost = 50.0;
+                backCost = 75.0;
+                scaleCostByDistance = true;
+                costPerBlock = 0.01;
+                costMultiplierCrossDimension = 2.0;
+                return;
+            }
+        } else {
+            config = YamlConfiguration.loadConfiguration(teleportConfig);
+        }
+        
+        // Load configuration values
+        teleportCooldown = config.getInt("cooldown.teleport", 30);
+        backCooldown = config.getInt("cooldown.back", 60);
+        tpaCooldown = config.getInt("cooldown.tpa", 60);
+        teleportWarmup = config.getInt("teleport.warmup", 3);
+        requestTimeout = config.getInt("teleport.request_timeout", 120);
+        allowCrossDimensional = config.getBoolean("teleport.allow_cross_dimensional", true);
+        cancelOnMove = config.getBoolean("teleport.cancel_on_move", true);
+        cancelOnDamage = config.getBoolean("teleport.cancel_on_damage", true);
+        
+        restrictedWorlds = new HashSet<>(config.getStringList("worlds.restricted"));
+        
+        // Load world cooldowns
+        worldCooldowns = new HashMap<>();
+        ConfigurationSection worldCooldownSection = config.getConfigurationSection("worlds.cooldowns");
+        if (worldCooldownSection != null) {
+            for (String world : worldCooldownSection.getKeys(false)) {
+                worldCooldowns.put(world, worldCooldownSection.getInt(world));
+            }
+        }
+        
+        // Load world permissions
+        worldPerms = new HashMap<>();
+        ConfigurationSection worldPermSection = config.getConfigurationSection("worlds.permissions");
+        if (worldPermSection != null) {
+            for (String world : worldPermSection.getKeys(false)) {
+                worldPerms.put(world, worldPermSection.getBoolean(world));
+            }
+        }
+        
+        // Load economy settings
+        economyEnabled = config.getBoolean("economy.enabled", false);
+        teleportBaseCost = config.getDouble("economy.base_cost", 100.0);
+        tpaCost = config.getDouble("economy.tpa_cost", 50.0);
+        backCost = config.getDouble("economy.back_cost", 75.0);
+        scaleCostByDistance = config.getBoolean("economy.scale_by_distance", true);
+        costPerBlock = config.getDouble("economy.cost_per_block", 0.01);
+        costMultiplierCrossDimension = config.getDouble("economy.cross_dimension_multiplier", 2.0);
+        
+        logger.info("Loaded teleport configuration");
+    }
+    
+    /**
+     * Starts a task to clean up expired teleport requests.
+     */
+    private void startCleanupTask() {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                long currentTime = System.currentTimeMillis();
+                
+                // Clean up expired requests
+                List<UUID> expiredRequests = incomingRequests.entrySet().stream()
+                    .filter(entry -> (currentTime - entry.getValue().getTimestamp()) > (requestTimeout * 1000))
+                    .map(Map.Entry::getKey)
+                    .collect(Collectors.toList());
+                
+                for (UUID uuid : expiredRequests) {
+                    TeleportRequest request = incomingRequests.remove(uuid);
+                    Player target = Bukkit.getPlayer(uuid);
+                    Player requester = Bukkit.getPlayer(request.getRequesterUUID());
+                    
+                    if (target != null && target.isOnline()) {
+                        target.sendMessage(ChatColor.RED + "Teleport request from " + 
+                                (requester != null ? requester.getName() : "someone") + " has expired.");
+                    }
+                    
+                    if (requester != null && requester.isOnline()) {
+                        requester.sendMessage(ChatColor.RED + "Your teleport request to " + 
+                                (target != null ? target.getName() : "someone") + " has expired.");
+                    }
+                    
+                    // Clean up outgoing requests
+                    if (requester != null) {
+                        Set<UUID> outgoing = outgoingRequests.get(request.getRequesterUUID());
+                        if (outgoing != null) {
+                            outgoing.remove(uuid);
+                            if (outgoing.isEmpty()) {
+                                outgoingRequests.remove(request.getRequesterUUID());
+                            }
+                        }
+                    }
+                }
+            }
+        }.runTaskTimer(plugin, 20L * 60L, 20L * 60L); // Check every minute
+    }
+    
+    /**
+     * Gets a world-specific cooldown.
+     *
+     * @param worldName The name of the world
+     * @param defaultCooldown The default cooldown to use if no world-specific one is set
+     * @return The cooldown in seconds
+     */
+    private int getWorldCooldown(String worldName, int defaultCooldown) {
+        return worldCooldowns.getOrDefault(worldName, defaultCooldown);
+    }
+    
+    /**
+     * Checks if teleporting to a specific world is allowed.
+     *
+     * @param worldName The name of the world
+     * @return true if teleporting is allowed, false otherwise
+     */
+    private boolean isTeleportAllowedToWorld(String worldName) {
+        if (restrictedWorlds.contains(worldName)) {
+            return false;
+        }
+        return worldPerms.getOrDefault(worldName, true);
+    }
+    
+    /**
+     * Saves a player's last location.
+     *
+     * @param player The player
+     */
+    public void saveLastLocation(Player player) {
+        lastLocation.put(player.getUniqueId(), player.getLocation().clone());
+    }
+    
+    /**
+     * Teleports a player to a location with all appropriate checks and cooldowns.
+     *
+     * @param player The player to teleport
+     * @param location The target location
+     * @param type The type of teleport
+     * @param bypassRestrictions Whether to bypass restrictions (for admin teleports)
+     * @return true if the teleport was initiated, false otherwise
+     */
+    public boolean teleportPlayer(Player player, Location location, TeleportType type, boolean bypassRestrictions) {
+        if (player == null || location == null || location.getWorld() == null) {
+            return false;
+        }
+        
+        UUID playerUuid = player.getUniqueId();
+        
+        // Save current location before teleporting
+        if (type != TeleportType.BACK) {
+            saveLastLocation(player);
+        }
+        
+        // Apply cooldown
+        if (!bypassRestrictions) {
+            Map<TeleportType, Long> cooldowns = lastTeleportTime.computeIfAbsent(playerUuid, k -> new HashMap<>());
+            cooldowns.put(type, System.currentTimeMillis());
+        }
+        
+        // Handle warmup if enabled
+        if (teleportWarmup > 0 && !bypassRestrictions) {
+            player.sendMessage(ChatColor.YELLOW + "Teleporting in " + teleportWarmup + " seconds. Don't move!");
+            Location startLoc = player.getLocation().clone();
+            pendingTeleports.put(playerUuid, startLoc);
+            
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    if (!player.isOnline()) {
+                        pendingTeleports.remove(playerUuid);
+                        return;
+                    }
+                    
+                    if (cancelOnMove && !locationEquals(startLoc, player.getLocation())) {
+                        player.sendMessage(ChatColor.RED + "Teleport cancelled because you moved!");
+                        pendingTeleports.remove(playerUuid);
+                        return;
+                    }
+                    
+                    pendingTeleports.remove(playerUuid);
+                    executeTeleport(player, location, type);
+                }
+            }.runTaskLater(plugin, teleportWarmup * 20L);
+            
+            return true;
+        } else {
+            // No warmup, teleport immediately  
+            return executeTeleport(player, location, type);
+        }
+    }
+    
+    /**
+     * Executes the actual teleport.
+     *
+     * @param player The player to teleport
+     * @param location The location to teleport to
+     * @param type The type of teleport
+     * @return true if the teleport was successful, false otherwise
+     */
+    private boolean executeTeleport(Player player, Location location, TeleportType type) {
+        TeleportCause cause = TeleportCause.PLUGIN;
+        
+        // Check for safe location
+        Location safeLoc = ensureSafeLocation(location);
+        if (safeLoc == null) {
+            player.sendMessage(ChatColor.RED + "Could not find a safe location to teleport to.");
+            return false;
+        }
+        
+        boolean success = player.teleport(safeLoc, cause);
+        if (success) {
+            player.sendMessage(ChatColor.GREEN + "Teleported successfully.");
+        } else {
+            player.sendMessage(ChatColor.RED + "Teleportation failed.");
+        }
+        
+        return success;
+    }
+    
+    /**
+     * Ensures a location is safe to teleport to.
+     *
+     * @param location The location to check
+     * @return A safe location, or null if no safe location could be found
+     */
+    private Location ensureSafeLocation(Location location) {
+        if (location == null || location.getWorld() == null) {
+            return null;
+        }
+        
+        World world = location.getWorld();
+        int x = location.getBlockX();
+        int y = location.getBlockY();
+        int z = location.getBlockZ();
+        
+        // Check if the target location is already safe
+        if (isSafeLocation(location)) {
+            return location;
+        }
+        
+        // Try to find a safe location nearby
+        for (int yOffset = 0; yOffset < 5; yOffset++) {
+            for (int xzOffset = 0; xzOffset <= yOffset; xzOffset++) {
+                for (int i = -xzOffset; i <= xzOffset; i++) {
+                    for (int j = -xzOffset; j <= xzOffset; j++) {
+                        if (Math.abs(i) != xzOffset && Math.abs(j) != xzOffset) {
+                            continue; // Skip if not on the perimeter
+                        }
+                        
+                        // Try above
+                        Location testLoc = new Location(world, x + i, y + yOffset, z + j, 
+                                location.getYaw(), location.getPitch());
+                        if (isSafeLocation(testLoc)) {
+                            return testLoc;
+                        }
+                        
+                        // Try below (if not at bottom of world)
+                        if (y - yOffset > 0) {
+                            testLoc = new Location(world, x + i, y - yOffset, z + j, 
+                                    location.getYaw(), location.getPitch());
+                            if (isSafeLocation(testLoc)) {
+                                return testLoc;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Could not find a safe location
+        return null;
+    }
+    
+    /**
+     * Checks if a location is safe to teleport to.
+     *
+     * @param location The location to check
+     * @return true if the location is safe, false otherwise
+     */
+    private boolean isSafeLocation(Location location) {
+        if (location == null || location.getWorld() == null) {
+            return false;
+        }
+        
+        World world = location.getWorld();
+        int x = location.getBlockX();
+        int y = location.getBlockY();
+        int z = location.getBlockZ();
+        
+        // Check if the location is in the world boundaries
+        if (y < 0 || y >= world.getMaxHeight()) {
+            return false;
+        }
+        
+        // Check for dangerous blocks
+        Material blockType = world.getBlockAt(x, y, z).getType();
+        Material blockBelow = world.getBlockAt(x, y - 1, z).getType();
+        Material blockAbove = world.getBlockAt(x, y + 1, z).getType();
+        
+        // Check that the player has two blocks of air to stand in
+        boolean airBlock = blockType.isAir() || blockType == Material.WATER;
+        boolean airAbove = blockAbove.isAir() || blockAbove == Material.WATER;
+        
+        // Check that there's a solid block below or water to swim in
+        boolean solidBelow = blockBelow.isSolid() || blockBelow == Material.WATER;
+        
+        // Check dangerous blocks
+        boolean dangerousBlock = isDangerousBlock(blockType) || isDangerousBlock(blockBelow) || 
+                                 isDangerousBlock(blockAbove);
+        
+        return airBlock && airAbove && solidBelow && !dangerousBlock;
+    }
+    
+    /**
+     * Checks if a block type is dangerous.
+     *
+     * @param material The material to check
+     * @return true if the material is dangerous, false otherwise
+     */
+    private boolean isDangerousBlock(Material material) {
+        return material == Material.LAVA || 
+               material == Material.FIRE || 
+               material == Material.CAMPFIRE || 
+               material == Material.SOUL_CAMPFIRE || 
+               material == Material.CACTUS || 
+               material == Material.MAGMA_BLOCK || 
+               material == Material.SWEET_BERRY_BUSH;
+    }
+    
+    /**
+     * Checks if a location equals another location, ignoring yaw and pitch.
+     *
+     * @param loc1 The first location
+     * @param loc2 The second location
+     * @return true if the locations are the same, false otherwise
+     */
+    private boolean locationEquals(Location loc1, Location loc2) {
+        if (loc1 == null || loc2 == null) {
+            return false;
+        }
+        
+        return loc1.getWorld() == loc2.getWorld() && 
+               loc1.getBlockX() == loc2.getBlockX() && 
+               loc1.getBlockY() == loc2.getBlockY() && 
+               loc1.getBlockZ() == loc2.getBlockZ();
+    }
+    
+    /**
+     * Checks if a player is on cooldown for a teleport type.
+     *
+     * @param player The player
+     * @param type The teleport type
+     * @return true if the player can teleport, false if they're on cooldown
+     */
+    private boolean checkCooldown(Player player, TeleportType type) {
+        if (player.hasPermission("bdcraft.teleport.bypass.cooldown")) {
+            return true;
+        }
+        
+        UUID playerUuid = player.getUniqueId();
+        Map<TeleportType, Long> cooldowns = lastTeleportTime.get(playerUuid);
+        if (cooldowns == null) {
+            return true;
+        }
+        
+        Long lastTime = cooldowns.get(type);
+        if (lastTime == null) {
+            return true;
+        }
+        
+        int cooldownSeconds;
+        switch (type) {
+            case TPA:
+                cooldownSeconds = tpaCooldown;
+                break;
+            case BACK:
+                cooldownSeconds = backCooldown;
+                break;
+            default:
+                cooldownSeconds = teleportCooldown;
+                break;
+        }
+        
+        // Apply world-specific cooldowns if the player is in a specific world
+        String worldName = player.getWorld().getName();
+        cooldownSeconds = getWorldCooldown(worldName, cooldownSeconds);
+        
+        long currentTime = System.currentTimeMillis();
+        return (currentTime - lastTime) >= (cooldownSeconds * 1000);
+    }
+    
+    /**
+     * Gets the remaining cooldown time for a player.
+     *
+     * @param player The player
+     * @param type The teleport type
+     * @return The remaining cooldown time in seconds, or 0 if no cooldown
+     */
+    private int getRemainingCooldown(Player player, TeleportType type) {
+        if (player.hasPermission("bdcraft.teleport.bypass.cooldown")) {
+            return 0;
+        }
+        
+        UUID playerUuid = player.getUniqueId();
+        Map<TeleportType, Long> cooldowns = lastTeleportTime.get(playerUuid);
+        if (cooldowns == null) {
+            return 0;
+        }
+        
+        Long lastTime = cooldowns.get(type);
+        if (lastTime == null) {
+            return 0;
+        }
+        
+        int cooldownSeconds;
+        switch (type) {
+            case TPA:
+                cooldownSeconds = tpaCooldown;
+                break;
+            case BACK:
+                cooldownSeconds = backCooldown;
+                break;
+            default:
+                cooldownSeconds = teleportCooldown;
+                break;
+        }
+        
+        // Apply world-specific cooldowns if the player is in a specific world
+        String worldName = player.getWorld().getName();
+        cooldownSeconds = getWorldCooldown(worldName, cooldownSeconds);
+        
+        long currentTime = System.currentTimeMillis();
+        long elapsed = currentTime - lastTime;
+        long remaining = (cooldownSeconds * 1000) - elapsed;
+        
+        return Math.max(0, (int) (remaining / 1000));
+    }
+    
+    /**
+     * Calculates the cost of a teleport.
+     *
+     * @param from The source location
+     * @param to The destination location
+     * @param type The teleport type
+     * @return The cost
+     */
+    private double calculateTeleportCost(Location from, Location to, TeleportType type) {
+        if (!economyEnabled) {
+            return 0;
+        }
+        
+        double baseCost;
+        switch (type) {
+            case TPA:
+                baseCost = tpaCost;
+                break;
+            case BACK:
+                baseCost = backCost;
+                break;
+            default:
+                baseCost = teleportBaseCost;
+                break;
+        }
+        
+        if (!scaleCostByDistance) {
+            return baseCost;
+        }
+        
+        double cost = baseCost;
+        
+        // Add distance-based cost
+        if (from.getWorld() == to.getWorld()) {
+            double distance = from.distance(to);
+            cost += distance * costPerBlock;
+        } else {
+            // Cross-dimensional teleport
+            cost *= costMultiplierCrossDimension;
+        }
+        
+        return Math.round(cost * 100) / 100.0; // Round to 2 decimal places
+    }
+    
+    /**
+     * Teleports a player to another player.
+     *
+     * @param player The player to teleport
+     * @param target The target player
+     * @param bypassRestrictions Whether to bypass restrictions
+     * @return true if the teleport was initiated, false otherwise
+     */
+    public boolean teleportToPlayer(Player player, Player target, boolean bypassRestrictions) {
+        if (player == null || target == null || !target.isOnline()) {
+            return false;
+        }
+        
+        // Don't allow teleporting to self
+        if (player.equals(target)) {
+            player.sendMessage(ChatColor.RED + "You cannot teleport to yourself.");
+            return false;
+        }
+        
+        return teleportPlayer(player, target.getLocation(), TeleportType.ADMIN, bypassRestrictions);
+    }
+    
+    /**
+     * Sends a teleport request from one player to another.
+     *
+     * @param sender The sender
+     * @param recipient The recipient
+     * @return true if the request was sent, false otherwise
+     */
+    public boolean sendTeleportRequest(Player sender, Player recipient) {
+        if (sender == null || recipient == null || !recipient.isOnline()) {
+            return false;
+        }
+        
+        UUID senderUuid = sender.getUniqueId();
+        UUID recipientUuid = recipient.getUniqueId();
+        
+        // Don't allow sending request to self
+        if (senderUuid.equals(recipientUuid)) {
+            sender.sendMessage(ChatColor.RED + "You cannot send a teleport request to yourself.");
+            return false;
+        }
+        
+        // Check if sender is on cooldown
+        if (!checkCooldown(sender, TeleportType.TPA)) {
+            int remainingSecs = getRemainingCooldown(sender, TeleportType.TPA);
+            sender.sendMessage(ChatColor.RED + "You must wait " + remainingSecs + 
+                    " more seconds before sending another teleport request.");
+            return false;
+        }
+        
+        // Check if recipient already has a request from sender
+        TeleportRequest existingRequest = incomingRequests.get(recipientUuid);
+        if (existingRequest != null && existingRequest.getRequesterUUID().equals(senderUuid)) {
+            sender.sendMessage(ChatColor.RED + "You have already sent a teleport request to " + 
+                    recipient.getName() + ".");
+            return false;
+        }
+        
+        // Store the request
+        TeleportRequest request = new TeleportRequest(senderUuid, System.currentTimeMillis(), TeleportRequestType.TPA);
+        incomingRequests.put(recipientUuid, request);
+        
+        // Track outgoing requests
+        outgoingRequests.computeIfAbsent(senderUuid, k -> new HashSet<>()).add(recipientUuid);
+        
+        // Apply cooldown
+        Map<TeleportType, Long> cooldowns = lastTeleportTime.computeIfAbsent(senderUuid, k -> new HashMap<>());
+        cooldowns.put(TeleportType.TPA, System.currentTimeMillis());
+        
+        // Send messages
+        sender.sendMessage(ChatColor.GREEN + "Teleport request sent to " + recipient.getName() + ".");
+        recipient.sendMessage(ChatColor.YELLOW + sender.getName() + " has requested to teleport to you.");
+        recipient.sendMessage(ChatColor.YELLOW + "Type " + ChatColor.GREEN + "/tpaccept" + 
+                ChatColor.YELLOW + " to accept or " + ChatColor.RED + "/tpdeny" + 
+                ChatColor.YELLOW + " to deny.");
+        
+        return true;
+    }
+    
+    /**
+     * Sends a teleport here request from one player to another.
+     *
+     * @param sender The sender
+     * @param recipient The recipient
+     * @return true if the request was sent, false otherwise
+     */
+    public boolean sendTeleportHereRequest(Player sender, Player recipient) {
+        if (sender == null || recipient == null || !recipient.isOnline()) {
+            return false;
+        }
+        
+        UUID senderUuid = sender.getUniqueId();
+        UUID recipientUuid = recipient.getUniqueId();
+        
+        // Don't allow sending request to self
+        if (senderUuid.equals(recipientUuid)) {
+            sender.sendMessage(ChatColor.RED + "You cannot send a teleport request to yourself.");
+            return false;
+        }
+        
+        // Check if sender is on cooldown
+        if (!checkCooldown(sender, TeleportType.TPA)) {
+            int remainingSecs = getRemainingCooldown(sender, TeleportType.TPA);
+            sender.sendMessage(ChatColor.RED + "You must wait " + remainingSecs + 
+                    " more seconds before sending another teleport request.");
+            return false;
+        }
+        
+        // Check if recipient already has a request from sender
+        TeleportRequest existingRequest = incomingRequests.get(recipientUuid);
+        if (existingRequest != null && existingRequest.getRequesterUUID().equals(senderUuid)) {
+            sender.sendMessage(ChatColor.RED + "You have already sent a teleport request to " + 
+                    recipient.getName() + ".");
+            return false;
+        }
+        
+        // Store the request
+        TeleportRequest request = new TeleportRequest(senderUuid, System.currentTimeMillis(), TeleportRequestType.TPAHERE);
+        incomingRequests.put(recipientUuid, request);
+        
+        // Track outgoing requests
+        outgoingRequests.computeIfAbsent(senderUuid, k -> new HashSet<>()).add(recipientUuid);
+        
+        // Apply cooldown
+        Map<TeleportType, Long> cooldowns = lastTeleportTime.computeIfAbsent(senderUuid, k -> new HashMap<>());
+        cooldowns.put(TeleportType.TPA, System.currentTimeMillis());
+        
+        // Send messages
+        sender.sendMessage(ChatColor.GREEN + "Teleport here request sent to " + recipient.getName() + ".");
+        recipient.sendMessage(ChatColor.YELLOW + sender.getName() + " has requested that you teleport to them.");
+        recipient.sendMessage(ChatColor.YELLOW + "Type " + ChatColor.GREEN + "/tpaccept" + 
+                ChatColor.YELLOW + " to accept or " + ChatColor.RED + "/tpdeny" + 
+                ChatColor.YELLOW + " to deny.");
+        
+        return true;
+    }
+    
+    /**
+     * Accepts a teleport request.
+     *
+     * @param player The player accepting the request
+     * @return true if the request was accepted and the teleport was successful, false otherwise
+     */
+    public boolean acceptTeleportRequest(Player player) {
+        if (player == null) {
+            return false;
+        }
+        
+        UUID playerUuid = player.getUniqueId();
+        TeleportRequest request = incomingRequests.get(playerUuid);
+        
+        if (request == null) {
+            player.sendMessage(ChatColor.RED + "You don't have any pending teleport requests.");
+            return false;
+        }
+        
+        // Check if the request has expired
+        if (System.currentTimeMillis() - request.getTimestamp() > (requestTimeout * 1000)) {
+            incomingRequests.remove(playerUuid);
+            player.sendMessage(ChatColor.RED + "The teleport request has expired.");
+            return false;
+        }
+        
+        // Find the requester
+        Player requester = Bukkit.getPlayer(request.getRequesterUUID());
+        if (requester == null || !requester.isOnline()) {
+            incomingRequests.remove(playerUuid);
+            player.sendMessage(ChatColor.RED + "The player who sent the request is offline.");
+            return false;
+        }
+        
+        // Remove the request
+        incomingRequests.remove(playerUuid);
+        Set<UUID> outgoing = outgoingRequests.get(request.getRequesterUUID());
+        if (outgoing != null) {
+            outgoing.remove(playerUuid);
+            if (outgoing.isEmpty()) {
+                outgoingRequests.remove(request.getRequesterUUID());
+            }
+        }
+        
+        // Execute the teleport based on the request type
+        boolean success;
+        if (request.getRequestType() == TeleportRequestType.TPA) {
+            // Requester teleports to player
+            success = teleportPlayer(requester, player.getLocation(), TeleportType.TPA, false);
+        } else {
+            // Player teleports to requester
+            success = teleportPlayer(player, requester.getLocation(), TeleportType.TPA, false);
+        }
+        
+        if (success) {
+            player.sendMessage(ChatColor.GREEN + "Teleport request accepted.");
+            if (request.getRequestType() == TeleportRequestType.TPA) {
+                requester.sendMessage(ChatColor.GREEN + player.getName() + " accepted your teleport request.");
+            } else {
+                requester.sendMessage(ChatColor.GREEN + player.getName() + " accepted your teleport here request.");
+            }
+        }
+        
+        return success;
+    }
+    
+    /**
+     * Accepts a teleport request from a specific player.
+     *
+     * @param player The player accepting the request
+     * @param requesterName The name of the requester
+     * @return true if the request was accepted and the teleport was successful, false otherwise
+     */
+    public boolean acceptTeleportRequest(Player player, String requesterName) {
+        if (player == null || requesterName == null || requesterName.isEmpty()) {
+            return false;
+        }
+        
+        UUID playerUuid = player.getUniqueId();
+        TeleportRequest request = incomingRequests.get(playerUuid);
+        
+        if (request == null) {
+            player.sendMessage(ChatColor.RED + "You don't have any pending teleport requests.");
+            return false;
+        }
+        
+        // Find the requester
+        Player requester = Bukkit.getPlayer(request.getRequesterUUID());
+        if (requester == null || !requester.isOnline() || !requester.getName().equalsIgnoreCase(requesterName)) {
+            player.sendMessage(ChatColor.RED + "You don't have a teleport request from " + requesterName + ".");
+            return false;
+        }
+        
+        return acceptTeleportRequest(player);
+    }
+    
+    /**
+     * Denies a teleport request.
+     *
+     * @param player The player denying the request
+     * @return true if the request was denied, false if there was no request
+     */
+    public boolean denyTeleportRequest(Player player) {
+        if (player == null) {
+            return false;
+        }
+        
+        UUID playerUuid = player.getUniqueId();
+        TeleportRequest request = incomingRequests.remove(playerUuid);
+        
+        if (request == null) {
+            player.sendMessage(ChatColor.RED + "You don't have any pending teleport requests.");
+            return false;
+        }
+        
+        Player requester = Bukkit.getPlayer(request.getRequesterUUID());
+        
+        // Clean up outgoing requests
+        Set<UUID> outgoing = outgoingRequests.get(request.getRequesterUUID());
+        if (outgoing != null) {
+            outgoing.remove(playerUuid);
+            if (outgoing.isEmpty()) {
+                outgoingRequests.remove(request.getRequesterUUID());
+            }
+        }
+        
+        // Send messages
+        player.sendMessage(ChatColor.GREEN + "Teleport request denied.");
+        if (requester != null && requester.isOnline()) {
+            requester.sendMessage(ChatColor.RED + player.getName() + " denied your teleport request.");
+        }
+        
+        return true;
+    }
+    
+    /**
+     * Denies a teleport request from a specific player.
+     *
+     * @param player The player denying the request
+     * @param requesterName The name of the requester
+     * @return true if the request was denied, false if there was no request
+     */
+    public boolean denyTeleportRequest(Player player, String requesterName) {
+        if (player == null || requesterName == null || requesterName.isEmpty()) {
+            return false;
+        }
+        
+        UUID playerUuid = player.getUniqueId();
+        TeleportRequest request = incomingRequests.get(playerUuid);
+        
+        if (request == null) {
+            player.sendMessage(ChatColor.RED + "You don't have any pending teleport requests.");
+            return false;
+        }
+        
+        // Find the requester
+        Player requester = Bukkit.getPlayer(request.getRequesterUUID());
+        if (requester == null || !requester.getName().equalsIgnoreCase(requesterName)) {
+            player.sendMessage(ChatColor.RED + "You don't have a teleport request from " + requesterName + ".");
+            return false;
+        }
+        
+        return denyTeleportRequest(player);
+    }
+    
+    /**
+     * Teleports a player back to their previous location.
+     *
+     * @param player The player
+     * @return true if the teleport was successful, false otherwise
+     */
+    public boolean teleportBack(Player player) {
+        if (player == null) {
+            return false;
+        }
+        
+        Location loc = lastLocation.get(player.getUniqueId());
+        if (loc == null) {
+            player.sendMessage(ChatColor.RED + "You don't have a previous location to return to.");
+            return false;
+        }
+        
+        boolean success = teleportPlayer(player, loc, TeleportType.BACK, false);
+        if (success) {
+            lastLocation.remove(player.getUniqueId());
+        }
+        
+        return success;
+    }
+    
+    /**
+     * Handles player damage during teleport warmup.
+     *
+     * @param player The player
+     * @return true if the teleport was cancelled, false otherwise
+     */
+    public boolean handlePlayerDamage(Player player) {
+        if (!cancelOnDamage || player == null) {
+            return false;
+        }
+        
+        UUID playerUuid = player.getUniqueId();
+        if (pendingTeleports.containsKey(playerUuid)) {
+            pendingTeleports.remove(playerUuid);
+            player.sendMessage(ChatColor.RED + "Teleport cancelled because you took damage!");
+            return true;
+        }
+        
+        return false;
+    }
+    
+    /**
+     * Gets a list of teleport requests sent by a player.
+     *
+     * @param player The player
+     * @return A list of player names who have received requests from this player
+     */
+    public List<String> getOutgoingRequests(Player player) {
+        if (player == null) {
+            return new ArrayList<>();
+        }
+        
+        Set<UUID> outgoing = outgoingRequests.get(player.getUniqueId());
+        if (outgoing == null || outgoing.isEmpty()) {
+            return new ArrayList<>();
+        }
+        
+        List<String> players = new ArrayList<>();
+        for (UUID uuid : outgoing) {
+            Player target = Bukkit.getPlayer(uuid);
+            if (target != null && target.isOnline()) {
+                players.add(target.getName());
+            }
+        }
+        
+        return players;
+    }
+    
+    /**
+     * Gets a list of teleport requests received by a player.
+     *
+     * @param player The player
+     * @return A list of player names who have sent requests to this player
+     */
+    public List<String> getIncomingRequests(Player player) {
+        if (player == null) {
+            return new ArrayList<>();
+        }
+        
+        TeleportRequest request = incomingRequests.get(player.getUniqueId());
+        if (request == null) {
+            return new ArrayList<>();
+        }
+        
+        Player requester = Bukkit.getPlayer(request.getRequesterUUID());
+        if (requester == null || !requester.isOnline()) {
+            return new ArrayList<>();
+        }
+        
+        List<String> players = new ArrayList<>();
+        players.add(requester.getName());
+        return players;
+    }
+    
+    /**
+     * Cancels a pending teleport for a player.
+     *
+     * @param player The player
+     * @return true if a teleport was cancelled, false otherwise
+     */
+    public boolean cancelPendingTeleport(Player player) {
+        if (player == null) {
+            return false;
+        }
+        
+        UUID playerUuid = player.getUniqueId();
+        if (pendingTeleports.containsKey(playerUuid)) {
+            pendingTeleports.remove(playerUuid);
+            player.sendMessage(ChatColor.RED + "Teleport cancelled.");
+            return true;
+        }
+        
+        return false;
+    }
+    
+    /**
+     * Teleport types.
+     */
+    public enum TeleportType {
+        GENERAL,
+        TPA,
+        BACK,
+        ADMIN,
+        WARP,
+        HOME
+    }
+    
+    /**
+     * Teleport request types.
+     */
+    public enum TeleportRequestType {
+        TPA, // Requester teleports to target
+        TPAHERE // Target teleports to requester
+    }
+    
+    /**
+     * Internal class representing a teleport request.
+     */
+    private static class TeleportRequest {
+        private final UUID requesterUUID;
+        private final long timestamp;
+        private final TeleportRequestType requestType;
+        
+        /**
+         * Creates a new TeleportRequest.
+         *
+         * @param requesterUUID The UUID of the player making the request
+         * @param timestamp The time the request was made
+         * @param requestType The type of request
+         */
+        public TeleportRequest(UUID requesterUUID, long timestamp, TeleportRequestType requestType) {
+            this.requesterUUID = requesterUUID;
+            this.timestamp = timestamp;
+            this.requestType = requestType;
+        }
+        
+        /**
+         * Gets the UUID of the player who made the request.
+         *
+         * @return The requester's UUID
+         */
+        public UUID getRequesterUUID() {
+            return requesterUUID;
+        }
+        
+        /**
+         * Gets the time the request was made.
+         *
+         * @return The timestamp
+         */
+        public long getTimestamp() {
+            return timestamp;
+        }
+        
+        /**
+         * Gets the type of the request.
+         *
+         * @return The request type
+         */
+        public TeleportRequestType getRequestType() {
+            return requestType;
+        }
+    }
+}

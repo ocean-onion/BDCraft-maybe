@@ -158,6 +158,56 @@ public class VillagerManager {
     }
     
     /**
+     * Creates a villager at a specific location.
+     *
+     * @param location The location to create the villager at
+     * @param type The type of villager to create
+     * @return The created BDVillager, or null if creation failed
+     */
+    public BDVillager createVillager(Location location, String type) {
+        UUID villagerUUID = UUID.randomUUID();
+        UUID ownerUUID = UUID.randomUUID(); // Default owner ID for system-created villagers
+        
+        BDVillager villager = new BDVillager(villagerUUID, type, ownerUUID, location);
+        villagers.put(villagerUUID, villager);
+        
+        saveVillager(villager);
+        return villager;
+    }
+    
+    /**
+     * Removes villagers within a certain radius of a location.
+     *
+     * @param location The center location
+     * @param radius The radius to check within
+     * @return The number of villagers removed
+     */
+    public int removeNearbyVillagers(Location location, int radius) {
+        if (location == null || location.getWorld() == null) {
+            return 0;
+        }
+        
+        int count = 0;
+        double radiusSquared = radius * radius;
+        
+        // Make a copy of the keys to avoid concurrent modification
+        for (UUID uuid : new HashMap<>(villagers).keySet()) {
+            BDVillager villager = villagers.get(uuid);
+            
+            if (villager != null && villager.getLocation() != null && 
+                    villager.getLocation().getWorld().equals(location.getWorld()) &&
+                    villager.getLocation().distanceSquared(location) <= radiusSquared) {
+                
+                if (removeVillager(uuid)) {
+                    count++;
+                }
+            }
+        }
+        
+        return count;
+    }
+    
+    /**
      * Cleans up resources used by the VillagerManager.
      */
     public void cleanup() {
