@@ -1,38 +1,36 @@
 package com.bdcraft.plugin.modules.economy.modules.auction;
 
 import com.bdcraft.plugin.BDCraft;
-import com.bdcraft.plugin.config.ConfigType;
 import com.bdcraft.plugin.modules.ModuleManager;
 import com.bdcraft.plugin.modules.SubmoduleBase;
+import com.bdcraft.plugin.modules.economy.auction.AuctionHouseGUI;
+import com.bdcraft.plugin.modules.economy.auction.AuctionItem;
+import com.bdcraft.plugin.modules.economy.auction.AuctionListener;
+import com.bdcraft.plugin.modules.economy.auction.AuctionManager;
+
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.PluginCommand;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
-import org.bukkit.event.Listener;
+import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 /**
- * Auction house submodule of the Economy module.
+ * Module for handling auction house functionality.
+ * This module provides an interface for players to buy and sell items.
  */
-public class BDAuctionModule implements SubmoduleBase, Listener, CommandExecutor {
+public class BDAuctionModule implements SubmoduleBase, CommandExecutor {
     private final BDCraft plugin;
+    private final Logger logger;
     private ModuleManager parentModule;
     private boolean enabled = false;
     
-    // Auction settings
-    private int maxPlayerListings;
-    private double listingFeePercent;
-    private double taxPercent;
-    private int auctionDurationHours;
-    
-    // Auction data
-    private final Map<UUID, AuctionListing> listings = new HashMap<>();
+    // Components
+    private AuctionManager auctionManager;
+    private AuctionListener auctionListener;
     
     /**
      * Creates a new auction module.
@@ -41,6 +39,7 @@ public class BDAuctionModule implements SubmoduleBase, Listener, CommandExecutor
      */
     public BDAuctionModule(BDCraft plugin) {
         this.plugin = plugin;
+        this.logger = plugin.getLogger();
     }
     
     @Override
@@ -55,19 +54,20 @@ public class BDAuctionModule implements SubmoduleBase, Listener, CommandExecutor
         }
         
         this.parentModule = parentModule;
+        logger.info("Enabling Auction submodule");
         
-        plugin.getLogger().info("Enabling BDAuction submodule");
-        
-        // Load config
-        loadConfig();
+        // Initialize components
+        this.auctionManager = new AuctionManager(plugin);
+        this.auctionListener = new AuctionListener(plugin, auctionManager);
         
         // Register events
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
+        plugin.getServer().getPluginManager().registerEvents(auctionListener, plugin);
         
         // Register commands
         registerCommands();
         
         enabled = true;
+        logger.info("Auction submodule enabled");
     }
     
     @Override
@@ -76,17 +76,25 @@ public class BDAuctionModule implements SubmoduleBase, Listener, CommandExecutor
             return;
         }
         
-        plugin.getLogger().info("Disabling BDAuction submodule");
+        logger.info("Disabling Auction submodule");
         
         // Unregister events
-        HandlerList.unregisterAll(this);
+        HandlerList.unregisterAll(auctionListener);
+        
+        // Save any pending data
+        auctionManager.saveAuctions();
         
         enabled = false;
+        logger.info("Auction submodule disabled");
     }
     
     @Override
     public void reload() {
-        loadConfig();
+        if (enabled) {
+            // Reload auction data
+            auctionManager.loadAuctions();
+            logger.info("Auction submodule reloaded");
+        }
     }
     
     @Override
@@ -95,35 +103,37 @@ public class BDAuctionModule implements SubmoduleBase, Listener, CommandExecutor
     }
     
     /**
-     * Loads the configuration.
+     * Registers commands for the auction module.
      */
-    private void loadConfig() {
-        FileConfiguration config = plugin.getConfig(ConfigType.ECONOMY);
-        
-        // Load auction settings
-        maxPlayerListings = config.getInt("auction.max-player-listings", 5);
-        listingFeePercent = config.getDouble("auction.listing-fee-percent", 5.0);
-        taxPercent = config.getDouble("auction.tax-percent", 10.0);
-        auctionDurationHours = config.getInt("auction.duration-hours", 48);
+    private void registerCommands() {
+        // Register auction house command
+        plugin.getCommand("bdauction").setExecutor(this);
+        plugin.getCommand("ah").setExecutor(this);
     }
     
     /**
-     * Registers commands.
+     * Opens the auction house GUI for a player.
+     * 
+     * @param player The player
      */
-    private void registerCommands() {
-        // Register auction command
-        PluginCommand auctionCommand = plugin.getCommand("bdauction");
-        if (auctionCommand != null) {
-            auctionCommand.setExecutor(this);
-        }
-        
-        // Register ah command (alias for auction)
-        PluginCommand ahCommand = plugin.getCommand("bdah");
-        if (ahCommand != null) {
-            ahCommand.setExecutor(this);
+    public void openAuctionHouse(Player player) {
+        if (auctionManager != null) {
+            auctionManager.openAuctionHouse(player);
         }
     }
     
+    /**
+     * Gets the auction manager instance.
+     * 
+     * @return The auction manager
+     */
+    public AuctionManager getAuctionManager() {
+        return auctionManager;
+    }
+    
+    /**
+     * Handles auction-related commands.
+     */
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
@@ -133,153 +143,54 @@ public class BDAuctionModule implements SubmoduleBase, Listener, CommandExecutor
         
         Player player = (Player) sender;
         
-        if (args.length == 0) {
-            // Show auction house menu
+        if (command.getName().equalsIgnoreCase("bdauction") || command.getName().equalsIgnoreCase("ah")) {
             openAuctionHouse(player);
             return true;
         }
         
-        String subCommand = args[0].toLowerCase();
-        
-        switch (subCommand) {
-            case "list":
-            case "sell":
-                if (args.length < 3) {
-                    player.sendMessage("§cUsage: /" + label + " " + subCommand + " <price> <amount>");
-                    return true;
-                }
-                
-                // Handle list/sell command
-                handleListCommand(player, args);
-                break;
-                
-            case "buy":
-                if (args.length < 2) {
-                    player.sendMessage("§cUsage: /" + label + " buy <listing-id>");
-                    return true;
-                }
-                
-                // Handle buy command
-                handleBuyCommand(player, args);
-                break;
-                
-            case "cancel":
-                if (args.length < 2) {
-                    player.sendMessage("§cUsage: /" + label + " cancel <listing-id>");
-                    return true;
-                }
-                
-                // Handle cancel command
-                handleCancelCommand(player, args);
-                break;
-                
-            case "search":
-                if (args.length < 2) {
-                    player.sendMessage("§cUsage: /" + label + " search <query>");
-                    return true;
-                }
-                
-                // Handle search command
-                handleSearchCommand(player, args);
-                break;
-                
-            case "help":
-                sendHelpMessage(player);
-                break;
-                
-            default:
-                player.sendMessage("§cUnknown subcommand. Use /" + label + " help for a list of commands.");
-                break;
+        return false;
+    }
+    
+    /**
+     * Lists an item in the auction house.
+     * 
+     * @param player The player listing the item
+     * @param item The item to list
+     * @param price The price
+     * @return Whether the listing was successful
+     */
+    public boolean listItem(Player player, AuctionItem item, double price) {
+        if (auctionManager != null) {
+            return auctionManager.listItem(player, item, price);
         }
-        
-        return true;
+        return false;
     }
     
     /**
-     * Opens the auction house menu for a player.
+     * Buys an item from the auction house.
      * 
-     * @param player The player
+     * @param player The player buying the item
+     * @param auctionId The auction ID
+     * @return Whether the purchase was successful
      */
-    private void openAuctionHouse(Player player) {
-        // TODO: Implement auction house GUI
-        player.sendMessage("§aOpening auction house...");
-    }
-    
-    /**
-     * Handles the list command.
-     * 
-     * @param player The player
-     * @param args The command arguments
-     */
-    private void handleListCommand(Player player, String[] args) {
-        // TODO: Implement listing items in the auction house
-        player.sendMessage("§aListing item in the auction house...");
-    }
-    
-    /**
-     * Handles the buy command.
-     * 
-     * @param player The player
-     * @param args The command arguments
-     */
-    private void handleBuyCommand(Player player, String[] args) {
-        // TODO: Implement buying items from the auction house
-        player.sendMessage("§aBuying item from the auction house...");
-    }
-    
-    /**
-     * Handles the cancel command.
-     * 
-     * @param player The player
-     * @param args The command arguments
-     */
-    private void handleCancelCommand(Player player, String[] args) {
-        // TODO: Implement canceling auction listings
-        player.sendMessage("§aCanceling auction listing...");
-    }
-    
-    /**
-     * Handles the search command.
-     * 
-     * @param player The player
-     * @param args The command arguments
-     */
-    private void handleSearchCommand(Player player, String[] args) {
-        // TODO: Implement searching auction listings
-        player.sendMessage("§aSearching auction listings...");
-    }
-    
-    /**
-     * Sends the help message to a player.
-     * 
-     * @param player The player
-     */
-    private void sendHelpMessage(Player player) {
-        player.sendMessage("§a=== BDAuction Help ===");
-        player.sendMessage("§7/bdauction §8- Open the auction house");
-        player.sendMessage("§7/bdauction list <price> <amount> §8- List an item for sale");
-        player.sendMessage("§7/bdauction buy <listing-id> §8- Buy an item from the auction house");
-        player.sendMessage("§7/bdauction cancel <listing-id> §8- Cancel one of your listings");
-        player.sendMessage("§7/bdauction search <query> §8- Search for items in the auction house");
-        player.sendMessage("§7/bdauction help §8- Show this help message");
-    }
-    
-    /**
-     * Represents an auction listing.
-     */
-    private static class AuctionListing {
-        private final UUID id;
-        private final UUID seller;
-        // Other listing data would go here
-        
-        /**
-         * Creates a new auction listing.
-         * 
-         * @param seller The seller
-         */
-        public AuctionListing(UUID seller) {
-            this.id = UUID.randomUUID();
-            this.seller = seller;
+    public boolean buyItem(Player player, UUID auctionId) {
+        if (auctionManager != null) {
+            return auctionManager.buyItem(player, auctionId);
         }
+        return false;
+    }
+    
+    /**
+     * Cancels an auction.
+     * 
+     * @param player The player cancelling the auction
+     * @param auctionId The auction ID
+     * @return Whether the cancellation was successful
+     */
+    public boolean cancelAuction(Player player, UUID auctionId) {
+        if (auctionManager != null) {
+            return auctionManager.cancelAuction(player, auctionId);
+        }
+        return false;
     }
 }

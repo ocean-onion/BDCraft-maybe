@@ -17,6 +17,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.HashMap;
@@ -37,12 +38,15 @@ public class TeleportModule implements SubmoduleBase, Listener, CommandExecutor 
     private int backCooldown;
     private boolean enableBack;
     
-    // Player data
-    private final Map<UUID, UUID> tpaRequests = new HashMap<>();
-    private final Map<UUID, Long> tpaRequestTimes = new HashMap<>();
-    private final Map<UUID, BukkitTask> tpaTimeoutTasks = new HashMap<>();
-    private final Map<UUID, Long> tpaCooldowns = new HashMap<>();
+    // Maps player UUIDs to their last locations
     private final Map<UUID, Location> lastLocations = new HashMap<>();
+    
+    // Maps player UUIDs to their death locations
+    private final Map<UUID, Location> deathLocations = new HashMap<>();
+    
+    // Maps target UUIDs to pending teleport requests
+    private final Map<UUID, TeleportRequest> pendingRequests = new HashMap<>();
+    
     private final Map<UUID, Long> backCooldowns = new HashMap<>();
     
     /**
@@ -89,11 +93,10 @@ public class TeleportModule implements SubmoduleBase, Listener, CommandExecutor 
         
         plugin.getLogger().info("Disabling Teleport submodule");
         
-        // Cancel all timeout tasks
-        for (BukkitTask task : tpaTimeoutTasks.values()) {
-            task.cancel();
-        }
-        tpaTimeoutTasks.clear();
+        // Clean up
+        lastLocations.clear();
+        deathLocations.clear();
+        pendingRequests.clear();
         
         // Unregister events
         HandlerList.unregisterAll(this);
@@ -152,14 +155,137 @@ public class TeleportModule implements SubmoduleBase, Listener, CommandExecutor 
     }
     
     /**
-     * Records a player's last location before teleporting.
-     * 
+     * Saves a player's last location.
      * @param player The player
      */
-    public void recordLastLocation(Player player) {
-        if (enableBack && player.hasPermission("bdvital.teleport.back")) {
-            lastLocations.put(player.getUniqueId(), player.getLocation());
+    public void saveLastLocation(Player player) {
+        lastLocations.put(player.getUniqueId(), player.getLocation());
+    }
+    
+    /**
+     * Gets a player's last location.
+     * @param playerUuid The player UUID
+     * @return The last location, or null if not found
+     */
+    public Location getLastLocation(UUID playerUuid) {
+        return lastLocations.get(playerUuid);
+    }
+    
+    /**
+     * Saves a player's death location.
+     * @param player The player
+     */
+    public void saveDeathLocation(Player player) {
+        deathLocations.put(player.getUniqueId(), player.getLocation());
+    }
+    
+    /**
+     * Gets a player's death location.
+     * @param playerUuid The player UUID
+     * @return The death location, or null if not found
+     */
+    public Location getDeathLocation(UUID playerUuid) {
+        return deathLocations.get(playerUuid);
+    }
+    
+    /**
+     * Sends a teleport request.
+     * @param requester The requester
+     * @param target The target
+     * @param type The teleport type
+     */
+    public void sendTeleportRequest(Player requester, Player target, TeleportType type) {
+        // Remove any existing request
+        pendingRequests.remove(target.getUniqueId());
+        
+        // Create new request
+        TeleportRequest request = new TeleportRequest(requester.getUniqueId(), type);
+        pendingRequests.put(target.getUniqueId(), request);
+        
+        // Schedule timeout
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                TeleportRequest currentRequest = pendingRequests.get(target.getUniqueId());
+                
+                if (currentRequest != null && currentRequest.equals(request) && !currentRequest.isExpired()) {
+                    pendingRequests.remove(target.getUniqueId());
+                    
+                    Player requesterPlayer = plugin.getServer().getPlayer(request.getRequesterUuid());
+                    
+                    if (requesterPlayer != null) {
+                        requesterPlayer.sendMessage(ChatColor.RED + "Your teleport request to " + 
+                                target.getName() + " has expired.");
+                    }
+                    
+                    if (target.isOnline()) {
+                        target.sendMessage(ChatColor.RED + "The teleport request from " + 
+                                (requesterPlayer != null ? requesterPlayer.getName() : "someone") + 
+                                " has expired.");
+                    }
+                }
+            }
+        }.runTaskLater(plugin, tpaTimeout * 20L);
+    }
+    
+    /**
+     * Gets a pending teleport request.
+     * @param targetUuid The target UUID
+     * @return The teleport request, or null if not found
+     */
+    public TeleportRequest getPendingRequest(UUID targetUuid) {
+        TeleportRequest request = pendingRequests.get(targetUuid);
+        
+        if (request != null && request.isExpired()) {
+            pendingRequests.remove(targetUuid);
+            return null;
         }
+        
+        return request;
+    }
+    
+    /**
+     * Removes a pending teleport request.
+     * @param targetUuid The target UUID
+     */
+    public void removePendingRequest(UUID targetUuid) {
+        pendingRequests.remove(targetUuid);
+    }
+    
+    /**
+     * Accepts a teleport request.
+     * @param target The target
+     * @param requester The requester
+     * @param type The teleport type
+     */
+    public void acceptRequest(Player target, Player requester, TeleportType type) {
+        // Remove request
+        pendingRequests.remove(target.getUniqueId());
+        
+        // Save last locations
+        saveLastLocation(target);
+        saveLastLocation(requester);
+        
+        // Perform teleport
+        if (type == TeleportType.TO_TARGET) {
+            requester.teleport(target.getLocation());
+            requester.sendMessage(ChatColor.GREEN + "Teleported to " + target.getName() + ".");
+            target.sendMessage(ChatColor.GREEN + requester.getName() + " teleported to you.");
+        } else {
+            target.teleport(requester.getLocation());
+            target.sendMessage(ChatColor.GREEN + "Teleported to " + requester.getName() + ".");
+            requester.sendMessage(ChatColor.GREEN + target.getName() + " teleported to you.");
+        }
+    }
+    
+    /**
+     * Clears all teleport data for a player.
+     * @param playerUuid The player UUID
+     */
+    public void clearPlayerData(UUID playerUuid) {
+        lastLocations.remove(playerUuid);
+        deathLocations.remove(playerUuid);
+        pendingRequests.remove(playerUuid);
     }
     
     @Override
@@ -200,19 +326,6 @@ public class TeleportModule implements SubmoduleBase, Listener, CommandExecutor 
             return;
         }
         
-        // Check cooldown
-        if (tpaCooldowns.containsKey(player.getUniqueId())) {
-            long lastTpa = tpaCooldowns.get(player.getUniqueId());
-            long now = System.currentTimeMillis();
-            long cooldownTime = tpaCooldown * 1000L;
-            
-            if (now - lastTpa < cooldownTime && !player.hasPermission("bdvital.teleport.bypass-cooldown")) {
-                long remainingSeconds = (cooldownTime - (now - lastTpa)) / 1000;
-                player.sendMessage(ChatColor.RED + "You must wait " + remainingSeconds + " seconds before sending another teleport request.");
-                return;
-            }
-        }
-        
         Player target = plugin.getServer().getPlayer(args[0]);
         if (target == null) {
             player.sendMessage(ChatColor.RED + "Player not found.");
@@ -224,32 +337,8 @@ public class TeleportModule implements SubmoduleBase, Listener, CommandExecutor 
             return;
         }
         
-        // Send request
-        tpaRequests.put(target.getUniqueId(), player.getUniqueId());
-        tpaRequestTimes.put(target.getUniqueId(), System.currentTimeMillis());
-        
-        // Set timeout
-        BukkitTask timeoutTask = plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
-            if (tpaRequests.containsKey(target.getUniqueId()) && tpaRequests.get(target.getUniqueId()).equals(player.getUniqueId())) {
-                tpaRequests.remove(target.getUniqueId());
-                tpaRequestTimes.remove(target.getUniqueId());
-                
-                if (player.isOnline()) {
-                    player.sendMessage(ChatColor.RED + "Your teleport request to " + target.getName() + " has expired.");
-                }
-                
-                if (target.isOnline()) {
-                    target.sendMessage(ChatColor.RED + "Teleport request from " + player.getName() + " has expired.");
-                }
-            }
-            
-            tpaTimeoutTasks.remove(target.getUniqueId());
-        }, tpaTimeout * 20L);
-        
-        tpaTimeoutTasks.put(target.getUniqueId(), timeoutTask);
-        
-        // Set cooldown
-        tpaCooldowns.put(player.getUniqueId(), System.currentTimeMillis());
+        // Send teleport request
+        sendTeleportRequest(player, target, TeleportType.TO_TARGET);
         
         // Send messages
         player.sendMessage(ChatColor.GREEN + "Teleport request sent to " + target.getName() + ".");
@@ -263,45 +352,24 @@ public class TeleportModule implements SubmoduleBase, Listener, CommandExecutor 
      * @param player The player
      */
     private void handleTpAcceptCommand(Player player) {
-        if (!tpaRequests.containsKey(player.getUniqueId())) {
+        TeleportRequest request = getPendingRequest(player.getUniqueId());
+        
+        if (request == null) {
             player.sendMessage(ChatColor.RED + "You have no pending teleport requests.");
             return;
         }
         
-        UUID requesterId = tpaRequests.get(player.getUniqueId());
-        Player requester = plugin.getServer().getPlayer(requesterId);
+        UUID requesterUuid = request.getRequesterUuid();
+        Player requester = plugin.getServer().getPlayer(requesterUuid);
         
         if (requester == null || !requester.isOnline()) {
             player.sendMessage(ChatColor.RED + "The player who requested to teleport is no longer online.");
-            tpaRequests.remove(player.getUniqueId());
-            tpaRequestTimes.remove(player.getUniqueId());
-            
-            if (tpaTimeoutTasks.containsKey(player.getUniqueId())) {
-                tpaTimeoutTasks.get(player.getUniqueId()).cancel();
-                tpaTimeoutTasks.remove(player.getUniqueId());
-            }
-            
+            removePendingRequest(player.getUniqueId());
             return;
         }
         
-        // Record last location for the requester
-        recordLastLocation(requester);
-        
-        // Teleport requester to player
-        requester.teleport(player.getLocation());
-        
-        // Send messages
-        player.sendMessage(ChatColor.GREEN + "Teleport request accepted.");
-        requester.sendMessage(ChatColor.GREEN + player.getName() + " accepted your teleport request.");
-        
-        // Clean up
-        tpaRequests.remove(player.getUniqueId());
-        tpaRequestTimes.remove(player.getUniqueId());
-        
-        if (tpaTimeoutTasks.containsKey(player.getUniqueId())) {
-            tpaTimeoutTasks.get(player.getUniqueId()).cancel();
-            tpaTimeoutTasks.remove(player.getUniqueId());
-        }
+        // Accept request
+        acceptRequest(player, requester, request.getType());
     }
     
     /**
@@ -310,13 +378,15 @@ public class TeleportModule implements SubmoduleBase, Listener, CommandExecutor 
      * @param player The player
      */
     private void handleTpDenyCommand(Player player) {
-        if (!tpaRequests.containsKey(player.getUniqueId())) {
+        TeleportRequest request = getPendingRequest(player.getUniqueId());
+        
+        if (request == null) {
             player.sendMessage(ChatColor.RED + "You have no pending teleport requests.");
             return;
         }
         
-        UUID requesterId = tpaRequests.get(player.getUniqueId());
-        Player requester = plugin.getServer().getPlayer(requesterId);
+        UUID requesterUuid = request.getRequesterUuid();
+        Player requester = plugin.getServer().getPlayer(requesterUuid);
         
         // Send messages
         player.sendMessage(ChatColor.GREEN + "Teleport request denied.");
@@ -325,14 +395,8 @@ public class TeleportModule implements SubmoduleBase, Listener, CommandExecutor 
             requester.sendMessage(ChatColor.RED + player.getName() + " denied your teleport request.");
         }
         
-        // Clean up
-        tpaRequests.remove(player.getUniqueId());
-        tpaRequestTimes.remove(player.getUniqueId());
-        
-        if (tpaTimeoutTasks.containsKey(player.getUniqueId())) {
-            tpaTimeoutTasks.get(player.getUniqueId()).cancel();
-            tpaTimeoutTasks.remove(player.getUniqueId());
-        }
+        // Remove request
+        removePendingRequest(player.getUniqueId());
     }
     
     /**
@@ -351,7 +415,8 @@ public class TeleportModule implements SubmoduleBase, Listener, CommandExecutor 
             return;
         }
         
-        if (!lastLocations.containsKey(player.getUniqueId())) {
+        Location lastLocation = getLastLocation(player.getUniqueId());
+        if (lastLocation == null) {
             player.sendMessage(ChatColor.RED + "You have no previous location to teleport to.");
             return;
         }
@@ -369,17 +434,14 @@ public class TeleportModule implements SubmoduleBase, Listener, CommandExecutor 
             }
         }
         
-        // Get last location
-        Location lastLocation = lastLocations.get(player.getUniqueId());
+        // Save current location
+        Location currentLocation = player.getLocation().clone();
         
-        // Record current location before teleporting
-        Location currentLocation = player.getLocation();
-        
-        // Teleport player
+        // Teleport to last location
         player.teleport(lastLocation);
         player.sendMessage(ChatColor.GREEN + "Teleported to your previous location.");
         
-        // Update last location
+        // Update last location (for /back to bring back to where they were)
         lastLocations.put(player.getUniqueId(), currentLocation);
         
         // Set cooldown
@@ -396,15 +458,86 @@ public class TeleportModule implements SubmoduleBase, Listener, CommandExecutor 
         Player player = event.getPlayer();
         
         // Clean up any teleport requests to or from this player
-        tpaRequests.entrySet().removeIf(entry -> 
-            entry.getKey().equals(player.getUniqueId()) || entry.getValue().equals(player.getUniqueId())
-        );
-        
-        tpaRequestTimes.remove(player.getUniqueId());
-        
-        if (tpaTimeoutTasks.containsKey(player.getUniqueId())) {
-            tpaTimeoutTasks.get(player.getUniqueId()).cancel();
-            tpaTimeoutTasks.remove(player.getUniqueId());
+        for (UUID targetUuid : pendingRequests.keySet()) {
+            TeleportRequest request = pendingRequests.get(targetUuid);
+            if (request != null && request.getRequesterUuid().equals(player.getUniqueId())) {
+                pendingRequests.remove(targetUuid);
+            }
         }
+    }
+    
+    /**
+     * Teleport request class.
+     */
+    public static class TeleportRequest {
+        private final UUID requesterUuid;
+        private final TeleportType type;
+        private final long timestamp;
+        
+        /**
+         * Creates a new teleport request.
+         * @param requesterUuid The requester UUID
+         * @param type The teleport type
+         */
+        public TeleportRequest(UUID requesterUuid, TeleportType type) {
+            this.requesterUuid = requesterUuid;
+            this.type = type;
+            this.timestamp = System.currentTimeMillis();
+        }
+        
+        /**
+         * Gets the requester UUID.
+         * @return The requester UUID
+         */
+        public UUID getRequesterUuid() {
+            return requesterUuid;
+        }
+        
+        /**
+         * Gets the teleport type.
+         * @return The teleport type
+         */
+        public TeleportType getType() {
+            return type;
+        }
+        
+        /**
+         * Checks if the request is expired.
+         * @return Whether the request is expired
+         */
+        public boolean isExpired() {
+            // Default timeout is 60 seconds
+            return System.currentTimeMillis() - timestamp > 60 * 1000L;
+        }
+        
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            
+            if (obj == null || getClass() != obj.getClass()) {
+                return false;
+            }
+            
+            TeleportRequest that = (TeleportRequest) obj;
+            
+            return requesterUuid.equals(that.requesterUuid) && type == that.type;
+        }
+        
+        @Override
+        public int hashCode() {
+            int result = requesterUuid.hashCode();
+            result = 31 * result + type.hashCode();
+            return result;
+        }
+    }
+    
+    /**
+     * Teleport type enum.
+     */
+    public enum TeleportType {
+        TO_TARGET,
+        TO_REQUESTER
     }
 }

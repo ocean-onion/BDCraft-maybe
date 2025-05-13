@@ -2,8 +2,8 @@ package com.bdcraft.plugin.modules.vital.listeners;
 
 import com.bdcraft.plugin.BDCraft;
 import com.bdcraft.plugin.modules.vital.BDVitalModule;
-import com.bdcraft.plugin.modules.vital.message.MessageManager;
-import com.bdcraft.plugin.modules.vital.teleport.TeleportManager;
+import com.bdcraft.plugin.modules.vital.modules.message.MessageManager;
+import com.bdcraft.plugin.modules.vital.modules.teleport.TeleportManager;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;

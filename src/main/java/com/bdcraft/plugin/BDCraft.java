@@ -11,8 +11,8 @@ import com.bdcraft.plugin.modules.ModuleManager;
 import com.bdcraft.plugin.modules.perms.BDPermissionAPI;
 import com.bdcraft.plugin.modules.display.BDDisplayModule;
 import com.bdcraft.plugin.modules.economy.BDEconomyModule;
-import com.bdcraft.plugin.modules.economy.market.MarketManager;
-import com.bdcraft.plugin.modules.economy.villager.VillagerManager;
+import com.bdcraft.plugin.modules.economy.modules.market.impl.MarketManager;
+import com.bdcraft.plugin.modules.economy.modules.villager.impl.VillagerManager;
 import com.bdcraft.plugin.modules.progression.BDProgressionModule;
 import com.bdcraft.plugin.util.PluginBlocker;
 

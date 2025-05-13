@@ -12,19 +12,25 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Manages player homes as a submodule of BDVital.
  */
 public class HomeModule implements SubmoduleBase, Listener, CommandExecutor {
     private final BDCraft plugin;
+    private final Logger logger;
     private ModuleManager parentModule;
     private boolean enabled = false;
     
@@ -33,7 +39,9 @@ public class HomeModule implements SubmoduleBase, Listener, CommandExecutor {
     private int homeCooldown;
     private boolean homePermissionBased;
     
-    // Player data
+    // Home data
+    private final File homesFile;
+    private FileConfiguration homesConfig;
     private final Map<UUID, Map<String, Location>> playerHomes = new HashMap<>();
     private final Map<UUID, Long> homeCooldowns = new HashMap<>();
     
@@ -44,6 +52,19 @@ public class HomeModule implements SubmoduleBase, Listener, CommandExecutor {
      */
     public HomeModule(BDCraft plugin) {
         this.plugin = plugin;
+        this.logger = plugin.getLogger();
+        this.homesFile = new File(plugin.getDataFolder(), "homes.yml");
+        
+        // Ensure file exists
+        if (!homesFile.exists()) {
+            try {
+                if (homesFile.createNewFile()) {
+                    logger.info("Created homes.yml file");
+                }
+            } catch (IOException e) {
+                logger.log(Level.SEVERE, "Could not create homes.yml file", e);
+            }
+        }
     }
     
     @Override
@@ -115,6 +136,71 @@ public class HomeModule implements SubmoduleBase, Listener, CommandExecutor {
     }
     
     /**
+     * Loads homes from file.
+     */
+    public void loadHomes() {
+        // Clear cache
+        playerHomes.clear();
+        
+        // Load config
+        homesConfig = YamlConfiguration.loadConfiguration(homesFile);
+        
+        // Check for homes section
+        if (!homesConfig.contains("homes")) {
+            return;
+        }
+        
+        // Load player homes
+        ConfigurationSection homesSection = homesConfig.getConfigurationSection("homes");
+        
+        for (String uuidStr : homesSection.getKeys(false)) {
+            try {
+                UUID playerUuid = UUID.fromString(uuidStr);
+                Map<String, Location> homes = new HashMap<>();
+                
+                ConfigurationSection playerSection = homesSection.getConfigurationSection(uuidStr);
+                
+                for (String homeName : playerSection.getKeys(false)) {
+                    Location location = playerSection.getLocation(homeName);
+                    homes.put(homeName, location);
+                }
+                
+                playerHomes.put(playerUuid, homes);
+            } catch (IllegalArgumentException e) {
+                logger.warning("Invalid UUID in homes.yml: " + uuidStr);
+            }
+        }
+        
+        logger.info("Loaded " + playerHomes.size() + " player home records");
+    }
+    
+    /**
+     * Saves homes to file.
+     */
+    public void saveHomes() {
+        // Clear existing homes
+        homesConfig.set("homes", null);
+        
+        // Save player homes
+        for (UUID playerUuid : playerHomes.keySet()) {
+            Map<String, Location> homes = playerHomes.get(playerUuid);
+            
+            for (String homeName : homes.keySet()) {
+                Location location = homes.get(homeName);
+                homesConfig.set("homes." + playerUuid.toString() + "." + homeName, location);
+            }
+        }
+        
+        // Save config
+        try {
+            homesConfig.save(homesFile);
+            logger.info("Saved " + playerHomes.size() + " player home records");
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, "Could not save homes.yml file", e);
+        }
+    }
+    
+    /**
      * Registers commands.
      */
     private void registerCommands() {
@@ -135,23 +221,6 @@ public class HomeModule implements SubmoduleBase, Listener, CommandExecutor {
         if (delhomeCommand != null) {
             delhomeCommand.setExecutor(this);
         }
-    }
-    
-    /**
-     * Loads player homes.
-     */
-    private void loadHomes() {
-        // Clear existing homes
-        playerHomes.clear();
-        
-        // TODO: Implement loading homes from database or file
-    }
-    
-    /**
-     * Saves player homes.
-     */
-    private void saveHomes() {
-        // TODO: Implement saving homes to database or file
     }
     
     /**
@@ -176,37 +245,127 @@ public class HomeModule implements SubmoduleBase, Listener, CommandExecutor {
     }
     
     /**
-     * Gets a player's homes.
-     * 
-     * @param playerId The player's UUID
-     * @return The player's homes
-     */
-    public Map<String, Location> getPlayerHomes(UUID playerId) {
-        return playerHomes.computeIfAbsent(playerId, k -> new HashMap<>());
-    }
-    
-    /**
-     * Sets a player's home.
-     * 
-     * @param playerId The player's UUID
+     * Sets a home for a player.
+     * @param playerUuid The player UUID
      * @param homeName The home name
      * @param location The location
      */
-    public void setPlayerHome(UUID playerId, String homeName, Location location) {
-        Map<String, Location> homes = getPlayerHomes(playerId);
-        homes.put(homeName.toLowerCase(), location);
+    public void setHome(UUID playerUuid, String homeName, Location location) {
+        // Get player homes
+        Map<String, Location> homes = playerHomes.computeIfAbsent(playerUuid, k -> new HashMap<>());
+        
+        // Set home
+        homes.put(homeName, location);
+        
+        // Save homes
+        saveHomes();
     }
     
     /**
-     * Removes a player's home.
-     * 
-     * @param playerId The player's UUID
+     * Removes a home for a player.
+     * @param playerUuid The player UUID
      * @param homeName The home name
-     * @return Whether the home was removed
      */
-    public boolean removePlayerHome(UUID playerId, String homeName) {
-        Map<String, Location> homes = getPlayerHomes(playerId);
-        return homes.remove(homeName.toLowerCase()) != null;
+    public void removeHome(UUID playerUuid, String homeName) {
+        // Get player homes
+        Map<String, Location> homes = playerHomes.get(playerUuid);
+        
+        if (homes == null) {
+            return;
+        }
+        
+        // Remove home
+        homes.remove(homeName);
+        
+        // If no homes left, remove player entry
+        if (homes.isEmpty()) {
+            playerHomes.remove(playerUuid);
+        }
+        
+        // Save homes
+        saveHomes();
+    }
+    
+    /**
+     * Gets a player's home.
+     * @param playerUuid The player UUID
+     * @param homeName The home name
+     * @return The home location, or null if not found
+     */
+    public Location getHome(UUID playerUuid, String homeName) {
+        // Get player homes
+        Map<String, Location> homes = playerHomes.get(playerUuid);
+        
+        if (homes == null) {
+            return null;
+        }
+        
+        // Get home
+        return homes.get(homeName);
+    }
+    
+    /**
+     * Checks if a player has a home.
+     * @param playerUuid The player UUID
+     * @param homeName The home name
+     * @return Whether the player has the home
+     */
+    public boolean hasHome(UUID playerUuid, String homeName) {
+        // Get player homes
+        Map<String, Location> homes = playerHomes.get(playerUuid);
+        
+        if (homes == null) {
+            return false;
+        }
+        
+        // Check if home exists
+        return homes.containsKey(homeName);
+    }
+    
+    /**
+     * Gets all homes for a player.
+     * @param playerUuid The player UUID
+     * @return The homes
+     */
+    public Map<String, Location> getHomes(UUID playerUuid) {
+        // Get player homes
+        Map<String, Location> homes = playerHomes.get(playerUuid);
+        
+        if (homes == null) {
+            return new HashMap<>();
+        }
+        
+        // Return a copy of the homes
+        return new HashMap<>(homes);
+    }
+    
+    /**
+     * Gets the number of homes a player has.
+     * @param playerUuid The player UUID
+     * @return The number of homes
+     */
+    public int getHomeCount(UUID playerUuid) {
+        // Get player homes
+        Map<String, Location> homes = playerHomes.get(playerUuid);
+        
+        if (homes == null) {
+            return 0;
+        }
+        
+        // Return number of homes
+        return homes.size();
+    }
+    
+    /**
+     * Clears a player's homes.
+     * @param playerUuid The player UUID
+     */
+    public void clearHomes(UUID playerUuid) {
+        // Remove player homes
+        playerHomes.remove(playerUuid);
+        
+        // Save homes
+        saveHomes();
     }
     
     @Override
@@ -240,9 +399,8 @@ public class HomeModule implements SubmoduleBase, Listener, CommandExecutor {
      */
     private void handleHomeCommand(Player player, String[] args) {
         String homeName = args.length > 0 ? args[0].toLowerCase() : "home";
-        Map<String, Location> homes = getPlayerHomes(player.getUniqueId());
         
-        if (!homes.containsKey(homeName)) {
+        if (!hasHome(player.getUniqueId(), homeName)) {
             player.sendMessage(ChatColor.RED + "Home '" + homeName + "' not found.");
             return;
         }
@@ -261,7 +419,7 @@ public class HomeModule implements SubmoduleBase, Listener, CommandExecutor {
         }
         
         // Teleport player
-        Location homeLocation = homes.get(homeName);
+        Location homeLocation = getHome(player.getUniqueId(), homeName);
         player.teleport(homeLocation);
         player.sendMessage(ChatColor.GREEN + "Teleported to home '" + homeName + "'.");
         
@@ -277,17 +435,16 @@ public class HomeModule implements SubmoduleBase, Listener, CommandExecutor {
      */
     private void handleSetHomeCommand(Player player, String[] args) {
         String homeName = args.length > 0 ? args[0].toLowerCase() : "home";
-        Map<String, Location> homes = getPlayerHomes(player.getUniqueId());
         
         // Check if player has reached the maximum number of homes
         int maxHomes = getMaxHomes(player);
-        if (homes.size() >= maxHomes && !homes.containsKey(homeName)) {
+        if (getHomeCount(player.getUniqueId()) >= maxHomes && !hasHome(player.getUniqueId(), homeName)) {
             player.sendMessage(ChatColor.RED + "You have reached the maximum number of homes (" + maxHomes + ").");
             return;
         }
         
         // Set home
-        setPlayerHome(player.getUniqueId(), homeName, player.getLocation());
+        setHome(player.getUniqueId(), homeName, player.getLocation());
         player.sendMessage(ChatColor.GREEN + "Home '" + homeName + "' set.");
     }
     
@@ -305,7 +462,8 @@ public class HomeModule implements SubmoduleBase, Listener, CommandExecutor {
         
         String homeName = args[0].toLowerCase();
         
-        if (removePlayerHome(player.getUniqueId(), homeName)) {
+        if (hasHome(player.getUniqueId(), homeName)) {
+            removeHome(player.getUniqueId(), homeName);
             player.sendMessage(ChatColor.GREEN + "Home '" + homeName + "' deleted.");
         } else {
             player.sendMessage(ChatColor.RED + "Home '" + homeName + "' not found.");
