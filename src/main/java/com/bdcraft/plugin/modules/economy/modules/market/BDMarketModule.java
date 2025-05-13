@@ -30,7 +30,7 @@ public class BDMarketModule implements SubmoduleBase, CommandExecutor, Listener 
     
     // Components
     private MarketManager marketManager;
-    private MarketAPIImpl marketAPI;
+    private ItemManager itemManager;
     
     /**
      * Creates a new market module.
@@ -57,8 +57,8 @@ public class BDMarketModule implements SubmoduleBase, CommandExecutor, Listener 
         logger.info("Enabling Market submodule");
         
         // Initialize components
-        this.marketManager = new MarketManager(plugin);
-        this.marketAPI = new MarketAPIImpl(marketManager);
+        this.itemManager = new ItemManager(plugin);
+        this.marketManager = new MarketManager(plugin, itemManager);
         
         // Register events
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
@@ -124,12 +124,12 @@ public class BDMarketModule implements SubmoduleBase, CommandExecutor, Listener 
     }
     
     /**
-     * Gets the market API implementation.
+     * Gets the item manager instance.
      * 
-     * @return The market API
+     * @return The item manager
      */
-    public MarketAPIImpl getMarketAPI() {
-        return marketAPI;
+    public ItemManager getItemManager() {
+        return itemManager;
     }
     
     /**
@@ -141,22 +141,24 @@ public class BDMarketModule implements SubmoduleBase, CommandExecutor, Listener 
      */
     public Market createMarket(Player player, String marketName) {
         if (marketManager != null) {
-            return marketManager.createMarket(player, marketName);
+            return marketManager.createMarket(player, marketName, player.getLocation());
         }
         return null;
     }
     
     /**
-     * Gets a player's market.
+     * Gets all markets owned by a player.
      * 
      * @param player The player
-     * @return The player's market, or null if none
+     * @return A list of markets owned by the player
      */
-    public PlayerMarket getPlayerMarket(Player player) {
+    public java.util.List<Market> getPlayerMarkets(Player player) {
         if (marketManager != null) {
-            return marketManager.getPlayerMarket(player);
+            return marketManager.getMarkets().stream()
+                .filter(market -> market.getOwner().equals(player.getUniqueId()))
+                .collect(java.util.stream.Collectors.toList());
         }
-        return null;
+        return java.util.Collections.emptyList();
     }
     
     /**
@@ -173,15 +175,19 @@ public class BDMarketModule implements SubmoduleBase, CommandExecutor, Listener 
     }
     
     /**
-     * Opens a market GUI for a player.
+     * Opens a market interface for a player.
+     * This would typically open a GUI but is just a placeholder for now.
      * 
      * @param player The player
      * @param marketId The market ID
      * @return Whether the market was opened
      */
     public boolean openMarket(Player player, UUID marketId) {
-        if (marketManager != null) {
-            return marketManager.openMarket(player, marketId);
+        Market market = getMarket(marketId);
+        if (market != null) {
+            player.sendMessage("§aOpening market: §e" + market.getName());
+            // TODO: Implement actual GUI opening
+            return true;
         }
         return false;
     }

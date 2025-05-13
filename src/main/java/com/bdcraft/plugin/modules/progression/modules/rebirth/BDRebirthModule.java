@@ -331,9 +331,17 @@ public class BDRebirthModule implements SubmoduleBase, Listener, CommandExecutor
         }
         
         // Check if player has enough emeralds
-        BDEconomyModule economy = (BDEconomyModule) plugin.getModule("Economy");
+        BDEconomyModule economy = plugin.getEconomyModule();
         if (economy != null) {
-            // TODO: Implement checking emerald balance
+            // Check emerald balance
+            int emeraldsRequired = nextTier.getEmeraldsRequired();
+            if (!economy.hasEnoughEmeralds(player, emeraldsRequired)) {
+                player.sendMessage(ChatColor.RED + "You need " + emeraldsRequired + " emeralds to rebirth.");
+                return false;
+            }
+            
+            // Deduct emeralds
+            economy.removeEmeralds(player, emeraldsRequired);
         }
         
         // Perform the rebirth
