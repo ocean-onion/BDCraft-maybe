@@ -159,9 +159,21 @@ The following permissions are granted to all players by default:
 - `bdcraft.chat.reply`
 - `bdcraft.chat.ignore`
 
+## Permission System
+
+BDCraft includes a comprehensive built-in permission system that does not require any external plugins. The permission system:
+
+1. **Self-Contained** - Fully manages all permissions without external dependencies
+2. **Groups-Based** - Organizes permissions into logical groups
+3. **Inheritance Support** - Allows groups to inherit permissions from other groups
+4. **UUID-Based** - Tracks players by their unique IDs for persistence
+5. **Negation Support** - Supports removing specific permissions with `-permission.node` syntax
+
+For detailed information on how to configure and use the permission system, see [Permission System](permission-system.md).
+
 ## Permission Groups
 
-BDCraft has its own built-in permission system with group functionality. Here are recommended permission group setups:
+BDCraft's internal permission system comes with pre-configured permission groups. Here are recommended permission group setups:
 
 ### Member Group
 ```
