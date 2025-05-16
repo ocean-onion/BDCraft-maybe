@@ -31,9 +31,9 @@ BDCraft provides a comprehensive set of commands for players and administrators.
 
 | Command | Description | Permission |
 |---------|-------------|------------|
-| `/bdmarket check` | Visualize market boundaries with temporary blocks | bdcraft.market.use |
-| `/bdmarket info` | Display information about the current market | bdcraft.market.use |
-| `/bdmarket list` | List all markets you're associated with | bdcraft.market.use |
+| `/bdmarket check` | Visualize market boundaries with temporary wool blocks | bdcraft.market.use |
+| `/bdmarket info` | Display information about the market you're standing in | bdcraft.market.use |
+| `/bdmarket list` | List all markets you have founder or associate status in | bdcraft.market.use |
 
 Note: Most market management is handled through the Market Owner villager GUI, which is accessed by right-clicking the Market Owner NPC.
 
@@ -41,15 +41,10 @@ Note: Most market management is handled through the Market Owner villager GUI, w
 
 | Command | Description | Permission |
 |---------|-------------|------------|
-| `/auction` or `/ah` | Opens the auction house menu | bdcraft.auction.use |
-| `/auction create <price> <duration>` | Creates a new auction with the item in your hand | bdcraft.auction.create |
-| `/auction bid <id> <amount>` | Places a bid on an auction | bdcraft.auction.use |
-| `/auction buyout <id>` | Instantly buys an auctioned item (if available) | bdcraft.auction.use |
-| `/auction cancel <id>` | Cancels your auction | bdcraft.auction.create |
-| `/auction search <query>` | Searches for items in the auction house | bdcraft.auction.use |
-| `/auction featured` | Makes your auction featured (costs extra) | bdcraft.auction.featured |
-| `/auction history` | Shows your auction history | bdcraft.auction.use |
-| `/auction admin` | Opens the auction admin menu | bdcraft.auction.admin |
+| `/bdah` | Opens the auction house GUI | bdcraft.auction.use |
+| `/bdah listings` | Shows your current auction listings | bdcraft.auction.list |
+| `/bdah sell <price> [amount]` | Lists an item for sale | bdcraft.auction.sell |
+| `/bdah cancel <listing_id>` | Cancels one of your listings | bdcraft.auction.cancel |
 
 ### Villager Trading System
 

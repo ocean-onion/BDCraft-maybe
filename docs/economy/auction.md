@@ -1,71 +1,134 @@
-# Auction System
+# BD Auction House
 
-The BDCraft Auction System provides a server-wide platform for players to sell items through a bidding process.
+The BDCraft Auction House is a specialized marketplace that allows players to buy and sell BD items through a GUI interface.
 
-## Overview
+## Accessing the Auction House
 
-The Auction System offers:
-- Time-limited item auctions
-- Bidding functionality
-- Instant buyout options
-- Auction history tracking
-- Featured auction slots
+Players can access the auction house using these commands:
+- `/bdah` - Opens the auction house GUI
+- `/bdah listings` - Shows your current auction listings
+- `/bdah sell <price> [amount]` - Lists an item for sale
+- `/bdah cancel <listing_id>` - Cancels one of your listings
 
-## Creating an Auction
+## Auction House Interface
 
-Players with the appropriate permissions can create auctions:
+The auction house uses a chest GUI interface with several pages:
 
-1. Hold the item you want to auction in your main hand
-2. Use `/auction create <starting-bid> <duration>` 
-3. Optionally set a buyout price with `/auction create <starting-bid> <duration> <buyout>`
-4. The item will be removed from your inventory and placed in the auction
+### Main Browsing Interface
 
-## Bidding on Auctions
+- **Top Row**: Navigation controls and category filters
+- **Middle Rows**: Item listings with prices
+- **Bottom Row**: Personal controls (your listings, sell item, etc.)
 
-To bid on an auction:
+### Category Filters
 
-1. View available auctions with `/auction` or `/ah`
-2. Find an auction you're interested in
-3. Place a bid using `/auction bid <id> <amount>`
-4. If you're outbid, you'll receive a notification
-5. If you win, the item will be delivered to your inventory
+- **All Items**: View all listings
+- **Seeds**: Filter for BD seeds only
+- **Tools**: Filter for BD tools only
+- **Special Items**: Filter for rare/seasonal items
 
-## Buyout
+### Listing Details
 
-For auctions with a buyout option:
+Each listing shows:
+- Item with custom name and lore
+- Price (per item)
+- Quantity available
+- Seller name
+- Time remaining before expiration
 
-1. View the auction details
-2. If a buyout price is set, you can use `/auction buyout <id>`
-3. The auction will immediately end and you'll receive the item
+## Selling Items
 
-## Featured Auctions
+### Listing Process
 
-Players with the appropriate permissions can create featured auctions:
+1. Hold the BD item you want to sell in your main hand
+2. Use the command: `/bdah sell <price> [amount]`
+   - Example: `/bdah sell 15 5` (sells 5 of the held item for 15 currency each)
+3. Confirm the listing in the confirmation GUI
+4. Pay the listing fee (deducted automatically)
 
-1. Create an auction normally
-2. Use `/auction featured <id>` to highlight it
-3. Featured auctions appear prominently in the auction house
+### Listing Rules and Limitations
 
-## Auction Management
+- **Allowed Items**:
+  - BD Seeds (regular, green, purple)
+  - BD Tools (BD Stick, BD Harvester, Ultimate BD Harvester)
+  - Special/Seasonal items from Seasonal Traders
 
-Auction creators can:
-- Cancel their own auctions before any bids using `/auction cancel <id>`
-- View their auction history with `/auction history`
-- See the status of their active auctions
+- **Prohibited Items**:
+  - BD Crops (must be sold to Collectors)
+  - Non-BD items (regular Minecraft items)
+  - Items without proper BD metadata
 
-Administrators can:
-- Cancel any auction with `/auction admin cancel <id>`
-- Manage the auction system with `/auction admin`
+- **Listing Limitations**:
+  - Maximum 10 active listings per player
+  - Listings expire after 3 days if not sold
+  - Minimum price: 1 currency
+  - Maximum price: 10,000 currency
+  - Listing fee: 5% of total listing value
 
-## Permissions
+## Buying Items
 
-| Permission | Description |
-|------------|-------------|
-| `bdcraft.auction.use` | Allow basic auction usage |
-| `bdcraft.auction.create` | Allow creating auctions |
-| `bdcraft.auction.featured` | Allow creating featured auctions |
-| `bdcraft.auction.admin` | Administrative auction commands |
+### Purchase Process
 
-## Commands
+1. Open the auction house with `/bdah`
+2. Browse listings or use category filters
+3. Click on the item you want to purchase
+4. Confirm the purchase in the confirmation GUI
+5. Item is added to your inventory and currency is deducted
 
-See the [Commands Reference](../commands.md#auction-commands) for a complete list of auction-related commands.
+### Purchase Limitations
+
+- Must have sufficient currency to buy
+- Must have inventory space for the items
+- Cannot purchase your own listings
+
+## Managing Listings
+
+### Viewing Your Listings
+
+- Use the command: `/bdah listings`
+- Shows all your active listings with details
+- Shows total potential value if all items sell
+
+### Cancelling Listings
+
+- Use the command: `/bdah cancel <listing_id>`
+- Listing ID can be found in your listings page
+- Cancelled items are returned to your inventory
+- Listing fee is not refunded
+
+### Expired Listings
+
+- Listings automatically expire after 3 days
+- Expired items are returned to your mailbox
+- Access mailbox with: `/bdmail`
+- Unclaimed mailbox items expire after 7 days
+
+## Rank Benefits for Auction House
+
+Different ranks receive special benefits in the auction house:
+
+- **Newcomer (Rank 1)**:
+  - Standard 5% listing fee
+  - 3-day listing duration
+  - Maximum 10 active listings
+
+- **Farmer (Rank 2)**:
+  - 4.5% listing fee
+  - 3-day listing duration
+  - Maximum 15 active listings
+
+- **Expert Farmer (Rank 3)**:
+  - 4% listing fee
+  - 4-day listing duration
+  - Maximum 20 active listings
+
+- **Master Farmer (Rank 4)**:
+  - 3.5% listing fee
+  - 5-day listing duration
+  - Maximum 25 active listings
+
+- **Agricultural Expert (Rank 5)**:
+  - 3% listing fee
+  - 7-day listing duration
+  - Maximum 30 active listings
+  - Special Featured Listings (appear at the top)
