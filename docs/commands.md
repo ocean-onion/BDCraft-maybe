@@ -31,12 +31,11 @@ BDCraft provides a comprehensive set of commands for players and administrators.
 
 | Command | Description | Permission |
 |---------|-------------|------------|
-| `/market` | Opens the market interface | bdcraft.market.use |
-| `/market sell <price>` | Lists an item for sale | bdcraft.market.use |
-| `/market buy <id>` | Purchases an item from the market | bdcraft.market.use |
-| `/market find <item>` | Searches for items in the market | bdcraft.market.use |
-| `/market listings` | Shows your active market listings | bdcraft.market.use |
-| `/market cancel <id>` | Cancels one of your listings | bdcraft.market.use |
+| `/bdmarket check` | Visualize market boundaries with temporary blocks | bdcraft.market.use |
+| `/bdmarket info` | Display information about the current market | bdcraft.market.use |
+| `/bdmarket list` | List all markets you're associated with | bdcraft.market.use |
+
+Note: Most market management is handled through the Market Owner villager GUI, which is accessed by right-clicking the Market Owner NPC.
 
 ### Auction Commands
 
