@@ -1,304 +1,654 @@
 # API Reference
 
-BDCraft features a robust internal API system that allows different modules to communicate with each other efficiently. This document provides a reference for developers who need to understand how the plugin's systems work internally.
+BDCraft provides a comprehensive internal API that can be used by the plugin's modules to interact with each other. This document provides a reference for the main API interfaces and methods.
 
-## Core API Interfaces
+## Core API
 
-### ModuleManager Interface
+The core API provides access to the central functionality of BDCraft.
 
-The ModuleManager interface defines how modules are loaded, enabled, and disabled:
+### BDCraftAPI
+
+The main API interface for the plugin.
 
 ```java
-public interface ModuleManager {
-    String getName();
-    void enable(BDCraft plugin);
-    void disable();
+public interface BDCraftAPI {
+    /**
+     * Gets the economy API.
+     * 
+     * @return The economy API
+     */
+    EconomyAPI getEconomyAPI();
+    
+    /**
+     * Gets the progression API.
+     * 
+     * @return The progression API
+     */
+    ProgressionAPI getProgressionAPI();
+    
+    /**
+     * Gets the vital API.
+     * 
+     * @return The vital API
+     */
+    VitalAPI getVitalAPI();
+    
+    /**
+     * Gets the configuration manager.
+     * 
+     * @return The configuration manager
+     */
+    ConfigManager getConfigManager();
+    
+    /**
+     * Gets the data manager.
+     * 
+     * @return The data manager
+     */
+    DataManager getDataManager();
+    
+    /**
+     * Reloads the plugin configuration.
+     */
     void reload();
-    boolean isEnabled();
-    Object getSubmodule(String name);
-    void registerSubmodule(Object submodule);
 }
 ```
 
-### SubmoduleBase Interface
+### ConfigManager
 
-The SubmoduleBase interface defines the basic functionality for all submodules:
+Interface for accessing configuration files.
 
 ```java
-public interface SubmoduleBase {
-    String getName();
-    void enable(ModuleManager parent);
-    void disable();
-    void reload();
-    boolean isEnabled();
+public interface ConfigManager {
+    /**
+     * Gets the main configuration.
+     * 
+     * @return The main configuration
+     */
+    FileConfiguration getConfig();
+    
+    /**
+     * Gets a specific configuration file.
+     * 
+     * @param name The name of the configuration file
+     * @return The configuration file
+     */
+    FileConfiguration getConfig(String name);
+    
+    /**
+     * Reloads all configuration files.
+     */
+    void reloadConfigs();
+    
+    /**
+     * Saves a configuration file.
+     * 
+     * @param name The name of the configuration file
+     */
+    void saveConfig(String name);
+}
+```
+
+### DataManager
+
+Interface for accessing plugin data.
+
+```java
+public interface DataManager {
+    /**
+     * Gets a player's data.
+     * 
+     * @param uuid The player's UUID
+     * @return The player data
+     */
+    PlayerData getPlayerData(UUID uuid);
+    
+    /**
+     * Saves a player's data.
+     * 
+     * @param data The player data to save
+     */
+    void savePlayerData(PlayerData data);
+    
+    /**
+     * Gets data for all players.
+     * 
+     * @return A map of player UUIDs to player data
+     */
+    Map<UUID, PlayerData> getAllPlayerData();
+    
+    /**
+     * Saves all data.
+     */
+    void saveAll();
 }
 ```
 
 ## Economy API
 
-The Economy API provides interfaces for currency management and economic operations.
+The economy API provides access to BDCraft's economy features.
 
-### EconomyAPI Interface
+### EconomyAPI
+
+The main economy API interface.
 
 ```java
 public interface EconomyAPI {
-    double getBalance(UUID playerUuid);
-    boolean hasBalance(UUID playerUuid, double amount);
-    boolean withdraw(UUID playerUuid, double amount);
-    boolean deposit(UUID playerUuid, double amount);
-    boolean transfer(UUID fromUuid, UUID toUuid, double amount);
-    String formatCurrency(double amount);
-    String getCurrencyName(double amount);
-    String getCurrencySymbol();
+    /**
+     * Gets a player's balance.
+     * 
+     * @param uuid The player's UUID
+     * @return The player's balance
+     */
+    double getBalance(UUID uuid);
+    
+    /**
+     * Sets a player's balance.
+     * 
+     * @param uuid The player's UUID
+     * @param amount The new balance
+     * @return Whether the operation was successful
+     */
+    boolean setBalance(UUID uuid, double amount);
+    
+    /**
+     * Gives money to a player.
+     * 
+     * @param uuid The player's UUID
+     * @param amount The amount to give
+     * @return Whether the operation was successful
+     */
+    boolean giveMoney(UUID uuid, double amount);
+    
+    /**
+     * Takes money from a player.
+     * 
+     * @param uuid The player's UUID
+     * @param amount The amount to take
+     * @return Whether the operation was successful
+     */
+    boolean takeMoney(UUID uuid, double amount);
+    
+    /**
+     * Transfers money from one player to another.
+     * 
+     * @param from The sender's UUID
+     * @param to The recipient's UUID
+     * @param amount The amount to transfer
+     * @return Whether the operation was successful
+     */
+    boolean transferMoney(UUID from, UUID to, double amount);
+    
+    /**
+     * Gets the market API.
+     * 
+     * @return The market API
+     */
+    MarketAPI getMarketAPI();
+    
+    /**
+     * Gets the auction API.
+     * 
+     * @return The auction API
+     */
+    AuctionAPI getAuctionAPI();
+    
+    /**
+     * Gets the villager API.
+     * 
+     * @return The villager API
+     */
+    VillagerAPI getVillagerAPI();
 }
 ```
 
-### MarketAPI Interface
+### MarketAPI
+
+Interface for interacting with markets.
 
 ```java
 public interface MarketAPI {
-    UUID createMarket(UUID ownerUuid, String name);
-    boolean deleteMarket(UUID marketId);
+    /**
+     * Gets a market by ID.
+     * 
+     * @param marketId The market ID
+     * @return The market, or null if not found
+     */
     Market getMarket(UUID marketId);
-    List<Market> getMarkets();
-    boolean addItem(UUID marketId, ItemStack item, double price);
-    boolean removeItem(UUID marketId, UUID itemId);
-    boolean purchaseItem(UUID buyerUuid, UUID itemId);
+    
+    /**
+     * Gets a player's market.
+     * 
+     * @param playerUuid The player's UUID
+     * @return The player's market, or null if they don't have one
+     */
+    Market getPlayerMarket(UUID playerUuid);
+    
+    /**
+     * Gets all markets.
+     * 
+     * @return A list of all markets
+     */
+    List<Market> getAllMarkets();
+    
+    /**
+     * Creates a market for a player.
+     * 
+     * @param playerUuid The player's UUID
+     * @param location The location of the market
+     * @param name The name of the market
+     * @return The created market, or null if creation failed
+     */
+    Market createMarket(UUID playerUuid, Location location, String name);
+    
+    /**
+     * Deletes a market.
+     * 
+     * @param marketId The market ID
+     * @return Whether the operation was successful
+     */
+    boolean deleteMarket(UUID marketId);
 }
 ```
 
-### AuctionAPI Interface
+### AuctionAPI
+
+Interface for interacting with the auction house.
 
 ```java
 public interface AuctionAPI {
-    UUID createAuction(UUID sellerUuid, ItemStack item, double startingBid, long duration);
-    boolean cancelAuction(UUID auctionId);
-    boolean placeBid(UUID bidderUuid, UUID auctionId, double amount);
-    boolean buyoutAuction(UUID buyerUuid, UUID auctionId);
-    List<Auction> getActiveAuctions();
-    Auction getAuction(UUID auctionId);
+    /**
+     * Lists an item for auction.
+     * 
+     * @param playerUuid The player's UUID
+     * @param item The item to list
+     * @param price The price
+     * @return The auction ID, or null if listing failed
+     */
+    UUID listItem(UUID playerUuid, ItemStack item, double price);
+    
+    /**
+     * Buys an item from the auction house.
+     * 
+     * @param playerUuid The player's UUID
+     * @param auctionId The auction ID
+     * @return Whether the purchase was successful
+     */
+    boolean buyItem(UUID playerUuid, UUID auctionId);
+    
+    /**
+     * Cancels an auction.
+     * 
+     * @param playerUuid The player's UUID
+     * @param auctionId The auction ID
+     * @return Whether the cancellation was successful
+     */
+    boolean cancelAuction(UUID playerUuid, UUID auctionId);
+    
+    /**
+     * Gets all active auctions.
+     * 
+     * @return A list of all active auctions
+     */
+    List<Auction> getAllAuctions();
+    
+    /**
+     * Gets auctions by a specific player.
+     * 
+     * @param playerUuid The player's UUID
+     * @return A list of the player's auctions
+     */
+    List<Auction> getPlayerAuctions(UUID playerUuid);
 }
 ```
 
-### VillagerAPI Interface
+### VillagerAPI
+
+Interface for interacting with BD villagers.
 
 ```java
 public interface VillagerAPI {
-    UUID createVillager(VillagerType type, Location location);
-    boolean removeVillager(UUID villagerUuid);
-    boolean addTrade(UUID villagerUuid, ItemStack input1, ItemStack input2, ItemStack output);
-    boolean removeTrade(UUID villagerUuid, int index);
-    List<VillagerTrade> getTrades(UUID villagerUuid);
-    boolean restockVillager(UUID villagerUuid);
+    /**
+     * Gets a BD villager by ID.
+     * 
+     * @param villagerId The villager ID
+     * @return The BD villager, or null if not found
+     */
+    BDVillager getVillager(UUID villagerId);
+    
+    /**
+     * Creates a BD villager.
+     * 
+     * @param type The villager type
+     * @param location The location
+     * @return The created BD villager, or null if creation failed
+     */
+    BDVillager createVillager(VillagerType type, Location location);
+    
+    /**
+     * Removes a BD villager.
+     * 
+     * @param villagerId The villager ID
+     * @return Whether the operation was successful
+     */
+    boolean removeVillager(UUID villagerId);
+    
+    /**
+     * Gets all BD villagers.
+     * 
+     * @return A list of all BD villagers
+     */
+    List<BDVillager> getAllVillagers();
+    
+    /**
+     * Gets BD villagers by type.
+     * 
+     * @param type The villager type
+     * @return A list of BD villagers of the specified type
+     */
+    List<BDVillager> getVillagersByType(VillagerType type);
 }
 ```
 
 ## Progression API
 
-The Progression API provides interfaces for rank and rebirth management.
+The progression API provides access to BDCraft's progression features.
 
-### ProgressionAPI Interface
+### ProgressionAPI
+
+The main progression API interface.
 
 ```java
 public interface ProgressionAPI {
-    Rank getPlayerRank(UUID playerUuid);
-    String getRankDisplayName(Rank rank);
-    int getPlayerRebirthLevel(UUID playerUuid);
-    int getPlayerExperience(UUID playerUuid);
-    int addPlayerExperience(UUID playerUuid, int amount);
-    double getProgressPercentage(UUID playerUuid);
-    Rank getNextRank(UUID playerUuid);
+    /**
+     * Gets a player's rank.
+     * 
+     * @param uuid The player's UUID
+     * @return The player's rank
+     */
+    Rank getPlayerRank(UUID uuid);
     
-    enum Rank {
-        NEWCOMER,
-        FARMER,
-        EXPERT_FARMER,
-        MASTER_FARMER,
-        AGRICULTURAL_EXPERT
-    }
-}
-```
-
-### RankAPI Interface
-
-```java
-public interface RankAPI {
-    int getPlayerRank(UUID playerUuid);
-    boolean setPlayerRank(UUID playerUuid, int rank);
-    String getRankName(int rank);
-    String getRankDisplayName(int rank);
-    int getRequiredExperience(int rank);
-    boolean rankUp(UUID playerUuid);
-    List<String> getRankPermissions(int rank);
-}
-```
-
-### RebirthAPI Interface
-
-```java
-public interface RebirthAPI {
-    int getRebirthLevel(UUID playerUuid);
-    boolean setRebirthLevel(UUID playerUuid, int level);
-    boolean performRebirth(UUID playerUuid);
-    double getRebirthMultiplier(UUID playerUuid);
-    boolean isEligibleForRebirth(UUID playerUuid);
-    int getRequiredRank(int rebirthLevel);
+    /**
+     * Sets a player's rank.
+     * 
+     * @param uuid The player's UUID
+     * @param rank The new rank
+     * @return Whether the operation was successful
+     */
+    boolean setPlayerRank(UUID uuid, Rank rank);
+    
+    /**
+     * Gets a player's experience.
+     * 
+     * @param uuid The player's UUID
+     * @return The player's experience
+     */
+    int getPlayerExperience(UUID uuid);
+    
+    /**
+     * Gives experience to a player.
+     * 
+     * @param uuid The player's UUID
+     * @param amount The amount of experience to give
+     * @return Whether the operation was successful
+     */
+    boolean giveExperience(UUID uuid, int amount);
+    
+    /**
+     * Gets a player's rebirth level.
+     * 
+     * @param uuid The player's UUID
+     * @return The player's rebirth level
+     */
+    int getRebirthLevel(UUID uuid);
+    
+    /**
+     * Performs a rebirth for a player.
+     * 
+     * @param uuid The player's UUID
+     * @return Whether the rebirth was successful
+     */
+    boolean performRebirth(UUID uuid);
 }
 ```
 
 ## Vital API
 
-The Vital API provides interfaces for essential utility features.
+The vital API provides access to BDCraft's vital features.
 
-### HomeAPI Interface
+### VitalAPI
+
+The main vital API interface.
+
+```java
+public interface VitalAPI {
+    /**
+     * Gets the home API.
+     * 
+     * @return The home API
+     */
+    HomeAPI getHomeAPI();
+    
+    /**
+     * Gets the teleport API.
+     * 
+     * @return The teleport API
+     */
+    TeleportAPI getTeleportAPI();
+    
+    /**
+     * Gets the chat API.
+     * 
+     * @return The chat API
+     */
+    ChatAPI getChatAPI();
+    
+    /**
+     * Gets the tab API.
+     * 
+     * @return The tab API
+     */
+    TabAPI getTabAPI();
+}
+```
+
+### HomeAPI
+
+Interface for interacting with homes.
 
 ```java
 public interface HomeAPI {
-    boolean setHome(UUID playerUuid, String name, Location location);
-    boolean deleteHome(UUID playerUuid, String name);
-    Location getHome(UUID playerUuid, String name);
-    List<String> getHomeList(UUID playerUuid);
-    int getMaxHomes(UUID playerUuid);
-    boolean isHomePublic(UUID playerUuid, String name);
-    boolean setHomeVisibility(UUID playerUuid, String name, boolean isPublic);
+    /**
+     * Gets a player's homes.
+     * 
+     * @param uuid The player's UUID
+     * @return A map of home names to locations
+     */
+    Map<String, Location> getHomes(UUID uuid);
+    
+    /**
+     * Sets a home for a player.
+     * 
+     * @param uuid The player's UUID
+     * @param name The home name
+     * @param location The location
+     * @return Whether the operation was successful
+     */
+    boolean setHome(UUID uuid, String name, Location location);
+    
+    /**
+     * Deletes a home for a player.
+     * 
+     * @param uuid The player's UUID
+     * @param name The home name
+     * @return Whether the operation was successful
+     */
+    boolean deleteHome(UUID uuid, String name);
+    
+    /**
+     * Gets the maximum number of homes a player can have.
+     * 
+     * @param uuid The player's UUID
+     * @return The maximum number of homes
+     */
+    int getMaxHomes(UUID uuid);
 }
 ```
 
-### TeleportAPI Interface
+### TeleportAPI
+
+Interface for teleportation.
 
 ```java
 public interface TeleportAPI {
-    boolean teleport(UUID playerUuid, Location destination);
-    boolean teleport(UUID playerUuid, UUID targetUuid);
-    boolean sendTeleportRequest(UUID requesterUuid, UUID targetUuid);
-    boolean acceptTeleportRequest(UUID targetUuid);
-    boolean denyTeleportRequest(UUID targetUuid);
-    boolean teleportToCoordinates(UUID playerUuid, World world, double x, double y, double z);
-    Location getLastLocation(UUID playerUuid);
-    boolean teleportRandom(UUID playerUuid, World world, int radius);
+    /**
+     * Teleports a player.
+     * 
+     * @param player The player
+     * @param location The location
+     * @return Whether the teleport was initiated successfully
+     */
+    boolean teleport(Player player, Location location);
+    
+    /**
+     * Gets a warp location.
+     * 
+     * @param name The warp name
+     * @return The warp location, or null if not found
+     */
+    Location getWarp(String name);
+    
+    /**
+     * Sets a warp.
+     * 
+     * @param name The warp name
+     * @param location The location
+     * @return Whether the operation was successful
+     */
+    boolean setWarp(String name, Location location);
+    
+    /**
+     * Deletes a warp.
+     * 
+     * @param name The warp name
+     * @return Whether the operation was successful
+     */
+    boolean deleteWarp(String name);
+    
+    /**
+     * Gets all warps.
+     * 
+     * @return A map of warp names to locations
+     */
+    Map<String, Location> getAllWarps();
 }
 ```
 
-### ChatAPI Interface
+### ChatAPI
+
+Interface for chat management.
 
 ```java
 public interface ChatAPI {
-    boolean sendPrivateMessage(UUID senderUuid, UUID receiverUuid, String message);
-    boolean broadcastMessage(String message);
-    boolean setNickname(UUID playerUuid, String nickname);
-    String getNickname(UUID playerUuid);
-    boolean addToChannel(UUID playerUuid, String channel);
-    boolean removeFromChannel(UUID playerUuid, String channel);
-    String getActiveChannel(UUID playerUuid);
-    boolean setActiveChannel(UUID playerUuid, String channel);
-    boolean createChannel(String name, UUID ownerUuid);
-    boolean deleteChannel(String name);
+    /**
+     * Formats a chat message.
+     * 
+     * @param player The player
+     * @param message The message
+     * @return The formatted message
+     */
+    String formatMessage(Player player, String message);
+    
+    /**
+     * Mutes a player.
+     * 
+     * @param uuid The player's UUID
+     * @param duration The duration in seconds, or 0 for permanent
+     * @return Whether the operation was successful
+     */
+    boolean mutePlayer(UUID uuid, long duration);
+    
+    /**
+     * Unmutes a player.
+     * 
+     * @param uuid The player's UUID
+     * @return Whether the operation was successful
+     */
+    boolean unmutePlayer(UUID uuid);
+    
+    /**
+     * Checks if a player is muted.
+     * 
+     * @param uuid The player's UUID
+     * @return Whether the player is muted
+     */
+    boolean isMuted(UUID uuid);
+    
+    /**
+     * Gets the chat format for a player.
+     * 
+     * @param player The player
+     * @return The chat format
+     */
+    String getChatFormat(Player player);
 }
 ```
 
-### TabAPI Interface
+### TabAPI
+
+Interface for tab list management.
 
 ```java
 public interface TabAPI {
-    boolean updateTabList(UUID playerUuid);
-    boolean updateAllTabLists();
-    boolean setHeader(String header);
-    boolean setFooter(String footer);
-    boolean setPlayerListName(UUID playerUuid, String name);
-    boolean toggleAFK(UUID playerUuid);
-    boolean isAFK(UUID playerUuid);
+    /**
+     * Sets the tab list header.
+     * 
+     * @param header The header
+     */
+    void setHeader(String header);
+    
+    /**
+     * Sets the tab list footer.
+     * 
+     * @param footer The footer
+     */
+    void setFooter(String footer);
+    
+    /**
+     * Updates the tab list for a player.
+     * 
+     * @param player The player
+     */
+    void updateTabList(Player player);
+    
+    /**
+     * Updates the tab list for all players.
+     */
+    void updateTabListForAll();
 }
 ```
 
-## Data Models
-
-The plugin uses several data models to represent entities in the system:
-
-### Economy Models
-
-- **Currency**: Represents a currency type with name, symbol, and format.
-- **Transaction**: Represents a currency transaction with sender, receiver, amount, and timestamp.
-- **Market**: Represents a player-owned market with items for sale.
-- **MarketItem**: Represents an item for sale in a market.
-- **Auction**: Represents an auction with current bids and status.
-- **Bid**: Represents a bid on an auction.
-- **Villager**: Represents a custom villager with trades.
-- **VillagerTrade**: Represents a trade offered by a villager.
-
-### Progression Models
-
-- **PlayerRank**: Represents a player's rank and experience.
-- **RankDefinition**: Defines a rank with name, permissions, and requirements.
-- **Rebirth**: Represents a player's rebirth status and benefits.
-- **RebirthDefinition**: Defines a rebirth level with requirements and rewards.
-
-### Vital Models
-
-- **Home**: Represents a player's home location.
-- **TeleportRequest**: Represents a request to teleport to another player.
-- **ChatChannel**: Represents a chat channel with members and settings.
-- **PlayerSettings**: Represents a player's personal settings for various features.
-
-## Event System
-
-BDCraft uses an event system for communication between modules:
-
-### Economy Events
-
-- **BalanceChangeEvent**: Fired when a player's balance changes.
-- **TransactionEvent**: Fired when a transaction occurs between players.
-- **MarketCreateEvent**: Fired when a market is created.
-- **MarketDeleteEvent**: Fired when a market is deleted.
-- **MarketPurchaseEvent**: Fired when an item is purchased from a market.
-- **AuctionCreateEvent**: Fired when an auction is created.
-- **AuctionBidEvent**: Fired when a bid is placed on an auction.
-- **AuctionEndEvent**: Fired when an auction ends.
-
-### Progression Events
-
-- **RankChangeEvent**: Fired when a player's rank changes.
-- **ExperienceGainEvent**: Fired when a player gains experience.
-- **RebirthEvent**: Fired when a player is reborn.
-
-### Vital Events
-
-- **HomeCreateEvent**: Fired when a home is created.
-- **HomeDeleteEvent**: Fired when a home is deleted.
-- **TeleportEvent**: Fired when a player teleports.
-- **TeleportRequestEvent**: Fired when a teleport request is sent.
-- **ChatMessageEvent**: Fired when a chat message is sent.
-- **ChannelJoinEvent**: Fired when a player joins a chat channel.
-- **ChannelLeaveEvent**: Fired when a player leaves a chat channel.
-
 ## Using the API Internally
 
-The API interfaces are used for communication between modules. For example, when a player sells an item in a market:
+Since BDCraft is designed as a self-contained plugin, these APIs are only used internally by the plugin's modules to interact with each other. The plugin does not expose these APIs for external plugins to use.
 
-1. The MarketModule processes the sale.
-2. It calls the EconomyAPI to add funds to the seller.
-3. It also calls the ProgressionAPI to add experience to the seller.
-4. It fires a MarketPurchaseEvent that other modules can listen for.
-
-This modular approach keeps the code clean and maintainable while allowing modules to work together seamlessly.
-
-## Configuration Access
-
-Modules can access configuration options through the ConfigManager:
+Example of internal API usage:
 
 ```java
-ConfigManager configManager = plugin.getConfigManager();
-FileConfiguration config = configManager.getConfig(ConfigType.ECONOMY);
-double taxRate = config.getDouble("market.tax-rate", 0.05);
+// Getting a player's balance from another module
+public void someMethod(UUID playerUuid) {
+    double balance = plugin.getEconomyAPI().getBalance(playerUuid);
+    // Do something with the balance
+}
+
+// Teleporting a player to their home
+public void teleportToHome(Player player, String homeName) {
+    UUID playerUuid = player.getUniqueId();
+    Map<String, Location> homes = plugin.getVitalAPI().getHomeAPI().getHomes(playerUuid);
+    Location homeLocation = homes.get(homeName);
+    
+    if (homeLocation != null) {
+        plugin.getVitalAPI().getTeleportAPI().teleport(player, homeLocation);
+    }
+}
 ```
-
-## Persistence
-
-Data is stored using a centralized persistence system:
-
-```java
-BDCraft plugin = getBDCraftInstance();
-plugin.getDataManager().savePlayerData(playerUuid, dataKey, value);
-Object value = plugin.getDataManager().getPlayerData(playerUuid, dataKey);
-```
-
-This ensures consistent data handling across all modules.

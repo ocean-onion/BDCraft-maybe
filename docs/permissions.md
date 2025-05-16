@@ -1,206 +1,196 @@
-# Permissions Reference
+# Permissions
 
-BDCraft uses a comprehensive permission system to control access to various features. This guide lists all permissions organized by module.
+BDCraft uses a comprehensive permission system to control access to various features. Below is a complete list of all permissions available in the plugin.
 
 ## Core Permissions
 
-These permissions control access to core plugin functionality:
-
-| Permission | Description | Default |
-|------------|-------------|---------|
-| `bdcraft.admin` | Full administrative access to all plugin features | op |
-| `bdcraft.reload` | Ability to reload the plugin configuration | op |
-| `bdcraft.modules.manage` | Ability to enable/disable modules | op |
-| `bdcraft.help` | Access to the help command | true |
+| Permission | Description |
+|------------|-------------|
+| `bdcraft.admin` | Grants access to all administrative commands and features |
+| `bdcraft.reload` | Allows reloading the plugin configuration |
+| `bdcraft.update` | Allows checking for plugin updates |
 
 ## Economy Module Permissions
 
 ### General Economy
 
-| Permission | Description | Default |
-|------------|-------------|---------|
-| `bdcraft.economy.use` | Basic economy commands and balance checking | true |
-| `bdcraft.economy.pay` | Ability to pay other players | true |
-| `bdcraft.economy.admin` | Administrative economy commands | op |
-| `bdcraft.economy.baltop` | View the balance leaderboard | true |
+| Permission | Description |
+|------------|-------------|
+| `bdcraft.economy.use` | Allows using basic economy commands |
+| `bdcraft.economy.admin` | Grants access to economy admin commands |
+| `bdcraft.economy.pay` | Allows paying other players |
+| `bdcraft.economy.balance` | Allows checking own balance |
+| `bdcraft.economy.balance.others` | Allows checking others' balances |
+| `bdcraft.economy.top` | Allows viewing top balances |
 
 ### Market System
 
-| Permission | Description | Default |
-|------------|-------------|---------|
-| `bdcraft.market.use` | Basic market usage and browsing | true |
-| `bdcraft.market.sell` | Ability to sell items on the market | true |
-| `bdcraft.market.admin` | Administrative market commands | op |
+| Permission | Description |
+|------------|-------------|
+| `bdcraft.market.use` | Allows basic market usage (check, info, list) |
+| `bdcraft.market.founder` | Allows creating a market |
+| `bdcraft.market.founder.multiple` | Allows creating multiple markets |
+| `bdcraft.market.admin` | Grants admin access to all markets |
 
 ### Auction System
 
-| Permission | Description | Default |
-|------------|-------------|---------|
-| `bdcraft.auction.use` | Basic auction usage and bidding | true |
-| `bdcraft.auction.create` | Ability to create auctions | true |
-| `bdcraft.auction.admin` | Administrative auction commands | op |
-| `bdcraft.auction.featured` | Ability to create featured auctions | true |
+| Permission | Description |
+|------------|-------------|
+| `bdcraft.auction.use` | Allows using the auction house |
+| `bdcraft.auction.sell` | Allows selling items on the auction house |
+| `bdcraft.auction.cancel` | Allows canceling own listings |
+| `bdcraft.auction.list` | Allows viewing own auction listings |
+| `bdcraft.auction.admin` | Grants admin access to the auction system |
 
 ### Villager System
 
-| Permission | Description | Default |
-|------------|-------------|---------|
-| `bdcraft.villager.use` | Ability to interact with custom villagers | true |
-| `bdcraft.villager.admin` | Administrative villager management | op |
+| Permission | Description |
+|------------|-------------|
+| `bdcraft.villager.use` | Allows interaction with BD villagers |
+| `bdcraft.villager.dealer` | Allows trading with BD Dealers |
+| `bdcraft.villager.collector` | Allows trading with Collectors |
+| `bdcraft.villager.seasonal` | Allows trading with Seasonal Traders |
+| `bdcraft.villager.admin` | Grants admin access to villager management |
 
 ## Progression Module Permissions
 
 ### Rank System
 
-| Permission | Description | Default |
-|------------|-------------|---------|
-| `bdcraft.rank.use` | View rank information and progress | true |
-| `bdcraft.rank.rankup` | Ability to rank up | true |
-| `bdcraft.rank.admin` | Administrative rank commands | op |
-| `bdcraft.rank.top` | View the rank leaderboard | true |
-
-#### Rank-Specific Permissions
-
-These permissions are automatically granted based on a player's rank:
-
 | Permission | Description |
 |------------|-------------|
-| `bdcraft.rank.novice` | Granted to Novice and above |
-| `bdcraft.rank.apprentice` | Granted to Apprentice and above |
-| `bdcraft.rank.expert` | Granted to Expert and above |
-| `bdcraft.rank.master` | Granted to Master and above |
-| `bdcraft.rank.grandmaster` | Granted to Grandmaster and above |
-| `bdcraft.rank.legend` | Granted to Legend rank |
+| `bdcraft.rank.use` | Allows viewing rank information |
+| `bdcraft.rank.progress` | Allows checking rank progress |
+| `bdcraft.rank.benefits` | Allows viewing rank benefits |
+| `bdcraft.rank.admin` | Grants admin access to rank management |
 
 ### Rebirth System
 
-| Permission | Description | Default |
-|------------|-------------|---------|
-| `bdcraft.rebirth.use` | Access to rebirth functionality | true |
-| `bdcraft.rebirth.admin` | Administrative rebirth commands | op |
-| `bdcraft.rebirth.top` | View the rebirth leaderboard | true |
+| Permission | Description |
+|------------|-------------|
+| `bdcraft.rebirth.use` | Allows using the rebirth system |
+| `bdcraft.rebirth.info` | Allows viewing rebirth information |
+| `bdcraft.rebirth.requirements` | Allows checking rebirth requirements |
+| `bdcraft.rebirth.admin` | Grants admin access to rebirth management |
 
 ## Vital Module Permissions
 
 ### Home System
 
-| Permission | Description | Default |
-|------------|-------------|---------|
-| `bdcraft.home.use` | Basic home functionality | true |
-| `bdcraft.home.admin` | Administrative home commands | op |
-| `bdcraft.home.bypass-cooldown` | Bypass home teleport cooldowns | op |
-| `bdcraft.home.others` | Access other players' homes | op |
-
-#### Home Limit Permissions
-
-These permissions control how many homes a player can have:
-
-| Permission | Description | Default |
-|------------|-------------|---------|
-| `bdcraft.home.limit.1` | Allows 1 home | true |
-| `bdcraft.home.limit.3` | Allows 3 homes | false |
-| `bdcraft.home.limit.5` | Allows 5 homes | false |
-| `bdcraft.home.limit.10` | Allows 10 homes | false |
-| `bdcraft.home.limit.unlimited` | Unlimited homes | op |
+| Permission | Description |
+|------------|-------------|
+| `bdcraft.home.use` | Allows basic home usage |
+| `bdcraft.home.set` | Allows setting homes |
+| `bdcraft.home.delete` | Allows deleting own homes |
+| `bdcraft.home.list` | Allows listing own homes |
+| `bdcraft.home.multiple.X` | Allows setting X number of homes |
+| `bdcraft.home.others` | Allows managing others' homes |
+| `bdcraft.home.bypass` | Bypasses home restrictions |
 
 ### Teleport System
 
-| Permission | Description | Default |
-|------------|-------------|---------|
-| `bdcraft.teleport.use` | Basic teleport functionality | true |
-| `bdcraft.teleport.tpa` | Send teleport requests | true |
-| `bdcraft.teleport.tpahere` | Request players to teleport to you | true |
-| `bdcraft.teleport.back` | Teleport to your previous location | true |
-| `bdcraft.teleport.spawn` | Teleport to spawn | true |
-| `bdcraft.teleport.admin` | Administrative teleport commands | op |
-| `bdcraft.teleport.bypass-cooldown` | Bypass teleport cooldowns | op |
-| `bdcraft.teleport.bypass-warmup` | Bypass teleport warmup times | op |
-| `bdcraft.teleport.bypass-combat` | Teleport during combat | op |
-| `bdcraft.teleport.others` | Teleport other players | op |
-| `bdcraft.teleport.random` | Use random teleportation | true |
+| Permission | Description |
+|------------|-------------|
+| `bdcraft.teleport.use` | Allows basic teleportation |
+| `bdcraft.teleport.tp` | Allows teleporting to players |
+| `bdcraft.teleport.tpa` | Allows requesting teleports |
+| `bdcraft.teleport.tpahere` | Allows requesting others to teleport to you |
+| `bdcraft.teleport.back` | Allows using the /back command |
+| `bdcraft.teleport.warp` | Allows using warps |
+| `bdcraft.teleport.spawn` | Allows teleporting to spawn |
+| `bdcraft.teleport.bypass-cooldown` | Bypasses teleport cooldowns |
+| `bdcraft.teleport.others` | Allows teleporting others |
 
 ### Chat System
 
-| Permission | Description | Default |
-|------------|-------------|---------|
-| `bdcraft.chat.use` | Basic chat functionality | true |
-| `bdcraft.chat.color` | Use color codes in chat | false |
-| `bdcraft.chat.format` | Use formatting codes in chat | false |
-| `bdcraft.chat.url` | Post clickable URLs in chat | false |
-| `bdcraft.chat.bypass-cooldown` | Bypass chat cooldowns | op |
-| `bdcraft.chat.admin` | Administrative chat commands | op |
-| `bdcraft.chat.announce` | Make server announcements | op |
-| `bdcraft.chat.broadcast` | Broadcast messages | op |
-| `bdcraft.chat.me` | Use /me command | true |
-| `bdcraft.chat.nick` | Set a nickname | false |
+| Permission | Description |
+|------------|-------------|
+| `bdcraft.chat.global` | Allows using global chat |
+| `bdcraft.chat.local` | Allows using local chat |
+| `bdcraft.chat.market` | Allows using market chat |
+| `bdcraft.chat.admin` | Allows using admin chat |
+| `bdcraft.chat.msg` | Allows private messaging |
+| `bdcraft.chat.reply` | Allows replying to messages |
+| `bdcraft.chat.ignore` | Allows ignoring players |
+| `bdcraft.chat.color` | Allows using color in chat |
+| `bdcraft.chat.format` | Allows using formatting in chat |
+| `bdcraft.chat.clear` | Allows clearing personal chat |
+| `bdcraft.chat.clear.all` | Allows clearing everyone's chat |
+| `bdcraft.chat.mute` | Allows muting global chat |
+| `bdcraft.chat.mute.player` | Allows muting players |
+| `bdcraft.chat.unmute` | Allows unmuting players |
+| `bdcraft.chat.bypass-cooldown` | Bypasses chat cooldowns |
 
-### Tab List System
+### Tab System
 
-| Permission | Description | Default |
-|------------|-------------|---------|
-| `bdcraft.tab.admin` | Administrative tab list commands | op |
-| `bdcraft.tab.afk` | Use AFK status | true |
-| `bdcraft.tab.afk.exempt` | Exempt from auto-AFK | op |
-| `bdcraft.tab.color` | Use color in tab list name | false |
+| Permission | Description |
+|------------|-------------|
+| `bdcraft.tab.admin` | Allows administering the tab list |
+| `bdcraft.tab.color` | Allows colored names in tab list |
+| `bdcraft.tab.bypass-hide` | Shows players even when hidden |
 
 ## Permission Inheritance
 
-The plugin automatically sets up permission inheritance for rank-based permissions. For example, a player with the Master rank will automatically have the following permissions:
+BDCraft uses permission inheritance to simplify permission management. For example:
 
-- `bdcraft.rank.novice`
-- `bdcraft.rank.apprentice`
-- `bdcraft.rank.expert`
-- `bdcraft.rank.master`
+- `bdcraft.admin` grants all permissions
+- `bdcraft.economy.admin` grants all economy-related permissions
+- `bdcraft.market.admin` grants all market-related permissions
 
-This ensures that players with higher ranks have access to all lower rank permissions.
+## Default Permissions
 
-## Integration with Permission Plugins
+The following permissions are granted to all players by default:
 
-BDCraft works with all major permission plugins including:
+- `bdcraft.economy.use`
+- `bdcraft.economy.balance`
+- `bdcraft.economy.pay`
+- `bdcraft.market.use`
+- `bdcraft.auction.use`
+- `bdcraft.villager.use`
+- `bdcraft.rank.use`
+- `bdcraft.home.use`
+- `bdcraft.home.set`
+- `bdcraft.home.multiple.1`
+- `bdcraft.teleport.use`
+- `bdcraft.teleport.tpa`
+- `bdcraft.teleport.spawn`
+- `bdcraft.chat.global`
+- `bdcraft.chat.local`
+- `bdcraft.chat.msg`
+- `bdcraft.chat.reply`
+- `bdcraft.chat.ignore`
 
-- LuckPerms
-- PermissionsEx
-- GroupManager
-- UltraPermissions
+## Permission Groups
 
-No special setup is required - simply use your permission plugin to assign the appropriate permissions.
+BDCraft has its own built-in permission system with group functionality. Here are recommended permission group setups:
 
-## Default Permission Configuration
-
-The plugin ships with a balanced set of default permissions that can be customized in the `permissions.yml` file:
-
-```yaml
-# Default permissions configuration
-defaults:
-  # Core permissions
-  bdcraft.help: true
-  bdcraft.admin: op
-  
-  # Economy permissions
-  bdcraft.economy.use: true
-  bdcraft.economy.pay: true
-  
-  # Market permissions
-  bdcraft.market.use: true
-  bdcraft.market.sell: true
-  
-  # Progression permissions
-  bdcraft.rank.use: true
-  bdcraft.rank.rankup: true
-  
-  # Vital permissions
-  bdcraft.home.use: true
-  bdcraft.home.limit.1: true
-  bdcraft.teleport.use: true
-  bdcraft.teleport.tpa: true
-  bdcraft.chat.use: true
+### Member Group
+```
+bdcraft.economy.use
+bdcraft.economy.balance
+bdcraft.economy.pay
+bdcraft.market.use
+bdcraft.auction.use
+bdcraft.villager.use
+bdcraft.rank.use
+bdcraft.rebirth.use
+bdcraft.home.use
+bdcraft.home.set
+bdcraft.home.multiple.1
+bdcraft.teleport.use
+bdcraft.teleport.tpa
+bdcraft.teleport.spawn
+bdcraft.chat.*
 ```
 
-## Permission Setup Guide
+### VIP Group
+```
+(All Member permissions)
+bdcraft.home.multiple.3
+bdcraft.teleport.back
+bdcraft.chat.color
+```
 
-1. Decide which permissions you want to grant to different player groups
-2. Configure your permission plugin to assign the appropriate permissions
-3. Test the permissions to ensure they're working correctly
-4. Adjust as needed based on your server's needs
-
-For servers with a rank-based permission system, consider using the automatic rank permissions as a foundation and adding specific permissions as needed.
+### Admin Group
+```
+bdcraft.admin
+```

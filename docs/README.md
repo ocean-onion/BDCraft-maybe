@@ -12,9 +12,10 @@ Welcome to the BDCraft plugin documentation. This comprehensive guide covers all
 6. [Progression Module](progression/README.md)
 7. [Vital Module](vital/README.md)
 8. [Permissions](permissions.md)
-9. [API Reference](api-reference.md)
-10. [Troubleshooting](troubleshooting.md)
-11. [FAQ](faq.md)
+9. [Permission System](permission-system.md)
+10. [API Reference](api-reference.md)
+11. [Troubleshooting](troubleshooting.md)
+12. [FAQ](faq.md)
 
 ## Quick Start
 

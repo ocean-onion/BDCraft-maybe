@@ -1,76 +1,96 @@
 # Installation Guide
 
+This guide will walk you through the process of installing BDCraft on your Minecraft server.
+
 ## Requirements
 
-- Minecraft server running Paper 1.21
 - Java 17 or higher
-- At least 2GB of RAM dedicated to the server
-- Recommended: SSD storage for improved performance
+- Minecraft Paper server 1.21.x
+- At least 1GB of RAM dedicated to the server
+- No other economy or teleport plugins installed
 
 ## Installation Steps
 
-1. Download the latest version of the BDCraft plugin JAR file from the releases page.
+1. **Download the Plugin**
+   - Download the latest version of BDCraft from the official site
+   - Make sure you download the correct version for your Minecraft server version
 
-2. Place the JAR file in your server's `plugins` directory.
+2. **Place the Plugin File**
+   - Locate your server's `plugins` folder
+   - Copy the `BDCraft.jar` file into the `plugins` folder
 
-3. Restart your server or use a plugin manager to load the plugin.
+3. **Start or Restart Your Server**
+   - Start your server if it's not running
+   - If your server is already running, use the `/stop` command to shut it down, then start it again
 
-4. On first run, BDCraft will create its configuration files in the `plugins/BDCraft` directory.
+4. **Verify Installation**
+   - Check the server console for messages from BDCraft
+   - You should see a message indicating that BDCraft has successfully loaded
+   - If you see any error messages, check the Troubleshooting section for help
 
-5. The plugin will automatically disable any detected conflicting plugins to ensure proper functionality.
+5. **Initial Configuration**
+   - BDCraft will generate default configuration files in a new folder called `plugins/BDCraft`
+   - Stop the server using the `/stop` command
+   - Edit the configuration files as needed (see the [Configuration Guide](configuration.md))
+   - Start the server again
 
-6. Customize the configuration files as needed (see the [Configuration](configuration.md) guide).
+## First-Time Setup
 
-7. Restart your server again to apply any configuration changes.
+After installing BDCraft, follow these steps to set up the plugin for the first time:
 
-## Post-Installation
+1. **Assign Permissions**
+   - Give yourself admin permissions by adding yourself to the ops.json file or using the built-in BDCraft permission system
+   - The main admin permission is `bdcraft.admin`
 
-After installing BDCraft, you should:
+2. **Initialize Economy**
+   - Use the command `/bdadmin economy init` to initialize the economy system
+   - This will set up the default currency and economy settings
 
-1. Set up administrator permissions using your server's permission system. Admins should have the `bdcraft.admin` permission.
+3. **Create Spawn Market**
+   - Use the command `/bdadmin market create spawn` to create a default market at your server's spawn
+   - This market will serve as a central trading hub for players
 
-2. Review the default configuration files and adjust them to suit your server's needs.
+4. **Test Basic Functionality**
+   - Try using basic commands like `/bdmarket list` and `/bdauction`
+   - Verify that the commands work and the plugin is functioning correctly
 
-3. Familiarize yourself with the available commands (see the [Commands](commands.md) guide).
+## Updating the Plugin
 
-4. Test the different modules to ensure they're working as expected.
+To update BDCraft to a newer version:
 
-## Upgrading from Previous Versions
+1. Stop your server using the `/stop` command
+2. Back up your `plugins/BDCraft` folder
+3. Replace the old `BDCraft.jar` with the new version
+4. Start your server
+5. Check the console for any migration or update messages
 
-When upgrading from a previous version of BDCraft:
+## Common Installation Issues
 
-1. Back up your current configuration files and any player data.
+### Plugin Conflicts
 
-2. Replace the old JAR file with the new one.
+BDCraft is designed to be self-contained and will block competing plugins to prevent conflicts. If you see error messages about plugin conflicts, you'll need to remove the conflicting plugins.
 
-3. Restart your server.
+Common conflicting plugins include:
+- Other economy plugins (Vault-based plugins, CMI Economy, etc.)
+- Other teleportation plugins (EssentialsX, CMI, etc.)
+- Other chat formatting plugins (EssentialsX Chat, ChatControl, etc.)
 
-4. Check the changelog for any configuration changes that might be needed.
+### Performance Considerations
 
-## Plugin Conflicts
+BDCraft is designed to be efficient, but it does require some server resources. If you experience performance issues:
 
-BDCraft is designed to replace several common plugins and will automatically attempt to disable conflicting plugins. If a plugin cannot be automatically disabled, you will see warnings in the console.
+1. Make sure your server meets the minimum requirements
+2. Consider increasing the memory allocation for your server
+3. Disable any modules you don't need in the configuration
 
-Common plugins that should be removed before installing BDCraft:
+### Database Issues
 
-- Economy plugins (Vault, EssentialsX Economy, etc.)
-- Shop plugins (ChestShop, ShopKeepers, etc.)
-- Teleportation plugins (EssentialsX, HyperDrive, etc.)
-- Home plugins (EssentialsX, HomeSpawnPlus, etc.)
-- Chat formatting plugins (EssentialsX Chat, ChatManager, etc.)
+By default, BDCraft stores data in flat files. If you choose to use MySQL:
 
-## Troubleshooting
-
-If you encounter issues during installation:
-
-1. Check the server logs for any error messages.
-
-2. Ensure you're using a compatible version of Paper (1.21+).
-
-3. Verify that no conflicting plugins are still active.
-
-4. See the [Troubleshooting](troubleshooting.md) guide for more information.
+1. Make sure your MySQL server is running and accessible
+2. Check that the database credentials in the configuration are correct
+3. Verify that the specified database exists and is accessible by the user
 
 ## Next Steps
 
-After installation, see the [Configuration](configuration.md) guide to customize BDCraft for your server.
+After successfully installing BDCraft, check out the [Configuration Guide](configuration.md) to learn how to customize the plugin to your needs.

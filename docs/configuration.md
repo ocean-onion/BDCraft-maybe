@@ -15,6 +15,8 @@ The main configuration file controls global plugin settings and module activatio
 plugin:
   # Prefix for plugin messages
   prefix: "&6[BDCraft] &r"
+  # Whether to block competing plugins (recommended: true)
+  block-competing-plugins: true
   # Debug mode (enables additional logging)
   debug: false
   

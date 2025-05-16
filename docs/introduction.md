@@ -1,64 +1,66 @@
 # Introduction to BDCraft
 
-## Overview
-
-BDCraft is a comprehensive, self-contained Minecraft plugin for Paper 1.21 servers that revolutionizes in-game economic interactions through an advanced market system and dynamic villager mechanics, while also providing robust progression and utility systems.
+BDCraft is a comprehensive Minecraft plugin designed to provide a complete economic and progression system for your server. With its self-contained design, BDCraft offers everything you need without requiring any additional plugins.
 
 ## Key Features
 
-BDCraft offers a complete suite of features in a single plugin:
-
-### Economy System
-- Custom currency system
-- Player markets and shops
-- Auction house with bidding system
-- Custom villager trading system
-- Transaction tracking and history
+### Complete Economy System
+- Physical player-built markets with villager-based trading
+- Auction house for player-to-player item sales
+- Custom villagers with specialized trades
+- Comprehensive currency system
 
 ### Progression System
-- Advanced rank system with multiple tiers
-- Rebirth/prestige mechanics
-- Experience-based advancement
-- Rank-specific permissions and rewards
-- Progress tracking and statistics
+- Rank-based progression with increasing benefits
+- Rebirth system for long-term engagement
+- Achievement-based advancement
+- Custom rewards and perks
 
-### Vital System
-- Home management system
-- Advanced teleportation features
-- Chat formatting and channels
-- Tab list customization
-- Essential server utility commands
+### Essential Server Utilities
+- Home teleportation system
+- Comprehensive chat management
+- Custom tab list display
+- Teleportation commands
 
-## Philosophy
+## Self-Contained Design
 
-BDCraft was designed with the following principles in mind:
+BDCraft is intentionally designed as a self-contained plugin that doesn't rely on or hook into any other plugins. This design choice offers several significant advantages:
 
-1. **Self-Contained**: Provides all functionality within a single plugin, eliminating the need for multiple plugins and their potential conflicts.
+### Stability Benefits
+- No dependency conflicts to troubleshoot
+- Updates to other plugins won't break BDCraft
+- Complete control over all features and functions
+- Consistent performance across server setups
 
-2. **Modular Design**: Features are organized into modules that can be individually enabled or disabled, giving server administrators complete control.
+### Compatibility Protection
+BDCraft includes a built-in protection mechanism that prevents competing plugins from interfering with its functionality. This ensures:
 
-3. **Performance Focused**: Optimized code ensures minimal impact on server performance even with all features enabled.
+- No conflicting economy systems
+- No overlapping permissions issues
+- Consistent player experience
+- Reliable data storage and retrieval
 
-4. **User-Friendly**: Intuitive commands and interfaces make the system accessible to players of all experience levels.
+The `block-competing-plugins` option in the configuration is recommended to remain enabled to prevent potential conflicts and ensure optimal performance.
 
-5. **Highly Configurable**: Extensive configuration options allow customization to suit any server's needs.
+## Modular Architecture
 
-## Plugin Conflict Management
+Despite being self-contained, BDCraft features a modular design that allows server administrators to enable or disable specific features:
 
-BDCraft is designed to replace several commonly used plugins. When it detects a potentially conflicting plugin, it can automatically disable it to prevent issues. This ensures a smooth experience without requiring manual conflict resolution.
+- Economy Module: Markets, auctions, and villager trading
+- Progression Module: Ranks and rebirth systems
+- Vital Module: Essential utilities for teleportation, chat, and more
 
-## Technical Architecture
+Each module can be individually configured or disabled based on your server's needs.
 
-The plugin is built on a modular architecture with:
+## Getting Started
 
-- **Core Module System**: Manages the loading, enabling, and disabling of modules
-- **Internal API Interfaces**: Provide structured communication between modules
-- **Configuration Management**: Handles loading and saving of all settings
-- **Command Framework**: Processes player commands and permissions
-- **Event System**: Facilitates communication between different plugin components
+To begin using BDCraft, check out these documentation sections:
 
-This modular approach makes the plugin easy to maintain and extend while ensuring all components work together seamlessly.
+1. [Installation Guide](installation.md) - How to install BDCraft on your server
+2. [Configuration Guide](configuration.md) - How to configure BDCraft to suit your needs
+3. [Commands Reference](commands.md) - A complete list of all available commands
+4. [Permissions](permissions.md) - How to set up permissions for your server
 
-## Next Steps
+---
 
-To get started with BDCraft, see the [Installation](installation.md) guide.
+BDCraft replaces multiple separate plugins with a single, cohesive system designed specifically for Minecraft servers focused on economic gameplay and player progression.
