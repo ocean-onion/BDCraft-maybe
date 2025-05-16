@@ -1,190 +1,239 @@
-# BDCraft Token System
+# BDCraft Collector Token System
 
-The BDCraft token system provides a specialized second currency that integrates directly with the plugin's progression and economy systems. Unlike generic token systems, BDCraft tokens are deeply woven into the server's ecosystem, providing unique gameplay opportunities and rewards.
+BDCraft includes a specialized token collection system that enhances gameplay through collectible tokens that can be redeemed at markets and special villagers. This system encourages exploration, trading, and participation in server activities.
 
-## Token Core Mechanics
+## Types of Collectible Tokens
 
-BDCraft tokens function as a premium currency with several key characteristics:
+BDCraft features several distinct types of collectible tokens:
 
-1. **Server-Bound**: Tokens are tied to the specific BDCraft instance and cannot be transferred between servers
-2. **Account-Linked**: Tokens are directly linked to player accounts through BDCraft's internal database
-3. **Permission-Controlled**: All token functions are managed through BDCraft's permission system
-4. **Progression-Integrated**: Tokens directly interact with the rank and rebirth systems
+### Market Tokens
 
-## Token Economy
+Market tokens are special collectible items that can be redeemed at player-owned markets for exclusive trades and deals.
 
-### Token Sources
+- **Basic Market Token**: Common token redeemable at any market
+- **Premium Market Token**: Rare token offering better trades and deals
+- **Founder's Market Token**: Special token only usable at a market founder's stalls
+- **Seasonal Market Token**: Limited-time token that changes each season
 
-Players can obtain tokens through:
+### Collector Tokens
 
-- **Milestone Rewards**: Automatically awarded when reaching specific rank thresholds
-- **Achievement Completion**: Granted for completing server achievements
-- **Market Leadership**: Earned by owning the most profitable market stands
-- **Special Events**: Awarded during server events and competitions
-- **Rebirth Bonus**: Significant token reward upon rebirth
-- **Admin Grants**: Given by administrators for contributions to the server
+Collector tokens are rare items sought by specific collector villagers who offer unique items in exchange.
 
-### Token Uses
+- **Ancient Token**: Extremely rare token found in dungeons
+- **Craftsman Token**: Token earned through high-level crafting
+- **Hunter Token**: Token earned by defeating specific mobs
+- **Explorer Token**: Token found by discovering specific locations
+- **Festival Token**: Special token earned during server events
 
-Tokens can be spent on various exclusive benefits:
+## Obtaining Tokens
 
-- **Rank Fast-Tracking**: Skip certain rank requirements using tokens
-- **Cooldown Bypasses**: Use tokens to bypass teleport and command cooldowns
-- **Exclusive Items**: Purchase items only available through the token shop
-- **Market Upgrades**: Expand market capabilities beyond normal limits
-- **Visual Effects**: Unlock particle effects, chat colors, and other cosmetics
-- **Special Abilities**: Purchase time-limited special abilities
+Players can acquire tokens through various gameplay activities:
+
+| Token Type | Acquisition Methods |
+|------------|---------------------|
+| Basic Market Token | Mining, fishing, mob drops (common) |
+| Premium Market Token | Dungeon chests, raid completion (uncommon) |
+| Founder's Market Token | Market participation, special trades (rare) |
+| Seasonal Market Token | Seasonal events and activities |
+| Ancient Token | Only in ancient ruins and dungeons |
+| Craftsman Token | Crafting special items |
+| Hunter Token | Defeating specific high-level mobs |
+| Explorer Token | Discovering landmark locations |
+| Festival Token | Participating in server festivals |
+
+## Using Tokens
+
+### Market Token Usage
+
+Market tokens can be used at player markets for special benefits:
+
+- **Access to exclusive items**: Some market stalls only accept tokens for certain items
+- **Discounted trades**: Use tokens for better prices on regular goods
+- **Special ordering**: Reserve rare items with tokens before they're available to others
+- **Market status**: Accumulate tokens to rise in market ranks
+
+### Collector Usage
+
+Collector villagers will exchange valuable and unique items for specific collector tokens:
+
+- **Rare item trades**: Exchange tokens for items not available elsewhere
+- **Custom enchantments**: Some collector villagers offer special enchantments
+- **Decorative items**: Unique decorative blocks and items
+- **Knowledge books**: Special recipes and crafting knowledge
 
 ## Token Commands
 
-BDCraft provides a complete set of token-related commands:
-
 | Command | Aliases | Description | Permission |
 |---------|---------|-------------|------------|
-| `/bdtoken` | `/token` | View your token balance | bdcraft.token.use |
-| `/bdtoken shop` | `/token shop` | Open the token shop GUI | bdcraft.token.use |
-| `/bdtoken transfer <player> <amount>` | `/token transfer <player> <amount>` | Transfer tokens to another player | bdcraft.token.transfer |
-| `/bdtoken leaderboard` | `/token leaderboard`, `/token top` | View top token holders | bdcraft.token.use |
-| `/bdtoken rewards` | `/token rewards` | View available token rewards | bdcraft.token.use |
-| `/bdtoken history` | `/token history` | View your token transaction history | bdcraft.token.use |
-| `/bdtoken admin give <player> <amount>` | `/token admin give <player> <amount>` | Give tokens to a player | bdcraft.token.admin |
-| `/bdtoken admin take <player> <amount>` | `/token admin take <player> <amount>` | Remove tokens from a player | bdcraft.token.admin |
-| `/bdtoken admin set <player> <amount>` | `/token admin set <player> <amount>` | Set a player's token balance | bdcraft.token.admin |
-| `/bdtoken admin reload` | `/token admin reload` | Reload token configuration | bdcraft.token.admin |
+| `/bdcollection` | `/collection`, `/bdcol` | View your token collection | bdcraft.collection.use |
+| `/bdcollection info <token>` | `/collection info <token>` | View information about a specific token | bdcraft.collection.use |
+| `/bdcollection exchange <token>` | `/collection exchange <token>` | Exchange a token | bdcraft.collection.use |
+| `/bdcollection track <token>` | `/collection track <token>` | Track a specific token type | bdcraft.collection.track |
+| `/bdcollection untrack` | `/collection untrack` | Stop tracking tokens | bdcraft.collection.track |
+| `/bdcollection top` | `/collection top` | View top token collectors | bdcraft.collection.use |
+| `/bdcollection admin add <player> <token> <amount>` | `/collection admin add <player> <token> <amount>` | Add tokens to a player | bdcraft.collection.admin |
+| `/bdcollection admin remove <player> <token> <amount>` | `/collection admin remove <player> <token> <amount>` | Remove tokens from a player | bdcraft.collection.admin |
+| `/bdcollection admin reload` | `/collection admin reload` | Reload token configuration | bdcraft.collection.admin |
 
-## Token Integration
+## Collection Book
 
-### Economy Module Integration
+The Collection Book is a special in-game GUI that tracks token collection progress:
 
-- **Market Bond**: Tokens can be used to create premium market stalls with extra features
-- **Auction Tags**: Use tokens to make auctions more visible and featured
-- **Villager Expansion**: Unlock special villager trades with tokens
-
-### Progression Module Integration
-
-- **Rank Skipping**: Use tokens to skip certain rank requirements
-- **Rebirth Benefits**: Rebirth levels provide token multipliers
-- **Experience Boosting**: Purchase temporary XP multipliers with tokens
-
-### Vital Module Integration
-
-- **Command Cooldowns**: Bypass teleport and other command cooldowns
-- **Home Expansion**: Purchase additional home slots beyond permission limits
-- **Premium Effects**: Unlock special visual and status effects
+- Access with `/bdcollection` command
+- Shows all token types discovered and their quantities
+- Displays information about where to find missing tokens
+- Tracks collection milestones and rewards
+- Provides a leaderboard for token collectors
 
 ## Token Configuration
 
-Token behavior is configured in the `tokens.yml` file:
+Token behavior and drop rates are configured in the `collection.yml` file:
 
 ```yaml
-# BDCraft Token System Configuration
+# BDCraft Collection Token Configuration
 
-# General Settings
-tokens:
-  # Token name (displayed in messages)
-  name: "BD Token"
-  # Plural form of token name
-  plural: "BD Tokens"
-  # Token symbol
-  symbol: "✦"
-  # Maximum tokens a player can have
-  max-balance: 1000
-  # Can tokens be transferred between players?
-  transferable: true
-  # Require confirmation for token transfers?
-  confirm-transfers: true
+# Market Tokens
+market:
+  basic:
+    name: "Basic Market Token"
+    description: "A common token accepted at most market stalls"
+    rarity: "COMMON"
+    drop-rates:
+      mining: 0.05  # 5% chance when mining
+      fishing: 0.03  # 3% chance when fishing
+      mob-kill: 0.02  # 2% chance from mob kills
+  
+  premium:
+    name: "Premium Market Token"
+    description: "An uncommon token offering better deals at markets"
+    rarity: "UNCOMMON"
+    drop-rates:
+      dungeon-chest: 0.15  # 15% chance in dungeon chests
+      raid-completion: 0.25  # 25% chance after raid
+      boss-kill: 0.20  # 20% chance from boss kills
+  
+  founders:
+    name: "Founder's Market Token"
+    description: "A rare token usable at market founders' stalls"
+    rarity: "RARE"
+    drop-rates:
+      special-trades: 0.10  # 10% chance from special trades
+      market-participation: 0.01  # 1% daily chance when using markets
+  
+  seasonal:
+    name: "Seasonal Market Token"
+    description: "A limited-time token that changes seasonally"
+    rarity: "SEASONAL"
+    enabled: true  # Can be disabled during off-seasons
+    current-season: "Summer"  # Current season
 
-# Token Rewards
-rewards:
-  # Rank milestone rewards
-  ranks:
-    APPRENTICE: 5
-    EXPERT: 10
-    MASTER: 25
-    GRANDMASTER: 50
-    LEGEND: 100
+# Collector Tokens
+collector:
+  ancient:
+    name: "Ancient Token"
+    description: "An extremely rare token found in ancient ruins"
+    rarity: "VERY_RARE"
+    drop-rates:
+      dungeon-chest: 0.05  # 5% chance in dungeon chests
+      ancient-ruins: 0.10  # 10% chance in ancient ruins
   
-  # Rebirth rewards
-  rebirth:
-    base-amount: 25
-    multiplier: 0.5  # Additional 50% per rebirth level
+  craftsman:
+    name: "Craftsman Token"
+    description: "A token earned through high-level crafting"
+    rarity: "RARE"
+    crafting-recipes:
+      - "NETHERITE_TOOL"
+      - "BEACON"
+      - "ELYTRA_REPAIR"
   
-  # Achievement rewards
-  achievements:
-    market_master: 15
-    potion_brewer: 10
-    enchantment_specialist: 20
-    dungeon_crawler: 30
-    
-# Token Shop Items
-shop:
-  categories:
-    effects:
-      flame_trail:
-        name: "Flame Trail"
-        description: "Leave a trail of fire particles behind you"
-        cost: 25
-        duration: 604800  # 1 week in seconds
-      
-    boosters:
-      xp_boost:
-        name: "XP Booster"
-        description: "1.5x XP gain for 24 hours"
-        cost: 20
-        multiplier: 1.5
-        duration: 86400  # 24 hours in seconds
-        
-    upgrades:
-      extra_home:
-        name: "Extra Home Slot"
-        description: "Adds one additional home slot"
-        cost: 15
-        permanent: true
-    
-    market:
-      featured_stall:
-        name: "Featured Market Stall"
-        description: "Highlight your market stall for 3 days"
-        cost: 10
-        duration: 259200  # 3 days in seconds
+  hunter:
+    name: "Hunter Token"
+    description: "A token earned by defeating specific mobs"
+    rarity: "UNCOMMON"
+    mob-drops:
+      ENDER_DRAGON: 1.0  # 100% chance
+      WITHER: 1.0  # 100% chance
+      ELDER_GUARDIAN: 0.5  # 50% chance
+  
+  explorer:
+    name: "Explorer Token"
+    description: "A token found by discovering specific locations"
+    rarity: "RARE"
+    locations:
+      - "DESERT_PYRAMID"
+      - "WOODLAND_MANSION"
+      - "OCEAN_MONUMENT"
+      - "END_CITY"
+  
+  festival:
+    name: "Festival Token"
+    description: "A special token earned during server events"
+    rarity: "EVENT"
+    enabled: false  # Only enabled during events
+    event: "Summer Festival"  # Current event
+
+# Collection Milestones
+milestones:
+  market-tokens:
+    10:
+      reward: "MARKET_DISCOUNT_CARD"
+      description: "10% discount at all markets"
+    50:
+      reward: "PREMIUM_MARKET_ACCESS"
+      description: "Access to premium market areas"
+    100:
+      reward: "MARKET_FOUNDER_RIGHTS"
+      description: "Ability to create special market stalls"
+  
+  collector-tokens:
+    5:
+      reward: "COLLECTOR_BAG"
+      description: "Special storage for collector items"
+    25:
+      reward: "RARE_RECIPE_BOOK"
+      description: "Book of rare crafting recipes"
+    50:
+      reward: "COLLECTOR_TITLE"
+      description: "Special 'Master Collector' title"
 ```
 
-## Token Shop
+## Collector Villagers
 
-The token shop provides a GUI interface for purchasing token-exclusive items:
+Special collector villagers can be found throughout the world, each specializing in different token types:
 
-1. **Cosmetic Effects**: Visual effects and cosmetic enhancements
-2. **Gameplay Boosters**: Experience and economy multipliers
-3. **Command Unlocks**: Special command abilities or cooldown bypasses
-4. **Permanent Upgrades**: Account-level upgrades that persist indefinitely
-5. **Temporary Benefits**: Time-limited special abilities or permissions
+- **Archeologist**: Trades for Ancient Tokens
+- **Master Craftsman**: Trades for Craftsman Tokens
+- **Trophy Hunter**: Trades for Hunter Tokens
+- **Cartographer**: Trades for Explorer Tokens
+- **Festival Merchant**: Trades for Festival Tokens (only during events)
 
-## Token Administration
+These villagers offer unique items, enchantments, and decorative blocks not available through any other means.
 
-Administrators can manage tokens using:
+## Market Token Integration
 
-- The token admin commands for monitoring and adjustment
-- Direct configuration in the tokens.yml file
-- In-game GUIs for token shop management
+Market tokens integrate directly with the BDCraft market system:
 
-## Tokens vs. Economy
+- Market owners can configure special token-only stalls
+- Markets can offer token-based discounts and special deals
+- Token collection status can influence market reputation
+- Seasonal market events feature special token-based activities
 
-BDCraft maintains a clear separation between the main economy (BDCoins) and tokens:
+## Admin Tools
 
-| Feature | Economy (BDCoins) | Tokens |
-|---------|-------------------|--------|
-| Primary Purpose | General transactions | Special rewards |
-| Acquisition | Regular gameplay | Achievements and milestones |
-| Usage | Standard purchases | Premium features |
-| Transferability | Freely transferable | Limited transfer |
-| Storage | Economic database | Player data records |
+Server administrators have several tools to manage the token system:
+
+- Token drop rate configuration in collection.yml
+- Admin commands for token management
+- Event scheduling tools for seasonal tokens
+- Token-based achievement configuration
+- Market integration settings
 
 ## Best Practices
 
 For server administrators:
 
-1. **Balance Token Rewards**: Carefully control the rate at which tokens enter the economy
-2. **Create Token Sinks**: Ensure there are valuable ways for players to spend tokens
-3. **Exclusive Benefits**: Keep token purchases genuinely exclusive without creating pay-to-win
-4. **Regular Updates**: Refresh token shop offerings to maintain player interest
-5. **Event Integration**: Use tokens as rewards for server events and competitions
+1. **Balance Token Rarity**: Ensure tokens maintain their collectible value
+2. **Rotate Seasonal Content**: Keep the token system fresh with seasonal changes
+3. **Create Token Sinks**: Ensure there are valuable ways for players to use tokens
+4. **Run Special Events**: Use festival tokens to drive participation in server events
+5. **Maintain Collector Value**: Keep collector villagers' offerings unique and desirable
