@@ -1,75 +1,71 @@
-# Custom Villager System
+# BD Villager System
 
-The BDCraft Villager System provides specialized villager NPCs that form the backbone of the server's economic and trading infrastructure.
+The BD Villager System provides specialized villagers that form the backbone of the BDCraft economy and trading systems. Each villager type has unique roles, appearances, and trading capabilities.
 
-## Overview
-
-The BDCraft Villager System includes:
-- Specialized villager types with unique appearances and trades
-- Integration with markets and economic systems
-- Custom trades that enhance the vanilla Minecraft experience
-- Reputation and progression through trading
-
-## Villager Types
+## BD Villager Types
 
 ### BD Dealer
 
-**Appearance:**
+**Visual Appearance:**
+- Base: Villager
 - Profession: FARMER
 - Villager Type: PLAINS
 - Level: 2 (Experienced)
 - Name: "BD Dealer" (green text)
 
-**Spawning:**
-- Natural spawning in vanilla villages (45% chance)
-- Automatically spawns with new player markets
-- Can be spawned by admins with commands
+**Distribution & Spawning:**
+- Spawns naturally in Minecraft villages (45% chance)
+- Spawns automatically when a player creates a BD Market
+- Admin villages: Every third village can have a dealer
 
 **Trades:**
-- Regular BD Seeds (5 seeds for 1 emerald)
-- Green BD Seeds (premium seeds, higher cost)
-- Purple BD Seeds (rare seeds, 25 emeralds)
-- BD Harvester (special tool, 16 diamonds)
-- Ultimate BD Harvester (top-tier tool, 32 diamonds)
+- Regular BD Seeds: 5 seeds for 1 emerald
+- Green BD Seeds: Premium seeds for more emeralds
+- Purple BD Seeds: Rare seeds for 25 emeralds
+- BD Harvester: Special tool for 16 diamonds
+- Ultimate BD Harvester: Top-tier tool for 32 diamonds
 
 ### Market Owner
 
-**Appearance:**
-- Profession: LIBRARIAN
+**Visual Appearance:**
+- Base: Villager
+- Profession: CARTOGRAPHER
 - Villager Type: TAIGA
 - Level: 3 (Expert)
 - Name: "[Player]'s Market" (gold text)
 
 **Spawning:**
-- Created when a player uses a Market Token
+- Created when a player builds a valid market structure and uses a Market Token
 - One per player market
 
-**Features:**
-- Market management interface
-- Upgrade options for markets
-- Associate management
-- House Token sales (at higher levels)
+**Functions:**
+- Provides Market Management GUI
+- Offers market upgrades
+- Manages market associates and permissions
+- Sells House Tokens at higher market levels
 
 ### Collector
 
-**Appearance:**
-- Various professions based on specialization
+**Visual Appearance:**
+- Base: Villager
+- Profession: Various based on specialization
 - Villager Type: Based on biome
 - Level: 1-5 (based on market level)
 - Name: "[Type] Collector" (cyan text)
 
 **Spawning:**
-- Created when a player uses a House Token within market boundaries
+- Created when a player builds a collector house and uses a House Token
 - Limited by market level (3-10 based on level)
 
-**Trades:**
-- Specialized trades based on collector type
-- Pricing affected by market level
-- Trade offerings refreshed periodically
+**Functions:**
+- Buys BD crops from players for emeralds and server currency
+- Trading prices affected by market level
+- Specializes in different crop types
 
 ### Seasonal Trader
 
-**Appearance:**
+**Visual Appearance:**
+- Base: Villager
 - Profession: NITWIT
 - Villager Type: SWAMP
 - Level: 4 (Master)
@@ -79,33 +75,61 @@ The BDCraft Villager System includes:
 - Appears periodically in level 3+ markets
 - Available for limited time periods
 
-**Trades:**
-- Rare seasonal items
-- Special event-related trades
-- Limited quantity offerings
+**Functions:**
+- Sells rare seasonal items
+- Offers special event-related trades
+- Provides limited quantity offerings
 
 ## Villager Interaction
 
-Players can interact with BD Villagers through:
-- Right-clicking to open trade interface
-- Special GUI menus for market management
-- Command-based management for market owners
+Players interact with BD Villagers by right-clicking on them, which opens their trading interface. Special villagers like the Market Owner will also provide access to GUI menus for additional management functions.
 
-## Administrative Commands
+### Trading With Villagers
 
-Administrators can manage BD Villagers with:
-- `/bdadmin spawn dealer` - Spawns a BD Dealer at current location
+1. Right-click on the villager to open the trading interface
+2. Browse available trades by scrolling through the interface
+3. Select a trade and fulfill the requirements (provide items/emeralds)
+4. Receive the traded item in return
+
+### Market Owner Interaction
+
+1. Right-click on the Market Owner villager
+2. Select "Market Management" from the trading menu
+3. Access various tabs for different management functions:
+   - Associates Tab
+   - Permissions Tab
+   - Security Tab
+   - Upgrades Tab
+   - Settings Tab
+
+## Market Collectors
+
+Market collectors are specialized villagers that buy crops from players. Each collector has different specializations:
+
+1. **Wheat Collector:**
+   - Buys BD wheat and related products
+   - Gives emeralds and server currency
+
+2. **Vegetable Collector:**
+   - Buys BD carrots, potatoes, beetroots
+   - Gives emeralds and server currency
+
+3. **Fruit Collector:**
+   - Buys BD melons, pumpkins, berries
+   - Gives emeralds and server currency
+
+4. **Special Collector:**
+   - Buys rare BD crops
+   - Gives premium prices in emeralds and server currency
+
+## Villager Administration
+
+Server administrators can manage BD Villagers using these commands:
+
+- `/bdadmin spawn dealer` - Spawns a BD Dealer
 - `/bdadmin spawn collector <type>` - Spawns a specific collector type
 - `/bdadmin villager reload` - Reloads villager configurations
 - `/bdadmin villager remove <id>` - Removes a specific BD Villager
-
-## Technical Implementation
-
-BD Villagers are enhanced versions of vanilla Minecraft villagers with:
-- Custom trading mechanics
-- Special behaviors and AI
-- Persistent data storage
-- Integration with other BDCraft systems
 
 ## Configuration
 

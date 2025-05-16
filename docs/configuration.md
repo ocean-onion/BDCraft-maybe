@@ -15,8 +15,6 @@ The main configuration file controls global plugin settings and module activatio
 plugin:
   # Prefix for plugin messages
   prefix: "&6[BDCraft] &r"
-  # Whether to block competing plugins automatically
-  block-competing-plugins: true
   # Debug mode (enables additional logging)
   debug: false
   
@@ -239,7 +237,7 @@ chat:
 tab:
   # Enable custom tab list
   enabled: true
-  # Custom header (supports PlaceholderAPI)
+  # Custom header (uses built-in placeholders)
   header: "&6Welcome to the server!\n&eOnline: {online}/{max}"
   # Custom footer
   footer: "&7Server running BDCraft"
@@ -398,7 +396,7 @@ vital:
 
 ### Custom Module Chains
 
-You can create custom module chains by configuring how different modules interact. For example, you might want market sales to award both currency and experience points:
+You can create custom module chains by configuring how different modules interact within BDCraft. For example, you might want market sales to award both currency and experience points:
 
 ```yaml
 # In economy.yml
@@ -408,7 +406,7 @@ market:
   experience-per-sale: 10
 ```
 
-### External Data Storage
+### Database Storage
 
 By default, BDCraft stores data in its own files, but you can configure it to use a database:
 
