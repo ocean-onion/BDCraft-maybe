@@ -56,13 +56,58 @@ After installing BDCraft, follow these steps to set up the plugin for the first 
 
 ## Updating the Plugin
 
-To update BDCraft to a newer version:
+BDCraft includes a sophisticated update system that handles database migrations and configuration updates automatically. Follow these steps for a smooth update experience:
+
+### Standard Update Procedure
 
 1. Stop your server using the `/stop` command
-2. Back up your `plugins/BDCraft` folder
+2. Back up your entire `plugins/BDCraft` folder
 3. Replace the old `BDCraft.jar` with the new version
 4. Start your server
 5. Check the console for any migration or update messages
+6. Log in and verify functionality with `/bdadmin checkupdate`
+
+### Major Version Updates (e.g., 1.x to 2.x)
+
+Major version updates may include significant changes to the plugin's structure:
+
+1. Stop your server
+2. Back up your entire `plugins/BDCraft` folder AND your server logs
+3. Create a separate backup of your `plugins/BDCraft/playerdata` folder
+4. Replace the old `BDCraft.jar` with the new version
+5. Start your server, but expect a longer startup time as migrations occur
+6. When the server is fully loaded, run `/bdadmin verify` to check system integrity
+7. Review the new features and changes in the update notes
+
+### Migrating From Other Plugins
+
+If you're replacing another plugin system with BDCraft:
+
+1. Run `/bdadmin import check` to see if BDCraft can import data from other plugins
+2. Back up your server completely
+3. Stop your server
+4. Remove the competing plugins
+5. Install BDCraft following the standard installation procedure
+6. Start your server
+7. Run `/bdadmin import run` to begin the data import process
+8. Follow the on-screen prompts to complete the migration
+
+### Rollback Procedure
+
+If you encounter issues after updating:
+
+1. Stop your server
+2. Delete the `plugins/BDCraft` folder (but keep your backup!)
+3. Restore your backed-up `plugins/BDCraft` folder
+4. Replace the new `BDCraft.jar` with your previous working version
+5. Start your server and verify functionality
+
+### Database Migration Notes
+
+- When upgrading, BDCraft automatically updates the database schema
+- The plugin creates a backup of your data before performing any migrations
+- You can find database backups in `plugins/BDCraft/backups`
+- If using MySQL, ensure your database user has ALTER TABLE permissions
 
 ## Common Installation Issues
 

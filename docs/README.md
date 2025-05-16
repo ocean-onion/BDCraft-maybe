@@ -13,9 +13,10 @@ Welcome to the BDCraft plugin documentation. This comprehensive guide covers all
 7. [Vital Module](vital/README.md)
 8. [Permissions](permissions.md)
 9. [Permission System](permission-system.md)
-10. [API Reference](api-reference.md)
-11. [Troubleshooting](troubleshooting.md)
-12. [FAQ](faq.md)
+10. [Modular Architecture](modular-architecture.md)
+11. [API Reference](api-reference.md)
+12. [Troubleshooting](troubleshooting.md)
+13. [FAQ](faq.md)
 
 ## Quick Start
 
