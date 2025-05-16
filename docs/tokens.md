@@ -1,173 +1,190 @@
 # BDCraft Token System
 
-BDCraft includes a powerful token system that allows players to earn and spend special tokens throughout the server. This document explains how the token system works and how it integrates with other aspects of the plugin.
+The BDCraft token system provides a specialized second currency that integrates directly with the plugin's progression and economy systems. Unlike generic token systems, BDCraft tokens are deeply woven into the server's ecosystem, providing unique gameplay opportunities and rewards.
 
-## What Are Tokens?
+## Token Core Mechanics
 
-Tokens are a secondary currency in BDCraft that function differently from the main economy. While the main economy (BDCoins) is used for everyday transactions, tokens are special rewards earned through specific activities and used to purchase unique items and perks.
+BDCraft tokens function as a premium currency with several key characteristics:
 
-## Earning Tokens
+1. **Server-Bound**: Tokens are tied to the specific BDCraft instance and cannot be transferred between servers
+2. **Account-Linked**: Tokens are directly linked to player accounts through BDCraft's internal database
+3. **Permission-Controlled**: All token functions are managed through BDCraft's permission system
+4. **Progression-Integrated**: Tokens directly interact with the rank and rebirth systems
 
-Players can earn tokens through various activities:
+## Token Economy
 
-| Activity | Token Reward | Cooldown |
-|----------|--------------|----------|
-| Daily login | 1-3 tokens | 24 hours |
-| Boss defeats | 5-20 tokens | Per boss |
-| Special events | 10-50 tokens | Per event |
-| Rank advancement | 5 tokens per rank | One-time |
-| Rebirth | 25 tokens | Per rebirth |
-| Voting for the server | 1 token | 24 hours per site |
-| Market achievements | 1-10 tokens | Various |
-| Weekly challenges | 5-25 tokens | Weekly |
+### Token Sources
 
-## Spending Tokens
+Players can obtain tokens through:
 
-Tokens can be spent in the following ways:
+- **Milestone Rewards**: Automatically awarded when reaching specific rank thresholds
+- **Achievement Completion**: Granted for completing server achievements
+- **Market Leadership**: Earned by owning the most profitable market stands
+- **Special Events**: Awarded during server events and competitions
+- **Rebirth Bonus**: Significant token reward upon rebirth
+- **Admin Grants**: Given by administrators for contributions to the server
 
-### Token Shop
+### Token Uses
 
-The token shop offers special items that can only be purchased with tokens:
+Tokens can be spent on various exclusive benefits:
 
-| Item Category | Description | Token Cost |
-|---------------|-------------|------------|
-| Cosmetic Items | Special visual effects, particle trails, etc. | 5-25 tokens |
-| Unique Equipment | Special equipment with custom enchants | 20-100 tokens |
-| Boosters | Experience and currency boosters | 10-50 tokens |
-| Exclusive Recipes | Unlock special crafting recipes | 15-40 tokens |
-| Titles | Special titles for chat | 5-15 tokens |
-| Pets | Companion mobs with special abilities | 30-100 tokens |
-
-### Special Features
-
-Tokens can also be used to:
-
-| Feature | Description | Token Cost |
-|---------|-------------|------------|
-| Reset cooldowns | Reset teleportation or ability cooldowns | 1-5 tokens |
-| Extra homes | Purchase additional home slots | 10 tokens per slot |
-| Auction house features | Create featured listings | 5 tokens |
-| Market upgrades | Upgrade market size or features | 15-50 tokens |
-| Villager restocks | Force a villager to restock trades | 2 tokens |
-| Skill respec | Reset and reallocate skill points | 20 tokens |
+- **Rank Fast-Tracking**: Skip certain rank requirements using tokens
+- **Cooldown Bypasses**: Use tokens to bypass teleport and command cooldowns
+- **Exclusive Items**: Purchase items only available through the token shop
+- **Market Upgrades**: Expand market capabilities beyond normal limits
+- **Visual Effects**: Unlock particle effects, chat colors, and other cosmetics
+- **Special Abilities**: Purchase time-limited special abilities
 
 ## Token Commands
 
-| Command | Description | Permission |
-|---------|-------------|------------|
-| `/bdtoken` or `/bdtk` | View your token balance | bdcraft.token.use |
-| `/bdtoken shop` | Open the token shop | bdcraft.token.use |
-| `/bdtoken send <player> <amount>` | Send tokens to another player | bdcraft.token.send |
-| `/bdtoken history` | View your token transaction history | bdcraft.token.use |
-| `/bdtoken top` | View the token leaderboard | bdcraft.token.use |
-| `/bdtoken buy <amount>` | Purchase tokens with server currency | bdcraft.token.buy |
-| `/bdtoken daily` | Claim your daily token reward | bdcraft.token.daily |
-| `/bdtoken rewards` | View available token rewards | bdcraft.token.use |
-| `/bdtoken admin give <player> <amount>` | Give tokens to a player (admin) | bdcraft.token.admin |
-| `/bdtoken admin take <player> <amount>` | Take tokens from a player (admin) | bdcraft.token.admin |
-| `/bdtoken admin set <player> <amount>` | Set a player's token balance (admin) | bdcraft.token.admin |
+BDCraft provides a complete set of token-related commands:
+
+| Command | Aliases | Description | Permission |
+|---------|---------|-------------|------------|
+| `/bdtoken` | `/token` | View your token balance | bdcraft.token.use |
+| `/bdtoken shop` | `/token shop` | Open the token shop GUI | bdcraft.token.use |
+| `/bdtoken transfer <player> <amount>` | `/token transfer <player> <amount>` | Transfer tokens to another player | bdcraft.token.transfer |
+| `/bdtoken leaderboard` | `/token leaderboard`, `/token top` | View top token holders | bdcraft.token.use |
+| `/bdtoken rewards` | `/token rewards` | View available token rewards | bdcraft.token.use |
+| `/bdtoken history` | `/token history` | View your token transaction history | bdcraft.token.use |
+| `/bdtoken admin give <player> <amount>` | `/token admin give <player> <amount>` | Give tokens to a player | bdcraft.token.admin |
+| `/bdtoken admin take <player> <amount>` | `/token admin take <player> <amount>` | Remove tokens from a player | bdcraft.token.admin |
+| `/bdtoken admin set <player> <amount>` | `/token admin set <player> <amount>` | Set a player's token balance | bdcraft.token.admin |
+| `/bdtoken admin reload` | `/token admin reload` | Reload token configuration | bdcraft.token.admin |
+
+## Token Integration
+
+### Economy Module Integration
+
+- **Market Bond**: Tokens can be used to create premium market stalls with extra features
+- **Auction Tags**: Use tokens to make auctions more visible and featured
+- **Villager Expansion**: Unlock special villager trades with tokens
+
+### Progression Module Integration
+
+- **Rank Skipping**: Use tokens to skip certain rank requirements
+- **Rebirth Benefits**: Rebirth levels provide token multipliers
+- **Experience Boosting**: Purchase temporary XP multipliers with tokens
+
+### Vital Module Integration
+
+- **Command Cooldowns**: Bypass teleport and other command cooldowns
+- **Home Expansion**: Purchase additional home slots beyond permission limits
+- **Premium Effects**: Unlock special visual and status effects
 
 ## Token Configuration
 
-Administrators can configure the token system in the `tokens.yml` configuration file:
+Token behavior is configured in the `tokens.yml` file:
 
 ```yaml
-# Token System Configuration
+# BDCraft Token System Configuration
+
+# General Settings
+tokens:
+  # Token name (displayed in messages)
+  name: "BD Token"
+  # Plural form of token name
+  plural: "BD Tokens"
+  # Token symbol
+  symbol: "✦"
+  # Maximum tokens a player can have
+  max-balance: 1000
+  # Can tokens be transferred between players?
+  transferable: true
+  # Require confirmation for token transfers?
+  confirm-transfers: true
 
 # Token Rewards
 rewards:
-  daily:
-    min: 1
-    max: 3
-    cooldown: 86400  # 24 hours in seconds
-  voting:
-    amount: 1
-    sites:
-      - "example1.com"
-      - "example2.com"
-  boss-defeats:
-    ender_dragon: 15
-    wither: 10
-    elder_guardian: 5
+  # Rank milestone rewards
+  ranks:
+    APPRENTICE: 5
+    EXPERT: 10
+    MASTER: 25
+    GRANDMASTER: 50
+    LEGEND: 100
   
-# Token Shop
+  # Rebirth rewards
+  rebirth:
+    base-amount: 25
+    multiplier: 0.5  # Additional 50% per rebirth level
+  
+  # Achievement rewards
+  achievements:
+    market_master: 15
+    potion_brewer: 10
+    enchantment_specialist: 20
+    dungeon_crawler: 30
+    
+# Token Shop Items
 shop:
   categories:
-    cosmetics:
-      enabled: true
-      items:
-        particle_trail_fire:
-          name: "Fire Trail"
-          cost: 15
-          description: "Leave a trail of fire particles as you walk"
-        
-    equipment:
-      enabled: true
-      items:
-        lucky_sword:
-          name: "Sword of Fortune"
-          cost: 50
-          description: "A sword with Fortune III and Looting III"
-          
+    effects:
+      flame_trail:
+        name: "Flame Trail"
+        description: "Leave a trail of fire particles behind you"
+        cost: 25
+        duration: 604800  # 1 week in seconds
+      
     boosters:
-      enabled: true
-      items:
-        xp_booster:
-          name: "XP Booster"
-          cost: 20
-          duration: 3600  # 1 hour in seconds
-          multiplier: 2.0
-          description: "Double XP for one hour"
-
-# Token Economy Settings
-economy:
-  # Whether tokens can be traded between players
-  tradeable: true
-  # Whether tokens can be purchased with regular currency
-  purchasable: true
-  # The cost in regular currency per token
-  purchase-cost: 5000
-  # Maximum tokens a player can have
-  max-balance: 1000
+      xp_boost:
+        name: "XP Booster"
+        description: "1.5x XP gain for 24 hours"
+        cost: 20
+        multiplier: 1.5
+        duration: 86400  # 24 hours in seconds
+        
+    upgrades:
+      extra_home:
+        name: "Extra Home Slot"
+        description: "Adds one additional home slot"
+        cost: 15
+        permanent: true
+    
+    market:
+      featured_stall:
+        name: "Featured Market Stall"
+        description: "Highlight your market stall for 3 days"
+        cost: 10
+        duration: 259200  # 3 days in seconds
 ```
 
-## Integration with Other Modules
+## Token Shop
 
-The token system integrates with other BDCraft modules:
+The token shop provides a GUI interface for purchasing token-exclusive items:
 
-### Economy Module
+1. **Cosmetic Effects**: Visual effects and cosmetic enhancements
+2. **Gameplay Boosters**: Experience and economy multipliers
+3. **Command Unlocks**: Special command abilities or cooldown bypasses
+4. **Permanent Upgrades**: Account-level upgrades that persist indefinitely
+5. **Temporary Benefits**: Time-limited special abilities or permissions
 
-- Special market stalls can accept tokens instead of regular currency
-- Auctions can be listed with token prices
-- Villagers can offer token-based trades
+## Token Administration
 
-### Progression Module
+Administrators can manage tokens using:
 
-- Rank advancements grant token rewards
-- Rebirth provides significant token bonuses
-- Tokens can be used to purchase rank or rebirth discounts
+- The token admin commands for monitoring and adjustment
+- Direct configuration in the tokens.yml file
+- In-game GUIs for token shop management
 
-### Vital Module
+## Tokens vs. Economy
 
-- Teleport cooldowns can be bypassed using tokens
-- Additional home slots can be purchased with tokens
-- Special chat formats and colors can be unlocked with tokens
+BDCraft maintains a clear separation between the main economy (BDCoins) and tokens:
 
-## Token Events
-
-BDCraft regularly runs special events where players can earn bonus tokens:
-
-- **Token Rush**: Periodic events where token rewards are doubled
-- **Token Quests**: Special quests that offer token rewards
-- **Boss Events**: Special boss fights with increased token drops
-- **Token Lottery**: Spend tokens for a chance to win more tokens
+| Feature | Economy (BDCoins) | Tokens |
+|---------|-------------------|--------|
+| Primary Purpose | General transactions | Special rewards |
+| Acquisition | Regular gameplay | Achievements and milestones |
+| Usage | Standard purchases | Premium features |
+| Transferability | Freely transferable | Limited transfer |
+| Storage | Economic database | Player data records |
 
 ## Best Practices
 
 For server administrators:
 
-1. **Balance the Economy**: Carefully balance token rewards and costs to maintain token value
-2. **Regular Events**: Host regular token events to keep players engaged
-3. **Seasonal Rewards**: Offer special seasonal items in the token shop
-4. **Monitor Usage**: Track token usage patterns and adjust rewards/costs accordingly
-5. **Token Sinks**: Ensure there are enough ways to spend tokens to keep them valuable
+1. **Balance Token Rewards**: Carefully control the rate at which tokens enter the economy
+2. **Create Token Sinks**: Ensure there are valuable ways for players to spend tokens
+3. **Exclusive Benefits**: Keep token purchases genuinely exclusive without creating pay-to-win
+4. **Regular Updates**: Refresh token shop offerings to maintain player interest
+5. **Event Integration**: Use tokens as rewards for server events and competitions
