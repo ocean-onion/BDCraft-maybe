@@ -44,11 +44,11 @@ The Auction System provides a server-wide marketplace for bidding on items:
 
 The Villager System enhances Minecraft's villager trading:
 
-- Custom villager professions
-- Dynamic pricing based on server economy
-- Trade leveling system
-- Quest-based trade unlocks
-- Special event traders
+- Custom villager professions (BD Dealer, Market Owner, Collector)
+- BD Crop collection and conversion to currency
+- Dynamic pricing based on market levels
+- Specialized collector villagers for different crop types
+- Seasonal traders with special offers
 
 [Learn more about the Villager System](villager.md)
 

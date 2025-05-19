@@ -102,25 +102,18 @@ Players interact with BD Villagers by right-clicking on them, which opens their 
    - Upgrades Tab
    - Settings Tab
 
-## Market Collectors
+## Collectors
 
-Market collectors are specialized villagers that buy crops from players. Each collector has different specializations:
+Collectors are specialized villagers that ONLY buy BD crops from players. They are crucial to the server economy as they are the primary way players convert their BD crops into currency.
 
-1. **Wheat Collector:**
-   - Buys BD wheat and related products
-   - Gives emeralds and server currency
+Collectors will:
+- Only accept BD crops (no vanilla crops)
+- Pay in server currency based on crop value and market level
+- Reject any items that are not BD crops
+- Have limited daily purchasing capacity
+- Reset their trades on a regular schedule
 
-2. **Vegetable Collector:**
-   - Buys BD carrots, potatoes, beetroots
-   - Gives emeralds and server currency
-
-3. **Fruit Collector:**
-   - Buys BD melons, pumpkins, berries
-   - Gives emeralds and server currency
-
-4. **Special Collector:**
-   - Buys rare BD crops
-   - Gives premium prices in emeralds and server currency
+Unlike regular villagers, Collectors do not offer any items for sale - they only purchase BD crops from players.
 
 ## Villager Administration
 
