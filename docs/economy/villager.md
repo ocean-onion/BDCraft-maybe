@@ -104,11 +104,11 @@ Players interact with BD Villagers by right-clicking on them, which opens their 
 
 ## Collectors
 
-Collectors are specialized villagers that ONLY buy BD crops from players. They are crucial to the server economy as they are the primary way players convert their BD crops into currency.
+Collectors are specialized villagers that ONLY buy BD crops from players. They are crucial to the server economy as they are the primary way players convert their BD crops into emeralds.
 
 Collectors will:
 - Only accept BD crops (no vanilla crops)
-- Pay in server currency based on crop value and market level
+- Pay with emeralds for BD crops
 - Reject any items that are not BD crops
 - Have limited daily purchasing capacity
 - Reset their trades on a regular schedule
