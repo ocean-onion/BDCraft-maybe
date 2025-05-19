@@ -72,7 +72,8 @@ Players can convert between physical and digital currency at Bank Villagers:
 
 Players can earn BDCoins through various activities:
 
-- **Farming**: Selling items at player-owned markets
+- **Farming**: Selling BD crops to Collectors (who pay with emeralds AND server currency)
+- **Markets**: Selling items at player-owned markets
 - **Trading**: Exchanging items with other players
 - **Mining**: Finding rare minerals and resources
 - **Events**: Participating in server events
