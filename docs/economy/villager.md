@@ -16,7 +16,6 @@ The BD Villager System provides specialized villagers that form the backbone of 
 **Distribution & Spawning:**
 - Spawns naturally in Minecraft villages (45% chance)
 - Spawns automatically when a player creates a BD Market
-- Admin villages: Every third village can have a dealer
 
 **Trades:**
 - Regular BD Seeds: 5 seeds for 1 emerald
@@ -58,9 +57,10 @@ The BD Villager System provides specialized villagers that form the backbone of 
 - Limited by market level (3-10 based on level)
 
 **Functions:**
-- Buys BD crops from players for emeralds and server currency
+- Buys BD crops ONLY - will not accept any other items
 - Trading prices affected by market level
-- Specializes in different crop types
+- Each collector specializes in specific BD crop types
+- Primary source for converting BD crops into server currency
 
 ### Seasonal Trader
 
