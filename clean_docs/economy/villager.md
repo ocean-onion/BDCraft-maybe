@@ -18,11 +18,13 @@ The BD Villager System provides specialized villagers that form the backbone of 
 - Spawns automatically when a player creates a BD Market
 
 **Trades:**
-- Regular BD Seeds: 5 seeds for 1 emerald
-- Green BD Seeds: Premium seeds for more emeralds
-- Purple BD Seeds: Rare seeds for 25 emeralds
-- BD Harvester: Special tool for 16 diamonds
-- Ultimate BD Harvester: Top-tier tool for 32 diamonds
+- Regular BD Seeds: 5 seeds for 1 emerald (available to all players)
+- Green BD Seeds: Premium seeds for 15 emeralds (unlocked at Farmer rank)
+- Purple BD Seeds: Rare seeds for 30 emeralds (unlocked at Master Farmer rank)
+- BD Harvester: Special tool for 16 diamonds (unlocked at Expert Farmer rank)
+- Ultimate BD Harvester: Top-tier tool for 32 diamonds (unlocked at Agricultural Expert rank)
+
+*Note: These crops primarily differ in their value - the higher-tier crops take longer to unlock as players progress through ranks but provide significantly better returns when sold to collectors.*
 
 ### Market Owner
 
@@ -114,6 +116,13 @@ Collectors will:
 - Reject any items that are not BD crops
 - Have limited daily purchasing capacity
 - Reset their trades on a regular schedule
+
+**Crop Values:**
+- Regular BD Crops: 1 emerald + 10 server currency per crop
+- Green BD Crops: 2 emeralds + 25 server currency per crop
+- Purple BD Crops: 5 emeralds + 100 server currency per crop
+
+*Note: These base values are affected by market level, player rank, and rebirth level, creating significantly higher values for advanced players.*
 
 Unlike regular villagers, Collectors do not offer any items for sale - they only purchase BD crops from players.
 

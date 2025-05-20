@@ -17,6 +17,16 @@ Yes, as long as they don't conflict with BDCraft's features. Plugins that modify
 ### How do I update BDCraft?
 Simply replace the BDCraft.jar file with the new version and restart your server. The plugin will handle any necessary data migrations automatically.
 
+### What are the benefits of being a donor?
+Donors receive several special perks:
+- **Remote Market Access**: Use `/bdmarket` command to access market management from anywhere
+- **Additional Homes**: Set up to 3 homes instead of the default 1 home
+- **Auction House Discount**: Pay only 2% fees in the auction house instead of the regular fees
+- **Rank Purchase Discount**: Receive a 15% discount when purchasing ranks
+- **Rebirth Currency Retention**: Keep 20% of server currency when performing a rebirth
+- **Chat Colors**: Use colored text in chat messages
+- **Back Command**: Access to `/back` command to return to previous locations
+
 ## Economy System
 
 ### How do players earn money in BDCraft?

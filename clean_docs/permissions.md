@@ -197,10 +197,13 @@ bdcraft.chat.*
 ### Donor Group
 ```
 (All Member permissions)
-bdcraft.home.multiple.3
-bdcraft.teleport.back
-bdcraft.chat.color
-bdcraft.market.donor
+bdcraft.home.multiple.3       # Can set up to 3 homes instead of 1
+bdcraft.teleport.back         # Access to /back command
+bdcraft.chat.color            # Can use colors in chat
+bdcraft.market.donor          # Remote market GUI access via /bdmarket
+bdcraft.auction.discount      # Lower 2% auction house fees
+bdcraft.rank.discount         # 15% discount on rank purchases
+bdcraft.rebirth.retention     # Keep 20% of server currency during rebirth
 ```
 
 ### Admin Group
