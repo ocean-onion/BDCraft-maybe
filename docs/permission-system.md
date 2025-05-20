@@ -47,15 +47,16 @@ groups:
       - bdcraft.chat.global
       - bdcraft.chat.local
       
-  vip:
+  donor:
     inherit: default
     permissions:
       - bdcraft.home.multiple.3
       - bdcraft.teleport.back
       - bdcraft.chat.color
+      - bdcraft.market.donor
       
   admin:
-    inherit: vip
+    inherit: donor
     permissions:
       - bdcraft.admin
 
@@ -78,7 +79,7 @@ To assign a player to a permission group:
    ```yaml
    players:
      <uuid>:
-       group: vip
+       group: donor
    ```
 3. Reload the plugin with `/bdadmin reload permissions`
 
@@ -99,7 +100,7 @@ To create a new permission group:
 
 ### Inheritance
 
-Groups can inherit permissions from other groups. For example, if `vip` inherits from `default`, then all permissions granted to `default` are also granted to `vip`.
+Groups can inherit permissions from other groups. For example, if `donor` inherits from `default`, then all permissions granted to `default` are also granted to `donor`.
 
 ### Negated Permissions
 
@@ -159,16 +160,17 @@ default:
     - bdcraft.chat.ignore
 ```
 
-### VIP Group
+### Donor Group
 A premium tier with extra features:
 
 ```yaml
-vip:
+donor:
   inherit: default
   permissions:
     - bdcraft.home.multiple.3
     - bdcraft.teleport.back
     - bdcraft.chat.color
+    - bdcraft.market.donor
 ```
 
 ### Admin Group
@@ -176,7 +178,7 @@ Full administrative access:
 
 ```yaml
 admin:
-  inherit: vip
+  inherit: donor
   permissions:
     - bdcraft.admin
 ```
