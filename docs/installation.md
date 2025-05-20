@@ -46,8 +46,11 @@ After installing BDCraft, follow these steps to set up the plugin for the first 
    - Use the command `/bdadmin economy init` to initialize the economy system
    - This will set up the default currency and economy settings
 
-3. **Create Spawn Market**
-   - Use the command `/bdadmin market create spawn` to create a default market at your server's spawn
+3. **Set Up First Market**
+   - Create a market token using `/bdadmin give <your_username> markettoken 1`
+   - Build a market structure (3x3 roof, walls with door, bed inside)
+   - Place an item frame above the door
+   - Place the market token in the item frame to create your first market
    - This market will serve as a central trading hub for players
 
 4. **Test Basic Functionality**
