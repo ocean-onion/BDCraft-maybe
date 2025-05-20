@@ -23,11 +23,10 @@ Simply replace the BDCraft.jar file with the new version and restart your server
 Players can earn money through various activities:
 - Selling crops to collector villagers in markets
 - Selling items to other players through the auction house
-- Completing tasks and achievements (if configured)
 - Receiving payments from other players
 
-### Can I customize the currency name and symbol?
-Yes, you can customize the currency name, plural form, and symbol in the `economy.yml` configuration file.
+### Can I customise the currency name and symbol?
+Yes, you can customise the currency name, plural form, and symbol in the `economy.yml` configuration file.
 
 ### How do I give money to players?
 As an administrator, you can use the command `/bdadmin economy give <player> <amount>` to give money to players.
@@ -71,7 +70,6 @@ Players automatically earn experience toward ranks by:
 - Harvesting BD crops
 - Trading with BD villagers
 - Using market and auction systems
-- Completing specific achievements
 
 The experience requirements for each rank can be configured in the `progression.yml` file.
 
