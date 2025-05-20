@@ -92,7 +92,7 @@ Players can ONLY access the Market Management GUI through the Market Owner villa
    - **Associates Tab**: Add or remove market associates (founder only)
    - **Permissions Tab**: Control who can trade with collectors
    - **Security Tab**: Manage building permissions within market area
-   - **Upgrades Tab**: Purchase market upgrades using currency and materials
+   - **Upgrades Tab**: Purchase market upgrades using currency and materials (only through this interface)
    - **Settings Tab**: Configure market appearance and effects
 
 ### Market Associates
@@ -104,6 +104,7 @@ Market Founders can manage who has special permissions in their market:
    - Select "Associates" tab and click on empty slots to add players
    - Maximum 5 associates per market
    - Associates must be online when added
+   - Associates can ONLY be added through the Market Owner GUI, not through commands
 
 2. **Associate Permissions**:
    - Can build collector houses using House Tokens
