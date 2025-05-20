@@ -34,9 +34,10 @@ Where:
 
 #### Special Properties
 - Can only be placed if location is at least 30 blocks from another market
-- Single-use item (consumed when placed)
+- Single-use item (consumed permanently when placed)
 - Cannot be used in creative mode (prevents market spam)
 - Required for accessing the BD economy system
+- Cannot be retrieved once placed - choose location carefully
 
 ### BD House Token
 
@@ -63,11 +64,13 @@ Where:
 - Must be placed within an existing market's radius to work
 
 #### Special Properties
-- Single-use item (consumed when placed)
+- Single-use item (consumed permanently when placed)
 - Cannot place if market has reached collector limit
 - Higher level markets allow more collector houses
 - Initial markets support up to 3 collectors
-- Upgraded markets can support up to 10 collectors
+- Upgraded markets can support up to 15 collectors (at level 5)
+- Cannot be retrieved once placed - placement is permanent
+- Cannot be transferred between players (soulbound item)
 
 ## Token Commands
 
