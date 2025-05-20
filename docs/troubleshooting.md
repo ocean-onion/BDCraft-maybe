@@ -60,7 +60,7 @@ This guide covers common issues you might encounter with BDCraft and their solut
 
 **Solutions:**
 1. Ensure the market module is enabled in the configuration
-2. Check if players have the necessary permissions (`bdcraft.market.founder`)
+2. Check if players have the necessary permissions (`bdcraft.market.use`)
 3. Verify that players are building valid market structures according to requirements
 4. Check that the market tokens are being crafted correctly
 

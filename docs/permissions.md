@@ -28,8 +28,8 @@ BDCraft uses a comprehensive permission system to control access to various feat
 | Permission | Description |
 |------------|-------------|
 | `bdcraft.market.use` | Allows basic market usage (check, info, list) |
-| `bdcraft.market.founder` | Allows creating a market |
-| `bdcraft.market.founder.multiple` | Allows creating multiple markets |
+| `bdcraft.market.donor` | Allows accessing market management remotely (donors only) |
+| `bdcraft.market.multiple` | Allows creating multiple markets |
 | `bdcraft.market.admin` | Grants admin access to all markets |
 
 ### Auction System
@@ -194,12 +194,13 @@ bdcraft.teleport.spawn
 bdcraft.chat.*
 ```
 
-### VIP Group
+### Donor Group
 ```
 (All Member permissions)
 bdcraft.home.multiple.3
 bdcraft.teleport.back
 bdcraft.chat.color
+bdcraft.market.donor
 ```
 
 ### Admin Group
