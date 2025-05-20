@@ -66,6 +66,40 @@ To undergo the rebirth process:
 4. Use `/bdrebirth confirm` to initiate the rebirth process
 5. Confirm the process in the confirmation GUI
 
+### What Happens During Rebirth
+
+When you complete a rebirth, the following changes occur:
+
+1. **Rank Reset**: 
+   - Your rank is reset to Newcomer (Rank 1)
+   - You must progress through ranks again to reach Agricultural Expert
+
+2. **Currency Reset**:
+   - Your server currency is reset to 0 
+   - Regular players lose all server currency
+   - Donors retain 20% of their server currency (bdcraft.rebirth.retention perk)
+
+3. **Market Impact**:
+   - Your existing markets remain intact
+   - Market levels and structures are preserved
+   - All associates and permissions remain unchanged
+
+4. **Inventory Impact**:
+   - BD Seeds in your inventory are preserved
+   - BD Tools (Harvester, Ultimate Harvester) remain in your inventory
+   - BD Tokens (Market/House) in your inventory are preserved
+   - All other BD items are preserved
+
+5. **Permanent Benefits**:
+   - You gain the permanent yield and trading bonuses for your new rebirth level
+   - You unlock the cosmetic and functional benefits of your rebirth level
+   - All bonuses from previous rebirth levels are retained and stack
+
+6. **Formula for Benefits**:
+   - Crop Yield Bonus: Base Yield × (1 + (Rebirth_Level × 0.05))
+   - Trading Price Bonus: Base Price × (1 + (Rebirth_Level × 0.03))
+   - These bonuses apply to all transactions with BD villagers
+
 ## Rebirth Benefits
 
 The rebirth system provides several types of permanent benefits:

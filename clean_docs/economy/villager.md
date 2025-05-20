@@ -26,6 +26,21 @@ The BD Villager System provides specialized villagers that form the backbone of 
 
 *Note: These crops primarily differ in their value - the higher-tier crops take longer to unlock as players progress through ranks but provide significantly better returns when sold to collectors.*
 
+#### BD Crop Growth Information
+- **Growth Time**: All BD crops take 20-25 minutes to fully mature (same as vanilla crops)
+- **Growth Stages**: 4 visible stages from seedling to mature plant
+- **Appearance**: Appear as special fern variants when fully grown
+- **Optimal Conditions**: 
+  - Require at least light level 9
+  - Must be planted on farmland with water within 4 blocks
+  - Growth rate is not affected by biome
+  - Bone meal does not work on BD crops
+- **Harvesting**: 
+  - Regular harvesting gives 1 crop per plant
+  - Using BD Harvester gives 2 crops per plant
+  - Using Ultimate BD Harvester gives 3 crops per plant
+  - Crops must be fully mature to harvest
+
 ### Market Owner
 
 **Visual Appearance:**
@@ -75,12 +90,21 @@ The BD Villager System provides specialized villagers that form the backbone of 
 
 **Spawning:**
 - Appears periodically in level 3+ markets
-- Available for limited time periods
+- Available for limited time periods (3 days every 2 weeks)
+- Appears more frequently in level 5 markets
+- Announces arrival in server-wide message
 
 **Functions:**
 - Sells rare seasonal items
 - Offers special event-related trades
 - Provides limited quantity offerings
+
+**Seasonal Offerings:**
+- **Spring Trader** (March-May): Sells special flower-themed decorations, unique spring crop variants
+- **Summer Trader** (June-August): Offers beach-themed items, summer cosmetics, cooling potions
+- **Fall Trader** (September-November): Provides harvest-themed decorations, special pumpkin variants
+- **Winter Trader** (December-February): Sells snow-themed items, holiday decorations, warming potions
+- **Special Event Traders**: Appear during server events with exclusive themed items
 
 ## Villager Interaction
 

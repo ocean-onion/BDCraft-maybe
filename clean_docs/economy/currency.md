@@ -16,7 +16,9 @@ BDCraft utilizes two main types of currency:
 - **Server Currency**: Earned alongside emeralds when trading with collectors
 - Used for purchasing ranks and other progression advancements
 - Tracked internally by the plugin (no physical item)
+- Automatically added to your balance when trading with collectors
 - Displayed through `/bdbalance` command
+- Stored securely in plugin's database with transaction history
 
 ## Earning Currency
 

@@ -12,7 +12,23 @@ BDCraft is designed for Paper 1.21.x servers. It is not compatible with older ve
 No. BDCraft is designed to be completely self-contained and does not require any other plugins to function. In fact, it will block competing plugins to prevent conflicts and ensure stability.
 
 ### Can I use BDCraft alongside other plugins?
-Yes, as long as they don't conflict with BDCraft's features. Plugins that modify economy, teleportation, chat, or villager behavior may conflict and be blocked by BDCraft. However, plugins that add completely different features (like WorldEdit, CoreProtect, etc.) should work fine.
+Yes, as long as they don't conflict with BDCraft's features. BDCraft is designed to be completely self-contained and will automatically block competing plugins to maintain stability and prevent conflicts.
+
+**Plugins That Will Be Blocked:**
+- Economy plugins (Vault, EssentialsX Economy, CMI Economy, etc.)
+- Home/teleport plugins (EssentialsX, CMI Homes, HomeSpawnPlus, etc.)
+- Chat management plugins (EssentialsX Chat, ChatControl, DeluxeChat, etc.)
+- Villager-related plugins (VillagerShop, VillagerGUIShop, CustomVillager, etc.)
+- Custom item plugins that modify vanilla item behavior
+
+**Compatible Plugins:**
+- World editing (WorldEdit, WorldGuard, etc.)
+- Protection plugins (GriefPrevention, Towny, etc.)
+- Logging plugins (CoreProtect, LogBlock, etc.)
+- Cosmetic plugins (GadgetsMenu, Hats, etc.)
+- Mini-game plugins
+
+The blocking mechanism works by checking for competing plugins at startup and disabling their conflicting features. You'll see notifications in the console indicating which plugin functions have been blocked. Server administrators cannot override this behavior as it's essential for ensuring a stable economy and progression system.
 
 ### How do I update BDCraft?
 Simply replace the BDCraft.jar file with the new version and restart your server. The plugin will handle any necessary data migrations automatically.
