@@ -72,7 +72,7 @@ Markets can be upgraded through the Market Owner villager:
 
 ### Market Commands
 
-The following commands are available for market management:
+The following commands are available for basic market information:
 
 - `/bdmarket check` - Visualize market boundaries with temporary wool blocks
 - `/bdmarket info` - Display information about the market you're standing in
@@ -80,12 +80,13 @@ The following commands are available for market management:
 
 ### Market Management GUI
 
-Players access most market features through the Market Owner villager:
+Players can ONLY access the Market Management GUI through the Market Owner villager:
 
 1. **Accessing the GUI**:
-   - Right-click the Market Owner villager in your market
+   - Right-click the Market Owner villager in your market (CARTOGRAPHER with gold name tag)
    - Select the "Market Management" option from the trading menu
    - Only the market founder and associates can access management features
+   - There is NO COMMAND to access this interface; physical interaction with the Market Owner is required
 
 2. **Management Features**:
    - **Associates Tab**: Add or remove market associates (founder only)
