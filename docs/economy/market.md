@@ -1,6 +1,6 @@
 # Player Markets
 
-The BDCraft Market System allows players to establish their own trading centers with physically built market structures.
+The BDCraft Market System allows all players to establish their own trading centers with physically built market structures. Any player can create a market by building a structure and placing a Market Token.
 
 ## Market Creation
 
