@@ -59,7 +59,7 @@ Interface for interacting with markets.
 - `getMarket(UUID marketId)` - Gets a market by ID
 - `getPlayerMarket(UUID playerUuid)` - Gets a player's market
 - `getAllMarkets()` - Gets all markets
-- `createMarket(UUID playerUuid, Location location, String name)` - Creates a market for a player
+- `handleMarketTokenPlacement(Player player, Location location, ItemFrame frame)` - Processes market creation when a player places a market token
 - `deleteMarket(UUID marketId)` - Deletes a market
 
 ### AuctionAPI
