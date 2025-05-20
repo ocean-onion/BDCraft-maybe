@@ -340,7 +340,7 @@ economy:
   # Market permissions
   market:
     use: "bdcraft.market.use"  # Basic market usage
-    create: "bdcraft.market.create"  # Create markets
+    donor: "bdcraft.market.donor"  # Access market GUI remotely (donors only)
     multiple: "bdcraft.market.multiple"  # Create multiple markets
     
   # Auction permissions
