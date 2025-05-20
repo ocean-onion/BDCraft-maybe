@@ -35,13 +35,12 @@ Each rank requires specific achievements to unlock:
 - Harvest 2,000 BD crops
 - Own all BD tools including Ultimate BD Harvester
 - Reach level 3 in a player market
-- Complete 5 special farming achievements
 
 ### Agricultural Expert (Rank 5)
 - Harvest 10,000 BD crops
 - Own a level 4 player market
 - Complete all farming achievements
-- Help 10 other players with BD farming
+- Help 10 other players with BD farming (Give players BD seeds at least 10 players minimum 20 seeds each)
 
 ## Rank Benefits
 

@@ -120,7 +120,7 @@ Unlike regular villagers, Collectors do not offer any items for sale - they only
 Server administrators can manage BD Villagers using these commands:
 
 - `/bdadmin spawn dealer` - Spawns a BD Dealer
-- `/bdadmin spawn collector <type>` - Spawns a specific collector type
+- `/bdadmin spawn collector` - Spawns a collector
 - `/bdadmin villager reload` - Reloads villager configurations
 - `/bdadmin villager remove <id>` - Removes a specific BD Villager
 

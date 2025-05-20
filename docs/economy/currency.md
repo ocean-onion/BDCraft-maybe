@@ -1,131 +1,92 @@
 # BDCraft Currency System
 
-BDCraft implements a comprehensive server currency system that forms the foundation of the server's economy. This document explains how the currency works, its denominations, and how it integrates with other aspects of the server.
+The BDCraft economy uses a dual-currency system that creates a complete economic loop for players. This document explains how the currency system works and how it integrates with other aspects of the server.
 
-## Currency Overview
+## Currency Types
 
-BDCraft uses a primary currency called "BDCoins" that powers all economic transactions on the server. The currency is:
+BDCraft utilizes two main types of currency:
 
-- **Self-contained**: Managed entirely within BDCraft without external economy plugins
-- **Secure**: All transactions are logged and protected against exploits
-- **Scalable**: Designed to handle economies of any size
-- **Integrated**: Deeply connected with all BDCraft modules
+### 1. In-Game Items as Currency
 
-## Currency Denominations
+- **Emeralds**: Primary tradeable currency, used for buying seeds and tools from dealers
+- **Diamonds**: Premium currency for special tools (BD Harvester and Ultimate BD Harvester)
 
-BDCoins come in several denominations to facilitate different transaction sizes:
+### 2. Server Currency
 
-| Denomination | Value | Physical Item | Usage |
-|--------------|-------|--------------|-------|
-| Copper BDCoin | 1 | Copper Ingot (with custom texture) | Small purchases |
-| Silver BDCoin | 10 | Iron Ingot (with custom texture) | Medium purchases |
-| Gold BDCoin | 100 | Gold Ingot (with custom texture) | Large purchases |
-| Diamond BDCoin | 1,000 | Diamond (with custom texture) | Major purchases |
-| Netherite BDCoin | 10,000 | Netherite Ingot (with custom texture) | Premium purchases |
-
-## Physical Currency
-
-BDCoins exist as physical items in the game with custom textures. Players can:
-
-- Hold physical coins in their inventory
-- Store coins in containers
-- Transfer coins to other players directly
-- Exchange lower denominations for higher ones (and vice versa)
-
-### Currency Conversion
-
-Players can combine and break down currency at any Bank Villager:
-
-- 10 Copper → 1 Silver
-- 10 Silver → 1 Gold
-- 10 Gold → 1 Diamond
-- 10 Diamond → 1 Netherite
-
-## Digital Currency
-
-In addition to physical coins, players have digital BDCoin balances tracked by the server. Digital currency:
-
-- Is accessed through commands like `/bdbalance`
-- Can be used for market transactions
-- Allows for precise payment amounts
-- Is secured against loss (unlike physical coins)
-
-### Converting Between Physical and Digital
-
-Players can convert between physical and digital currency at Bank Villagers:
-- Deposit: Convert physical coins to digital balance
-- Withdraw: Convert digital balance to physical coins
-
-## Currency Commands
-
-| Command | Aliases | Description | Permission |
-|---------|---------|-------------|------------|
-| `/bdbalance` | `/balance`, `/bal`, `/money` | Check your digital balance | bdcraft.economy.use |
-| `/bdbalance <player>` | `/balance <player>` | Check another player's balance | bdcraft.economy.balance.others |
-| `/bdpay <player> <amount>` | `/pay <player> <amount>` | Pay another player from your digital balance | bdcraft.economy.pay |
-| `/bddeposit <amount>` | `/deposit <amount>` | Convert physical coins to digital balance | bdcraft.economy.use |
-| `/bdwithdraw <amount>` | `/withdraw <amount>` | Convert digital balance to physical coins | bdcraft.economy.use |
-| `/bdconvert` | `/convert` | Opens the currency conversion GUI | bdcraft.economy.use |
-| `/bdcurrency value <item>` | `/currency value <item>` | Check the value of a currency item | bdcraft.economy.use |
+- **Server Currency**: Earned alongside emeralds when trading with collectors
+- Used for purchasing ranks and other progression advancements
+- Tracked internally by the plugin (no physical item)
+- Displayed through `/bdbalance` command
 
 ## Earning Currency
 
-Players can earn BDCoins through various activities:
+Players can earn currency through several methods:
 
-- **Farming**: Selling BD crops to Collectors (who pay with emeralds AND server currency)
-- **Markets**: Selling items at player-owned markets
-- **Trading**: Exchanging items with other players
-- **Mining**: Finding rare minerals and resources
-- **Events**: Participating in server events
-- **Achievements**: Completing certain achievements
+- **Trading with Collectors**: Selling BD crops to collectors provides both emeralds AND server currency
+- **Market Sales**: Selling items to other players at player-owned markets
+- **Special Events**: Participating in server events
+- **Rank Bonuses**: Some ranks provide currency bonuses
 
-## Banking System
+## Using Currency
 
-The BDCraft banking system provides secure storage and management of currency:
+### Emeralds
 
-### Bank Villagers
+Emeralds are used primarily for:
+- Purchasing seeds from Dealers
+- Trading with Market Villagers
+- Player-to-player trades
 
-Located in spawn and player markets, Bank Villagers offer:
-- Currency conversion (physical ↔ digital)
-- Denomination exchange
-- Basic banking services
-- Interest on deposits (configurable)
+### Diamonds
 
-### Bank Accounts
+Diamonds are used for premium purchases:
+- BD Harvester (16 diamonds)
+- Ultimate BD Harvester (32 diamonds)
 
-Players can open bank accounts for additional features:
-- Interest accrual on savings
-- Joint accounts with other players
-- Transaction history
-- Scheduled payments
-- Loan services (for qualifying accounts)
+### Server Currency
 
-## Market Integration
+Server currency is used for progression:
+- Purchasing ranks (5,000 - 60,000 per rank)
+- Market upgrades and expansions
+- Special permissions and abilities
 
-BDCoins are the primary currency used in BDCraft's market system:
-
-- **Market Stalls**: Players can buy and sell items using BDCoins
-- **Auctions**: Items are bid on and purchased with BDCoins
-- **Market Fees**: Market usage fees are collected in BDCoins
-- **Market Ownership**: Purchasing and upgrading markets requires BDCoins
-
-## Economy Management
-
-Server administrators can manage the economy using:
-
-### Admin Commands
+## Currency Commands
 
 | Command | Description | Permission |
 |---------|-------------|------------|
-| `/bdeco give <player> <amount>` | Give BDCoins to a player | bdcraft.economy.admin |
-| `/bdeco take <player> <amount>` | Take BDCoins from a player | bdcraft.economy.admin |
-| `/bdeco set <player> <amount>` | Set a player's balance | bdcraft.economy.admin |
-| `/bdeco reset <player>` | Reset a player's balance to default | bdcraft.economy.admin |
-| `/bdeco top` | View top balances on the server | bdcraft.economy.admin |
-| `/bdeco history <player>` | View transaction history | bdcraft.economy.admin |
-| `/bdeco reload` | Reload economy configuration | bdcraft.economy.admin |
+| `/bdbalance` or `/bdbal` | Check your server currency balance | bdcraft.economy.use |
+| `/bdbalance <player>` | Check another player's balance | bdcraft.economy.balance.others |
+| `/bdpay <player> <amount>` | Pay another player from your balance | bdcraft.economy.pay |
+| `/bdeco give <player> <amount>` | Give server currency to a player (admin) | bdcraft.economy.admin |
+| `/bdeco take <player> <amount>` | Take server currency from a player (admin) | bdcraft.economy.admin |
+| `/bdeco set <player> <amount>` | Set a player's server currency balance (admin) | bdcraft.economy.admin |
+| `/bdeco top` | View top balances on the server | bdcraft.economy.top |
 
-### Economy Configuration
+## Economic Flow
+
+The BDCraft currency system is designed to create a complete economic loop:
+
+1. Players purchase seeds from Dealers using emeralds
+2. Players grow BD crops from these seeds
+3. Players sell BD crops to Collectors for emeralds AND server currency
+4. Players use emeralds to purchase more seeds
+5. Players use server currency to purchase ranks
+6. Higher ranks provide better crop values, creating more currency
+
+## Currency Administration
+
+Server administrators can manage the economy using the following features:
+
+### Admin Commands
+
+All economy administration is handled through the `/bdeco` command:
+
+- `/bdeco give <player> <amount>` - Give server currency to a player
+- `/bdeco take <player> <amount>` - Take server currency from a player
+- `/bdeco set <player> <amount>` - Set a player's server currency balance
+- `/bdeco reset <player>` - Reset a player's server currency to default
+- `/bdeco reload` - Reload economy configuration
+
+### Currency Configuration
 
 The economy can be configured in `economy.yml`:
 
@@ -134,89 +95,79 @@ The economy can be configured in `economy.yml`:
 
 currency:
   # Currency name
-  name: "BDCoin"
+  name: "BD Coin"
   # Plural form
-  plural: "BDCoins"
+  plural: "BD Coins"
   # Currency symbol
   symbol: "฿"
   # Starting balance for new players
-  starting-balance: 100
-  # Maximum amount that can be held in a single stack of each denomination
-  max-stack:
-    copper: 64
-    silver: 64
-    gold: 32
-    diamond: 16
-    netherite: 8
-  # Physical currency enabled
-  physical-enabled: true
-  # Custom model data IDs for currency items
-  custom-model-data:
-    copper: 1001
-    silver: 1002
-    gold: 1003
-    diamond: 1004
-    netherite: 1005
-
-banking:
-  # Whether to enable the banking system
-  enabled: true
-  # Interest rate (daily)
-  interest-rate: 0.001  # 0.1% daily
-  # Maximum bank account balance
-  max-balance: 1000000
-  # Minimum balance for interest
-  min-balance-for-interest: 1000
-  # Loan settings
-  loans:
-    enabled: true
-    interest-rate: 0.01  # 1% daily
-    max-loan: 10000
-    payment-period: 7  # days
-
-economy-balance:
-  # Money sinks to keep the economy balanced
-  sinks:
-    market-fees: true
-    teleport-costs: true
-    repair-costs: true
+  starting-balance: 0
   
-  # Money fountains to inject currency
-  fountains:
-    login-rewards: true
-    achievement-rewards: true
-    voting-rewards: true
+ranks:
+  # Rank costs in server currency
+  costs:
+    FARMER: 5000
+    EXPERT_FARMER: 15000
+    MASTER_FARMER: 30000
+    AGRICULTURAL_EXPERT: 60000
+  
+  # Crop value multipliers per rank
+  multipliers:
+    NEWCOMER: 1.0
+    FARMER: 1.1
+    EXPERT_FARMER: 1.25
+    MASTER_FARMER: 1.4
+    AGRICULTURAL_EXPERT: 1.6
+    
+# Collector trade settings
+collectors:
+  # Base emerald values for crops
+  emerald-values:
+    regular: 1
+    green: 2
+    purple: 5
+    
+  # Base server currency values
+  currency-values:
+    regular: 10
+    green: 25
+    purple: 100
+    
+  # Market level bonuses (percentage)
+  market-level-bonus:
+    1: 0
+    2: 5
+    3: 10
+    4: 15
+    5: 20
 ```
 
-## Economy Protection Features
+## Rebirth and Currency
 
-BDCraft includes several features to protect the server's economy:
+The rebirth system interacts directly with the server currency:
 
-- **Inflation Control**: Automatic adjustment of prices and fees
-- **Money Sinks**: Strategic removal of currency from circulation
-- **Transaction Limits**: Caps on certain transaction types
-- **Audit System**: Comprehensive logging of all transactions
-- **Anti-Duplication**: Protection against currency duplication exploits
+- Rebirth requires reaching a specific currency threshold
+- Upon rebirth, all server currency is reset to zero
+- Each rebirth level provides a permanent multiplier to all BD crop values
+- After 10 rebirths, players reach maximum currency generation efficiency
 
-## Currency vs. Token System
+## Village Reputation System
 
-BDCoins differ from BD Collection Tokens in several important ways:
+The village reputation system affects currency generation:
 
-| Feature | BDCoins | Collection Tokens |
-|---------|---------|------------------|
-| Primary Purpose | General economy currency | Collectible rewards |
-| Physical Form | Yes (denominations) | Yes (unique tokens) |
-| Digital Form | Yes (account balances) | No (always physical) |
-| Earning Methods | All activities | Specific achievements |
-| Usage | All transactions | Special trades only |
-| Storage | Bank accounts and inventory | Inventory only |
+- Higher reputation results in better prices from villagers
+- Successful trades increase reputation
+- Different villager types give different reputation gains:
+  - Dealers: +2 reputation
+  - Collectors: +3 reputation
+  - Seasonal: +4 reputation
+- Reputation is specific to each market village
 
 ## Best Practices
 
 For server administrators:
 
-1. **Balance Generation/Removal**: Monitor currency creation and removal rates
-2. **Regular Audits**: Check transaction logs for unusual activity
-3. **Economy Health Checks**: Use `/bdeco stats` to view economic health
-4. **Reset Prevention**: Configure automatic backups of economy data
-5. **Pricing Guidelines**: Provide suggested price ranges to players
+1. **Balance Currency Sources**: Monitor emerald and server currency generation rates
+2. **Configure Rank Costs**: Adjust rank costs based on server economy size
+3. **Monitor Prices**: Use the admin panel to monitor crop prices and adjust as needed
+4. **Regular Economy Reports**: Run periodic reports to check economic health
