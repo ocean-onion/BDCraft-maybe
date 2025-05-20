@@ -96,11 +96,13 @@ Players interact with BD Villagers by right-clicking on them, which opens their 
 1. Right-click on the Market Owner villager
 2. Select "Market Management" from the trading menu
 3. Access various tabs for different management functions:
-   - Associates Tab
-   - Permissions Tab
-   - Security Tab
-   - Upgrades Tab
-   - Settings Tab
+   - Associates Tab: Add or remove market associates (founder only)
+   - Permissions Tab: Control who can trade with collectors
+   - Security Tab: Manage building permissions within market area
+   - Upgrades Tab: Purchase market upgrades using currency and materials
+   - Settings Tab: Configure market appearance and effects
+
+**Important:** This is the ONLY way to manage your market. There are no commands that can replace this interaction.
 
 ## Collectors
 
