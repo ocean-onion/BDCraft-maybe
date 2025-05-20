@@ -118,10 +118,10 @@ The player who creates a market (the market founder) can manage who has special 
 
 ### Trading Permissions
 
-Markets can control who can trade with collectors:
-- Public: Anyone can trade
-- Associates: Only founder and associates can trade
-- Founder: Only the founder can trade
+Markets can control who can trade with collectors through the Permissions tab:
+- Public: Anyone can trade with the market's collectors
+- Associates: Only the market founder and associates can trade
+- Founder Only: Only the market founder can trade
 
 ## Administration
 
