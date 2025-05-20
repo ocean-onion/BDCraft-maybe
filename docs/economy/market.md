@@ -102,7 +102,7 @@ Most players can ONLY access the Market Management GUI through the Market Owner 
 
 ### Market Associates
 
-Market Founders can manage who has special permissions in their market:
+The player who creates a market (the market founder) can manage who has special permissions in their market:
 
 1. **Adding Associates**:
    - Use the Market GUI by right-clicking the Market Owner villager
