@@ -102,7 +102,7 @@ Players interact with BD Villagers by right-clicking on them, which opens their 
    - Upgrades Tab: Purchase market upgrades using currency and materials
    - Settings Tab: Configure market appearance and effects
 
-**Important:** This is the ONLY way to manage your market. There are no commands that can replace this interaction.
+**Important:** For most players, this is the ONLY way to manage your market. However, donors with the bdcraft.market.donor permission can use the `/bdmarket` command to access the Market Owner GUI remotely.
 
 ## Collectors
 

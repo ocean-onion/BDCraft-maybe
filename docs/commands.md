@@ -47,7 +47,10 @@ As a self-contained plugin, BDCraft offers both BD-prefixed commands (e.g., `/bd
 | `/bdmarket info` | `/market info` | Display information about the market you're standing in | bdcraft.market.use |
 | `/bdmarket list` | `/market list` | List all markets you have founder or associate status in | bdcraft.market.use |
 
-**Important Note:** Market management (creating markets, adding associates, upgrading markets, etc.) can ONLY be done through the Market Owner villager GUI, which is accessed by right-clicking the Market Owner NPC (CARTOGRAPHER with gold nametag). There is no command to access the market management interface.
+**Important Note:** Market management (creating markets, adding associates, upgrading markets, etc.) can ONLY be done through the Market Owner villager GUI, which is accessed by right-clicking the Market Owner NPC (CARTOGRAPHER with gold nametag). 
+
+Only donors have access to a special command that lets them access the market GUI remotely:
+| `/bdmarket` | `/market` | Opens the market management GUI (donor-only) | bdcraft.market.donor |
 
 ### Auction Commands
 

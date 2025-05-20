@@ -80,15 +80,20 @@ The following commands are available for basic market information:
 
 ### Market Management GUI
 
-Players can ONLY access the Market Management GUI through the Market Owner villager:
+Most players can ONLY access the Market Management GUI through the Market Owner villager:
 
 1. **Accessing the GUI**:
    - Right-click the Market Owner villager in your market (CARTOGRAPHER with gold name tag)
    - Select the "Market Management" option from the trading menu
    - Only the market founder and associates can access management features
-   - There is NO COMMAND to access this interface; physical interaction with the Market Owner is required
+   - Physical interaction with the Market Owner is required for all regular players
 
-2. **Management Features**:
+2. **Donor Access**:
+   - Donors have access to a special command that lets them access the market GUI remotely
+   - `/bdmarket` - Opens the market management GUI for donors (requires bdcraft.market.donor permission)
+   - This privilege is exclusive to server donors
+
+3. **Management Features**:
    - **Associates Tab**: Add or remove market associates (founder only)
    - **Permissions Tab**: Control who can trade with collectors
    - **Security Tab**: Manage building permissions within market area
