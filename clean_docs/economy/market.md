@@ -16,7 +16,7 @@ To create a BD market, players must:
    - Craft using BD Stick surrounded by diamonds with two emeralds
    - Place the token in the item frame above the door
    - Must be at least 30 blocks away from any existing market
-   - Creates a 49x49 block radius market area
+   - Creates a 98x98 block area (49 block radius in all directions)
 
 3. **Market Initialization**:
    - A BD Dealer (FARMER) villager spawns inside the market
@@ -62,11 +62,18 @@ Markets can be upgraded through the Market Owner villager:
    - 10% better trading prices
    - Seasonal Trader visits periodically
 
-4. **Level 4 (Maximum)**:
+4. **Level 4**:
    - Cost: 64 diamonds + 25000 server currency
    - Up to 10 collector houses
    - 15% better trading prices
    - Players receive minor buffs within market radius
+
+5. **Level 5 (Maximum)**:
+   - Cost: 128 diamonds + 50000 server currency
+   - Up to 15 collector houses
+   - 20% better trading prices
+   - Enhanced player buffs within market radius
+   - Special seasonal events occur more frequently
 
 ## Market Management
 
