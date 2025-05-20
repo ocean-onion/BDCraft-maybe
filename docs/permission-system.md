@@ -21,7 +21,7 @@ bdcraft.<module>.<submodule>.<action>
 
 For example:
 - `bdcraft.economy.use` - Basic economy usage
-- `bdcraft.market.founder` - Market creation ability
+- `bdcraft.market.donor` - Remote market management ability for donors
 - `bdcraft.admin` - Full administrative access
 
 ## Permission Configuration
