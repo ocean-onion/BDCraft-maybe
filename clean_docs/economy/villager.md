@@ -43,9 +43,8 @@ The BD Villager System provides specialized villagers that form the backbone of 
 - **Physical Properties**:
   - All BD crops use the wheat growth model (4 stages)
   - Seeds appear differently in inventory but use the same planting mechanics as wheat
-  - Regular crops have no special effects
-  - Green crops emit occasional green particles when fully grown
-  - Purple crops emit constant purple particles and have a subtle glow effect
+  - All BD crop types grow as wheat, but the seeds are represented by different Minecraft seeds in inventory
+  - When planted, all BD crops grow identical to wheat plants during their growth stages
 - **Harvesting Appearance**:
   - When harvested, the crops drop as special items with custom textures
   - Regular BD Crops: Appear as brown wheat bundles
