@@ -15,7 +15,7 @@ To create a BD market, players must:
 2. **Use a BD Market Token**:
    - Craft using BD Stick surrounded by diamonds in a square pattern with two emeralds on the sides
    - Recipe: 8 diamonds around the edges, BD Stick in center, emeralds on left and right middle
-   - The token appears as an enchanted emerald in inventory
+   - The token appears as an enchanted emerald with gold text and blue enchantment glow in inventory
    - Place the token in the item frame directly above the door
    - Must be at least 50 blocks away from any existing market
    - Creates a 98x98 block area (49 block radius in all directions)

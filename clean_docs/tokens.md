@@ -10,7 +10,7 @@ BDCraft features two primary token types that serve specific functions:
 
 Market tokens are special items used to establish player-owned markets where BD economic activity takes place.
 
-- **Appearance**: Enchanted emerald with custom name "BD Market Token" in gold text
+- **Appearance**: Enchanted emerald with custom name "BD Market Token" in gold text and blue enchantment glow
 - **Function**: Creates a player-owned market when placed in an item frame above a market stall door
 - **Acquisition**: Crafting only
 
@@ -44,7 +44,7 @@ Where:
 
 House tokens allow players to expand their markets by creating collector houses where crop sales take place.
 
-- **Appearance**: Enchanted bed with custom name "BD House Token" in aqua text
+- **Appearance**: Enchanted bed with custom name "BD House Token" in aqua text and purple enchantment glow
 - **Function**: Creates collector houses with BD Collectors in existing markets
 - **Acquisition**: Crafting or purchase from Market Owner villager
 
