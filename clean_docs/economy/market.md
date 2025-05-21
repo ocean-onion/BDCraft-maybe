@@ -89,7 +89,7 @@ The following commands are available for basic market information:
 
 - `/bdmarket check` - Visualize market boundaries with temporary wool blocks
 - `/bdmarket info` - Display information about the market you're standing in
-- `/bdmarket list` - List all markets you own or have associate status in
+- `/bdmarket list` - List all markets you own or have associate status in (maximum 5 markets per player)
 
 ### Market Management GUI
 
