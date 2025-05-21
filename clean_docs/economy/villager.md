@@ -39,7 +39,18 @@ The BD Villager System provides specialized villagers that form the backbone of 
 - **Crop Appearance When Grown**:
   - Regular BD Crops: Appear as ferns when fully grown
   - Green BD Crops: Appear as double ferns when fully grown
-  - Purple BD Crops: Appear as enchanted double ferns when fully grown
+  - Purple BD Crops: Appear as enchanted double ferns when fully grown (with purple particle effects)
+- **Physical Properties**:
+  - All BD crops use the wheat growth model (4 stages)
+  - Seeds appear differently in inventory but use the same planting mechanics as wheat
+  - Regular crops have no special effects
+  - Green crops emit occasional green particles when fully grown
+  - Purple crops emit constant purple particles and have a subtle glow effect
+- **Harvesting Appearance**:
+  - When harvested, the crops drop as special items with custom textures
+  - Regular BD Crops: Appear as brown wheat bundles
+  - Green BD Crops: Appear as green wheat bundles with vine decoration
+  - Purple BD Crops: Appear as purple wheat bundles with enchantment glow
 - **Optimal Conditions**: 
   - Require at least light level 9
   - Must be planted on farmland with water within 4 blocks

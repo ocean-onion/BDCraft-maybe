@@ -21,7 +21,8 @@ To create a BD market, players must:
 3. **Market Initialization**:
    - A BD Dealer (FARMER) villager spawns inside the market
    - A Market Owner (CARTOGRAPHER) villager also spawns inside
-   - The player who placed the token becomes the "Market Founder"
+   - The player who placed the token becomes the market owner
+   - The Market Owner villager shows the player's name: "[username]'s Market Owner [market_level]"
 
 ## Collector Houses
 
@@ -83,7 +84,7 @@ The following commands are available for basic market information:
 
 - `/bdmarket check` - Visualize market boundaries with temporary wool blocks
 - `/bdmarket info` - Display information about the market you're standing in
-- `/bdmarket list` - List all markets you have founder or associate status in
+- `/bdmarket list` - List all markets you own or have associate status in
 
 ### Market Management GUI
 
@@ -92,7 +93,7 @@ Most players can ONLY access the Market Management GUI through the Market Owner 
 1. **Accessing the GUI**:
    - Right-click the Market Owner villager in your market (CARTOGRAPHER with gold name tag)
    - Select the "Market Management" option from the trading menu
-   - Only the market founder and associates can access management features
+   - Only the market owner and associates can access management features
    - Physical interaction with the Market Owner is required for all regular players
 
 2. **Donor Access**:
@@ -101,7 +102,7 @@ Most players can ONLY access the Market Management GUI through the Market Owner 
    - This privilege is exclusive to server donors
 
 3. **Management Features**:
-   - **Associates Tab**: Add or remove market associates (founder only)
+   - **Associates Tab**: Add or remove market associates (market owner only)
    - **Permissions Tab**: Control who can trade with collectors
    - **Security Tab**: Manage building permissions within market area
    - **Upgrades Tab**: Purchase market upgrades using currency and materials (only through this interface)
@@ -109,7 +110,7 @@ Most players can ONLY access the Market Management GUI through the Market Owner 
 
 ### Market Associates
 
-The player who creates a market (the market founder) can manage who has special permissions in their market:
+The player who creates a market (the market owner) can manage who has special permissions in their market:
 
 1. **Adding Associates**:
    - Use the Market GUI by right-clicking the Market Owner villager
