@@ -27,14 +27,25 @@ The BD Villager System provides specialized villagers that form the backbone of 
 *Note: These crops primarily differ in their value - the higher-tier crops take longer to unlock as players progress through ranks but provide significantly better returns when sold to collectors.*
 
 #### BD Crop Growth Information
-- **Growth Time**: All BD crops take 20-25 minutes to fully mature (same as vanilla crops)
+- **Growth Times**: 
+  - Regular BD Crops: 12 minutes to fully mature
+  - Green BD Crops: 20 minutes to fully mature
+  - Purple BD Crops: 32 minutes to fully mature
 - **Growth Stages**: 4 visible stages from seedling to mature plant
-- **Appearance**: Appear as special fern variants when fully grown
+- **Seed Appearance in Inventory**: 
+  - Regular BD Seeds: Represented as wheat seeds
+  - Green BD Seeds: Represented as melon seeds
+  - Purple BD Seeds: Represented as pumpkin seeds
+- **Crop Appearance When Grown**:
+  - Regular BD Crops: Appear as ferns when fully grown
+  - Green BD Crops: Appear as double ferns when fully grown
+  - Purple BD Crops: Appear as enchanted double ferns when fully grown
 - **Optimal Conditions**: 
   - Require at least light level 9
   - Must be planted on farmland with water within 4 blocks
   - Growth rate is not affected by biome
   - Bone meal does not work on BD crops
+  - Growth time is reduced when planted within market boundaries (based on market level)
 - **Harvesting**: 
   - Regular harvesting gives 1 crop per plant
   - Using BD Harvester gives 2 crops per plant
@@ -109,6 +120,41 @@ The BD Villager System provides specialized villagers that form the backbone of 
 ## Villager Interaction
 
 Players interact with BD Villagers by right-clicking on them, which opens their trading interface. Special villagers like the Market Owner will also provide access to GUI menus for additional management functions.
+
+## Villager Behavior and Movement
+
+BD Villagers follow specific movement and behavior rules:
+
+- **Natural BD Dealer**: 
+  - Behaves like regular villagers
+  - Can walk freely around their village
+  - Can be killed, though this is discouraged as they provide valuable trades
+
+- **Market Owner**: 
+  - Limited to walking within the market boundary only
+  - Cannot be moved with boats, minecarts, or any other transportation method
+  - Cannot be killed by any means
+
+- **Market Dealer**: 
+  - Limited to walking within the market boundary only
+  - Cannot be moved with boats, minecarts, or any other transportation method
+  - Cannot be killed by any means
+
+- **Collector**: 
+  - Limited to walking within the market boundary only
+  - Cannot be moved with boats, minecarts, or any other transportation method
+  - Can be killed, but this will not destroy the collector house token or the market itself
+  - If killed, the BD token used to create the collector house is not returned
+
+## Villager Trading Rates
+
+Collector villagers operate with dynamic trade rates:
+
+- Base rates are determined by market level
+- Rates may increase based on market activity and demand
+- All rates reset to default values automatically every 24 real-world days
+- Market founder rebirth level provides additional bonuses to trade rates
+- Donor players receive 10% better prices than regular players with the same rank
 
 ### Trading With Villagers
 

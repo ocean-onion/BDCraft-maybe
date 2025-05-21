@@ -14,33 +14,44 @@ The plugin features 5 progressive ranks that players can achieve:
 
 ## Rank Requirements
 
-Each rank requires specific achievements to unlock:
+Ranks are purchased using server currency, with specific achievement requirements that must be completed before purchase:
 
 ### Newcomer (Rank 1)
 - Default starting rank
 - No requirements
+- No cost
 
 ### Farmer (Rank 2)
-- Harvest 100 BD crops
-- Own at least 1 BD tool
-- Trade with BD Dealers 10 times
+- Requirements:
+  - Harvest 100 BD crops
+  - Trade with BD Dealers 10 times
+- Cost: 500 server currency
 
 ### Expert Farmer (Rank 3)
-- Harvest 500 BD crops
-- Own at least 3 different BD tools
-- Reach level 2 in a player market
-- Trade with collectors 25 times
+- Requirements:
+  - Harvest 500 BD crops
+  - Plant 300 BD seeds
+  - Trade with collectors 25 times
+- Cost: 2,000 server currency
 
 ### Master Farmer (Rank 4)
-- Harvest 2,000 BD crops
-- Own all BD tools including Ultimate BD Harvester
-- Reach level 3 in a player market
+- Requirements:
+  - Harvest 2,000 BD crops
+  - Plant 800 BD seeds
+  - Trade with collectors 80 times
+  - Trade with dealers 50 times
+  - Own or be an associate in a market
+- Cost: 5,000 server currency
 
 ### Agricultural Expert (Rank 5)
-- Harvest 10,000 BD crops
-- Own a level 4 player market
-- Complete all farming achievements
-- Help 10 other players with BD farming (Give players BD seeds at least 10 players minimum 20 seeds each)
+- Requirements:
+  - Harvest 10,000 BD crops
+  - Plant 2,000 BD seeds
+  - Trade with collectors 200 times
+  - Trade with dealers 100 times
+  - Own a level 3+ market
+  - Own all BD tools
+- Cost: 10,000 server currency
 
 ## Rank Benefits
 
