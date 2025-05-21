@@ -142,20 +142,25 @@ BD Villagers follow specific movement and behavior rules:
   - Can be killed, though this is discouraged as they provide valuable trades
 
 - **Market Owner**: 
-  - Limited to walking within the market boundary only
+  - Limited to walking within the market stall (the building where it spawned)
+  - Cannot leave the physical structure of the market building
   - Cannot be moved with boats, minecarts, or any other transportation method
   - Cannot be killed by any means
+  - Removed only if the market token is removed
 
 - **Market Dealer**: 
-  - Limited to walking within the market boundary only
+  - Limited to walking within the market stall (the building where it spawned)
+  - Cannot leave the physical structure of the market building
   - Cannot be moved with boats, minecarts, or any other transportation method
   - Cannot be killed by any means
+  - Removed only if the market token is removed
 
 - **Collector**: 
-  - Limited to walking within the market boundary only
+  - Limited to walking within the market boundary (not just the collector house)
+  - Can walk freely within the entire market area but cannot leave the market boundary
   - Cannot be moved with boats, minecarts, or any other transportation method
-  - Can be killed, but this will not destroy the market itself
-  - If killed, the BD token in the item frame becomes unenchanted
+  - Can be killed by players or mobs
+  - If killed, the House Token in the item frame becomes unenchanted
   - Unenchanted tokens must be picked up and placed again to respawn the collector
 
 ## Villager Trading Rates
