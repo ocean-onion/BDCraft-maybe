@@ -45,7 +45,7 @@ As a self-contained plugin, BDCraft offers both BD-prefixed commands (e.g., `/bd
 |---------|---------|-------------|------------|
 | `/bdmarket check` | `/market check` | Visualize market boundaries with temporary wool blocks | bdcraft.market.use |
 | `/bdmarket info` | `/market info` | Display information about the market you're standing in | bdcraft.market.use |
-| `/bdmarket list` | `/market list` | List all markets you have founder or associate status in | bdcraft.market.use |
+| `/bdmarket list` | `/market list` | List all markets you own or have associate status in (maximum 5 markets per player) | bdcraft.market.use |
 
 **Important Note:** Market management (creating markets, adding associates, upgrading markets, etc.) can ONLY be done through the Market Owner villager GUI, which is accessed by right-clicking the Market Owner NPC (CARTOGRAPHER with gold nametag). 
 

@@ -1,28 +1,53 @@
-# BDCraft Plugin Documentation
+# BDCraft Documentation
 
-Welcome to the BDCraft plugin documentation. This comprehensive guide covers all aspects of the BDCraft plugin, a self-contained economy and progression system for Minecraft servers.
+Welcome to the BDCraft documentation. This comprehensive guide contains everything you need to know about installing, configuring, and using the BDCraft plugin.
 
-## Table of Contents
+## Getting Started
 
-1. [Introduction](introduction.md)
-2. [Installation](installation.md)
-3. [Configuration](configuration.md)
-4. [Commands](commands.md)
-5. [Economy Module](economy/README.md)
-6. [Progression Module](progression/README.md)
-7. [Vital Module](vital/README.md)
-8. [Token System](tokens.md)
-9. [Permissions](permissions.md)
-10. [Permission System](permission-system.md)
-11. [Modular Architecture](modular-architecture.md)
-12. [API Reference](api-reference.md)
-13. [Troubleshooting](troubleshooting.md)
-14. [FAQ](faq.md)
+- [Introduction](getting-started/introduction.md) - Overview of BDCraft's features and capabilities
+- [Installation](getting-started/installation.md) - How to install and set up BDCraft
 
-## Quick Start
+## Core Features
 
-See the [Installation](installation.md) guide to get started with BDCraft on your server.
+- [Economy System](economy/README.md)
+  - [Currency System](economy/currency.md)
+  - [Markets](economy/market.md)
+  - [Villagers](economy/villager.md)
+  - [Auction House](economy/auction.md)
+
+- [Progression System](progression/README.md)
+  - [Ranks](progression/ranks.md)
+  - [Rebirth](progression/rebirth.md)
+
+- [Token System](tokens.md) - Information about the token-based market and collector house system
+
+- [Vital Features](vital/README.md)
+  - [Chat System](vital/chat.md)
+  - [Home System](vital/home.md)
+  - [Tab System](vital/tab.md)
+  - [Teleport System](vital/teleport.md)
+
+## Administration
+
+- [Admin Commands](admin/commands.md) - Complete list of all commands
+- [Troubleshooting](admin/troubleshooting.md) - Solutions to common issues
+
+## Configuration
+
+- [Configuration Guide](configuration/configuration.md) - Detailed configuration options
+- [Permissions](configuration/permissions.md) - List of all permissions
+- [Permission System](configuration/permission-system.md) - How to set up and manage permissions
+
+## Development
+
+- [API Reference](development/api-reference.md) - Information for developers
+- [Modular Architecture](development/modular-architecture.md) - How BDCraft is structured
+
+## Additional Information
+
+- [Donor Benefits](donor/donor-benefits.md) - Special perks for donors
+- [Frequently Asked Questions](faq.md) - Answers to common questions
 
 ## Support
 
-If you need help with BDCraft, please refer to the [Troubleshooting](troubleshooting.md) guide or join our Discord server for community support.
+If you encounter any issues not covered in this documentation, please contact our support team on Discord or through our website.
