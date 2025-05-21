@@ -10,7 +10,7 @@ BDCraft features two primary token types that serve specific functions:
 
 Market tokens are special items used to establish player-owned markets where BD economic activity takes place.
 
-- **Appearance**: Enchanted stick with custom name "BD Market Token" in gold text
+- **Appearance**: Enchanted emerald with custom name "BD Market Token" in gold text
 - **Function**: Creates a player-owned market when placed in an item frame above a market stall door
 - **Acquisition**: Crafting only
 
@@ -29,11 +29,12 @@ Where:
 - Build a market stall structure (minimum 3x3 roof, walls with door, bed inside)
 - Place the BD Market Token in an item frame above the door
 - This spawns a BD Dealer and Market Owner in your new market
-- Creates a 49x49 block market area around the token
-- Makes you the "Market Founder" with full management permissions
+- Creates a 98x98 block market area (49 block radius) around the token
+- Donors receive an additional 30 blocks of market area (128x128 total)
+- Makes you the market owner with full management permissions
 
 #### Special Properties
-- Can only be placed if location is at least 30 blocks from another market
+- Can only be placed if location is at least 50 blocks from another market
 - Single-use item (consumed permanently when placed)
 - Cannot be used in creative mode (prevents market spam)
 - Required for accessing the BD economy system
@@ -43,7 +44,7 @@ Where:
 
 House tokens allow players to expand their markets by creating collector houses where crop sales take place.
 
-- **Appearance**: Bed with custom name "BD House Token" in aqua text
+- **Appearance**: Enchanted bed with custom name "BD House Token" in aqua text
 - **Function**: Creates collector houses with BD Collectors in existing markets
 - **Acquisition**: Crafting or purchase from Market Owner villager
 
@@ -69,7 +70,8 @@ Where:
 - Higher level markets allow more collector houses
 - Initial markets support up to 3 collectors
 - Upgraded markets can support up to 15 collectors (at level 5)
-- Cannot be retrieved once placed - placement is permanent
+- If the collector is killed, the token becomes unenchanted
+- Unenchanted tokens must be picked up and placed again to respawn the collector
 - Cannot be transferred between players (soulbound item)
 
 ## Token Commands
@@ -101,11 +103,13 @@ Where:
 
 ## Market Limitations
 
-- Markets must be at least 30 blocks apart
-- Initial market size is 49x49 blocks (can be expanded with upgrades)
+- Markets must be at least 50 blocks apart
+- Initial market size is 98x98 blocks (49 block radius)
+- Donors receive an additional 30 blocks of market area (128x128 total)
 - Starting markets are limited to 3 collector houses
-- Only Market Founders can add associates who can manage the market
-- Players are initially limited to owning one market (higher ranks allow more)
+- Only Market Owners can add associates who can manage the market
+- Players are initially limited to owning one market
+- Donors with bdcraft.market.multiple permission can own up to 5 markets
 
 ## Token Administration
 
