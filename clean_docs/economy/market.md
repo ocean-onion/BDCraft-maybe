@@ -51,25 +51,25 @@ Markets can be upgraded through the Market Owner villager:
    - No special benefits
 
 2. **Level 2**:
-   - Cost: 16 diamonds + 5000 server currency
+   - Cost: 32 emeralds + 500 server currency
    - Up to 5 collector houses
    - 5% better trading prices
    - Market Owner sells House Tokens
 
 3. **Level 3**:
-   - Cost: 32 diamonds + 10000 server currency
+   - Cost: 64 emeralds + 1,500 server currency
    - Up to 7 collector houses
    - 10% better trading prices
-   - Seasonal Trader visits periodically
+   - Seasonal Trader visits periodically (3 days every 2 weeks)
 
 4. **Level 4**:
-   - Cost: 64 diamonds + 25000 server currency
+   - Cost: 128 emeralds + 3,000 server currency
    - Up to 10 collector houses
    - 15% better trading prices
    - Players receive minor buffs within market radius
 
 5. **Level 5 (Maximum)**:
-   - Cost: 128 diamonds + 50000 server currency
+   - Cost: 256 emeralds + 6,000 server currency
    - Up to 15 collector houses
    - 20% better trading prices
    - Enhanced player buffs within market radius
