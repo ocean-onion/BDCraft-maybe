@@ -143,10 +143,16 @@ tokens:
       - "Place in an item frame above a house door"
     
 market:
-  min-distance: 30              # Minimum blocks between markets
+  min-distance: 50              # Minimum blocks between markets
   market-radius: 49             # Radius of player markets in blocks
+  donor-bonus-radius: 15        # Additional radius for donor markets
   max-collectors-initial: 3     # Starting collector limit
-  max-collectors-upgraded: 10   # Maximum collectors after upgrades
+  max-collectors-level2: 5      # Level 2 collector limit
+  max-collectors-level3: 7      # Level 3 collector limit
+  max-collectors-level4: 10     # Level 4 collector limit
+  max-collectors-level5: 15     # Level 5 collector limit (maximum)
+  max-markets-per-player: 1     # Regular players market limit
+  max-markets-for-donors: 5     # Donor market limit
 ```
 
 ## BD Stick
