@@ -31,7 +31,8 @@ The BD Villager System provides specialized villagers that form the backbone of 
   - Regular BD Crops: 12 minutes to fully mature
   - Green BD Crops: 20 minutes to fully mature
   - Purple BD Crops: 32 minutes to fully mature
-- **Growth Stages**: 4 visible stages from seedling to mature plant
+  - Market Growth Reduction: 5% reduction per market level (maximum 25% at level 5)
+- **Growth Stages**: 4 visible stages identical to wheat
 - **Seed Appearance in Inventory**: 
   - Regular BD Seeds: Represented as wheat seeds
   - Green BD Seeds: Represented as melon seeds
@@ -39,12 +40,12 @@ The BD Villager System provides specialized villagers that form the backbone of 
 - **Crop Appearance When Grown**:
   - Regular BD Crops: Appear as ferns when fully grown
   - Green BD Crops: Appear as double ferns when fully grown
-  - Purple BD Crops: Appear as enchanted double ferns when fully grown (with purple particle effects)
+  - Purple BD Crops: Appear as enchanted double ferns when fully grown
 - **Physical Properties**:
-  - All BD crops use the wheat growth model (4 stages)
-  - Seeds appear differently in inventory but use the same planting mechanics as wheat
-  - All BD crop types grow as wheat, but the seeds are represented by different Minecraft seeds in inventory
-  - When planted, all BD crops grow identical to wheat plants during their growth stages
+  - All BD crop types grow as wheat plants during growth stages
+  - Seeds appear differently in inventory but all grow identically to wheat
+  - No growth bonuses from different biomes or seasons
+  - Growth time reduction only applies when planted within market boundaries
 - **Harvesting Appearance**:
   - When harvested, the crops drop as special items with custom textures
   - Regular BD Crops: Appear as brown wheat bundles
@@ -153,8 +154,9 @@ BD Villagers follow specific movement and behavior rules:
 - **Collector**: 
   - Limited to walking within the market boundary only
   - Cannot be moved with boats, minecarts, or any other transportation method
-  - Can be killed, but this will not destroy the collector house token or the market itself
-  - If killed, the BD token used to create the collector house is not returned
+  - Can be killed, but this will not destroy the market itself
+  - If killed, the BD token in the item frame becomes unenchanted
+  - Unenchanted tokens must be picked up and placed again to respawn the collector
 
 ## Villager Trading Rates
 

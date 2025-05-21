@@ -7,16 +7,18 @@ The BDCraft Market System allows all players to establish their own trading cent
 To create a BD market, players must:
 
 1. **Build a Market Structure**:
-   - **Roof**: Minimum 3x3 solid blocks at the same height
-   - **Walls**: At least 3x3 wall formation with one doorway
+   - **Roof**: Minimum 3x3 solid blocks at the same height (can be larger)
+   - **Walls**: At least 3x3 wall formation with one doorway (can be larger, like 3x6 or 4x8)
    - **Interior**: Must contain one bed
-   - **Item Frame**: Must be placed above the door on the outside
+   - **Item Frame**: Must be placed directly above the door on the outside
 
 2. **Use a BD Market Token**:
    - Craft using BD Stick surrounded by diamonds with two emeralds
-   - Place the token in the item frame above the door
-   - Must be at least 30 blocks away from any existing market
+   - The token appears as an enchanted emerald in inventory
+   - Place the token in the item frame directly above the door
+   - Must be at least 50 blocks away from any existing market
    - Creates a 98x98 block area (49 block radius in all directions)
+   - Donor players receive an additional 30 blocks of market area (128x128 total)
 
 3. **Market Initialization**:
    - A BD Dealer (FARMER) villager spawns inside the market
@@ -36,7 +38,10 @@ Players can expand their markets by adding collector houses:
 2. **House Token**:
    - Craft by surrounding a bed with harvested BD crops
    - Can also be purchased from Market Owner at market level 2+
+   - Appears as an enchanted bed in inventory
    - Place in an item frame above the collector house door
+   - If the collector is killed, the token loses its enchantment
+   - Unenchanted tokens must be picked up and placed again to respawn the collector
 
 3. **Collector Spawning**:
    - A BD Collector villager spawns inside
