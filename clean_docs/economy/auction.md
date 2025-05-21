@@ -63,7 +63,10 @@ Each listing shows:
   - Listings expire after 3 days if not sold
   - Minimum price: 1 currency
   - Maximum price: 10,000 currency
-  - Listing fee: 5% of total listing value
+  - Listing fee: 5% of total listing value for regular players
+  - Donor listing fee: Fixed 2% regardless of rank
+  - High-value seed listings: 30% fee if priced above 500 currency (20% for donors)
+  - Fee increases by 3% for every 50 currency above threshold (1% for donors)
 
 ## Buying Items
 
@@ -98,7 +101,12 @@ Each listing shows:
 
 ### Expired Listings
 
-- Listings automatically expire after 3 days
+- Listings automatically expire after the duration for your rank
+  - Newcomer: 3 days
+  - Farmer: 3 days
+  - Expert Farmer: 4 days
+  - Master Farmer: 5 days
+  - Agricultural Expert: 7 days
 - Expired items are returned to your mailbox
 - Access mailbox with: `/bdmail`
 - Unclaimed mailbox items expire after 7 days

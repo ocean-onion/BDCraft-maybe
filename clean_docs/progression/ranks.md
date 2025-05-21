@@ -46,11 +46,12 @@ Ranks are purchased using server currency, with specific achievement requirement
 ### Agricultural Expert (Rank 5)
 - Requirements:
   - Harvest 10,000 BD crops
-  - Plant 2,000 BD seeds
-  - Trade with collectors 200 times
-  - Trade with dealers 100 times
-  - Own a level 3+ market
+  - Plant 3,500 BD seeds
+  - Trade with collectors 150 times
+  - Trade with dealers 80 times
+  - Own a level 5 market
   - Own all BD tools
+  - Help 10 other players with BD farming (give at least 20 seeds to each of 10 different players)
 - Cost: 10,000 server currency
 
 ## Rank Benefits
@@ -70,24 +71,27 @@ Each rank provides increasing benefits:
 
 ### Expert Farmer (Rank 3)
 - 10% increased harvest yield from BD crops
-- 4% auction house fees
+- 4% auction house fees instead of 5%
 - Extended auction listing duration (4 days)
-- Ability to grow green BD seeds faster
+- Seeds planted grow 5% faster
+- Access to buy BD tools from natural spawning dealers
 - Custom chat prefix: [Expert Farmer]
 
 ### Master Farmer (Rank 4)
 - 20% increased harvest yield from BD crops
-- 3.5% auction house fees
+- 3.5% auction house fees instead of 5%
 - Extended auction listing duration (5 days)
-- Higher chance of rare drops from BD crops
+- Seeds planted grow 15% faster
+- 15% higher chance of getting a rare crop than the one planted
 - Custom chat prefix: [Master Farmer]
 
 ### Agricultural Expert (Rank 5)
 - 30% increased harvest yield from BD crops
-- 3% auction house fees
+- 3% auction house fees instead of 5%
 - Extended auction listing duration (7 days)
-- Featured auction listings
-- Ability to set custom market effects
+- Seeds planted grow 25% faster
+- 25% higher chance of getting a rare crop than the one planted
+- Choice of permanent effect (invisibility, strength, night vision, fire resistance, jump boost, speed, slow falling, or water breathing)
 - Custom chat prefix: [Agricultural Expert]
 
 ## Rank Commands

@@ -15,7 +15,7 @@ Donors receive these core benefits:
 - **Remote Market Access**: Use `/bdmarket` to access your Market Owner GUI from anywhere
 - **Multiple Homes**: 3 homes instead of the standard 1 home
 - **Reduced Auction House Fee**: Fixed 2% fee instead of the standard 5%
-- **Rank Discount**: 15% discount on all rank upgrade costs
+- **Enhanced Rank Perks**: All rank perks are increased by 10%
 - **Currency Retention**: Keep 20% of currency after rebirth (regular players lose all currency)
 - **Auction Listing Priority**: Donor auctions appear first on the first page
 
@@ -43,6 +43,12 @@ Donors receive these core benefits:
 - **Enhanced Perks**: All rank perks are increased by 10%
 - **Discount**: 15% discount on all rank upgrade costs
 
+## Additional Benefits
+
+- **Inactive Balance Increase**: Donor balances increase by 1% per day when inactive
+- **Market Size Bonus**: Additional 30 blocks of market area (128x128 total)
+- **Tool Access**: Access to all BD tools from any dealer regardless of rank
+
 ## Configuration
 
 Server administrators can configure donor benefits in the plugin configuration:
@@ -55,8 +61,10 @@ donor:
     remote-market-access: true
     homes: 3
     auction-fee: 2.0
-    rank-discount: 15
+    rank-perk-boost: 10
     rebirth-retention: 20
     auction-priority: true
     inflation-protection: true
+    inactive-balance-increase: 1.0
+    market-size-bonus: 30
 ```

@@ -38,9 +38,12 @@ Donors receive several special perks:
 - **Remote Market Access**: Use `/bdmarket` command to access market management from anywhere
 - **Additional Homes**: Set up to 3 homes instead of the default 1 home
 - **Auction House Discount**: Pay only 2% fees in the auction house instead of the regular fees
-- **Rank Purchase Discount**: Receive a 15% discount when purchasing ranks
+- **Enhanced Rank Perks**: All rank perks are boosted by 10%
 - **Rebirth Currency Retention**: Keep 20% of server currency when performing a rebirth
-- **Chat Colors**: Use colored text in chat messages
+- **Auction Listing Priority**: Donor listings appear first on the auction house
+- **Market Size Bonus**: Additional 30 blocks of market area (128x128 total)
+- **Tool Access**: Access to all BD tools from any dealer regardless of rank
+- **Inactive Currency Growth**: Balance increases by 1% per day when inactive
 - **Back Command**: Access to `/back` command to return to previous locations
 
 ## Economy System
