@@ -47,7 +47,7 @@ The plugin provides multiple chat channels for organized communication:
 - **Command**: `/m <message>`
 - **Format**: `[M] [Rank] PlayerName: Message`
 - **Range**: Only within your market area
-- **Permission**: `bdcraft.chat.market` (for market founders and associates)
+- **Permission**: `bdcraft.chat.market` (for market owners and associates)
 
 ### Admin Channel
 

@@ -15,11 +15,9 @@ The BDCraft home system allows players to set personal teleportation points, mak
 
 ### Multiple Homes
 
-Players can set multiple homes based on their permissions:
-- Default players: 1 home
-- VIP players: 3 homes
-- Premium players: 5 homes
-- Elite players: 10 homes
+Players can set multiple homes based on their status:
+- Regular players: 1 home
+- Donors: 3 homes
 
 ### Home Limitations
 

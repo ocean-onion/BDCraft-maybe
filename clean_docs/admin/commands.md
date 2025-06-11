@@ -57,14 +57,14 @@ Only donors have access to a special command that lets them access the market GU
 | Command | Aliases | Description | Permission |
 |---------|---------|-------------|------------|
 | `/bdauction` | `/auction`, `/ah`, `/bdah` | Opens the auction house GUI | bdcraft.auction.use |
-| `/bdah listings` | `/ah listings` | Shows your current auction listings | bdcraft.auction.list |
-| `/bdah sell <price> [amount]` | `/ah sell <price> [amount]` | Lists an item for sale | bdcraft.auction.sell |
-| `/bdah cancel <listing_id>` | `/ah cancel <listing_id>` | Cancels one of your listings | bdcraft.auction.cancel |
-| `/bdah search <query>` | `/ah search <query>` | Searches for items in the auction house | bdcraft.auction.use |
-| `/bdah history` | `/ah history` | Shows your auction history | bdcraft.auction.use |
-| `/bdah featured` | `/ah featured` | Creates a featured auction (costs extra) | bdcraft.auction.featured |
-| `/bdah reload` | `/ah reload` | Reloads the auction configuration | bdcraft.auction.admin |
-| `/bdah clear <player>` | `/ah clear <player>` | Clears a player's listings | bdcraft.auction.admin |
+| `/bdauction listings` | `/auction listings`, `/ah listings` | Shows your current auction listings | bdcraft.auction.list |
+| `/bdauction sell <price> [amount]` | `/auction sell <price> [amount]`, `/ah sell <price> [amount]` | Lists an item for sale | bdcraft.auction.sell |
+| `/bdauction cancel <listing_id>` | `/auction cancel <listing_id>`, `/ah cancel <listing_id>` | Cancels one of your listings | bdcraft.auction.cancel |
+| `/bdauction search <query>` | `/auction search <query>`, `/ah search <query>` | Searches for items in the auction house | bdcraft.auction.use |
+| `/bdauction history` | `/auction history`, `/ah history` | Shows your auction history | bdcraft.auction.use |
+| `/bdauction featured` | `/auction featured`, `/ah featured` | Creates a featured auction (costs extra) | bdcraft.auction.featured |
+| `/bdauction reload` | `/auction reload`, `/ah reload` | Reloads the auction configuration | bdcraft.auction.admin |
+| `/bdauction clear <player>` | `/auction clear <player>`, `/ah clear <player>` | Clears a player's listings | bdcraft.auction.admin |
 
 ### Market and House Tokens
 

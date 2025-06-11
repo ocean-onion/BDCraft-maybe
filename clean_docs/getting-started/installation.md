@@ -31,7 +31,7 @@ This guide will walk you through the process of installing BDCraft on your Minec
 5. **Initial Configuration**
    - BDCraft will generate default configuration files in a new folder called `plugins/BDCraft`
    - Stop the server using the `/stop` command
-   - Edit the configuration files as needed (see the [Configuration Guide](configuration.md))
+   - Edit the configuration files as needed (see the [Configuration Guide](../configuration/configuration.md))
    - Start the server again
 
 ## First-Time Setup
@@ -141,4 +141,4 @@ By default, BDCraft stores data in flat files. If you choose to use MySQL:
 
 ## Next Steps
 
-After successfully installing BDCraft, check out the [Configuration Guide](configuration.md) to learn how to customize the plugin to your needs.
+After successfully installing BDCraft, check out the [Configuration Guide](../configuration/configuration.md) to learn how to customize the plugin to your needs.

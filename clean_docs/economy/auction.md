@@ -5,10 +5,10 @@ The BDCraft Auction House is a specialized marketplace that allows players to bu
 ## Accessing the Auction House
 
 Players can access the auction house using these commands:
-- `/bdah` - Opens the auction house GUI
-- `/bdah listings` - Shows your current auction listings
-- `/bdah sell <price> [amount]` - Lists an item for sale
-- `/bdah cancel <listing_id>` - Cancels one of your listings
+- `/bdauction` or `/auction` - Opens the auction house GUI
+- `/bdauction listings` or `/auction listings` - Shows your current auction listings
+- `/bdauction sell <price> [amount]` or `/auction sell <price> [amount]` - Lists an item for sale
+- `/bdauction cancel <listing_id>` or `/auction cancel <listing_id>` - Cancels one of your listings
 
 ## Auction House Interface
 
@@ -41,8 +41,8 @@ Each listing shows:
 ### Listing Process
 
 1. Hold the BD item you want to sell in your main hand
-2. Use the command: `/bdah sell <price> [amount]`
-   - Example: `/bdah sell 15 5` (sells 5 of the held item for 15 currency each)
+2. Use the command: `/bdauction sell <price> [amount]`
+   - Example: `/bdauction sell 15 5` (sells 5 of the held item for 15 currency each)
 3. Confirm the listing in the confirmation GUI
 4. Pay the listing fee (deducted automatically)
 
