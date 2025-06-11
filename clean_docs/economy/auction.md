@@ -72,7 +72,7 @@ Each listing shows:
 
 ### Purchase Process
 
-1. Open the auction house with `/bdah`
+1. Open the auction house with `/bdauction`
 2. Browse listings or use category filters
 3. Click on the item you want to purchase
 4. Confirm the purchase in the confirmation GUI
