@@ -18,13 +18,13 @@ The BDCraft plugin includes a fully-featured economy system with:
 
 ### Market System
 
-The Market System provides an integrated marketplace for item trading:
+The Market System allows players to create physical trading centers:
 
-- Server-wide marketplace for buying and selling items
-- Easy-to-use interface for listing and purchasing items
-- Advanced item browsing with search and filtering
-- Transaction tracking and sales analytics
-- Commission system with configurable rates
+- Player-built market structures with villager trading
+- Physical market areas with defined boundaries
+- Custom villagers (Market Owner, Dealer, Collectors)
+- Token-based market creation system
+- Crop trading and collection mechanics
 
 [Learn more about the Market System](market.md)
 
@@ -54,16 +54,16 @@ The Villager System enhances Minecraft's villager trading:
 
 ## Commands
 
-For a full list of Economy Module commands, see the [Commands Reference](../commands.md#economy-module-commands).
+For a full list of Economy Module commands, see the [Admin Commands](../admin/commands.md).
 
 ## Configuration
 
-For configuration options related to the Economy Module, see the [Configuration Guide](../configuration.md#economy-configuration-economyyml).
+For configuration options related to the Economy Module, see the [Configuration Guide](../configuration/configuration.md).
 
 ## Permissions
 
-For permissions related to the Economy Module, see the [Permissions Reference](../permissions.md#economy-permissions).
+For permissions related to the Economy Module, see the [Permissions Reference](../configuration/permissions.md).
 
 ## API Reference
 
-For developers interested in how the Economy Module works internally, see the [API Reference](../api-reference.md#economy-api).
+For developers interested in how the Economy Module works internally, see the [API Reference](../development/api-reference.md).

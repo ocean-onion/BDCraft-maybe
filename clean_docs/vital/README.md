@@ -58,12 +58,12 @@ The Tab List System customizes the player list display:
 
 ## Commands
 
-For a full list of Vital Module commands, see the [Commands Reference](../commands.md#vital-module-commands).
+For a full list of Vital Module commands, see the [Admin Commands](../admin/commands.md).
 
 ## Configuration
 
-For configuration options related to the Vital Module, see the [Configuration Guide](../configuration.md#vital-configuration-vitalyml).
+For configuration options related to the Vital Module, see the [Configuration Guide](../configuration/configuration.md).
 
 ## Permissions
 
-For permissions related to the Vital Module, see the [Permissions Reference](../permissions.md#vital-permissions).
+For permissions related to the Vital Module, see the [Permissions Reference](../configuration/permissions.md).
