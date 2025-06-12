@@ -243,6 +243,17 @@ Only donors have access to a special command that lets them access the market GU
 
 ### Chat Commands
 
+#### Chat Channels
+
+| Command | Aliases | Description | Permission |
+|---------|---------|-------------|------------|
+| `/g <message>` | None | Sends a message to global chat (server-wide) | bdcraft.chat.global |
+| `/l <message>` | None | Sends a message to local chat (100 block radius) | bdcraft.chat.local |
+| `/m <message>` | None | Sends a message to market chat (market area only) | bdcraft.chat.market |
+| `/a <message>` | None | Sends a message to admin chat (admins only) | bdcraft.chat.admin |
+
+#### Private Messaging
+
 | Command | Aliases | Description | Permission |
 |---------|---------|-------------|------------|
 | `/bdmsg <player> <message>` | `/msg <player> <message>`, `/w <player> <message>`, `/tell <player> <message>` | Sends a private message to a player | bdcraft.chat.msg |
