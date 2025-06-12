@@ -32,26 +32,29 @@ The BD Villager System provides specialized villagers that form the backbone of 
   - Green BD Crops: 20 minutes to fully mature
   - Purple BD Crops: 32 minutes to fully mature
   - Market Growth Reduction: 5% reduction per market level (maximum 25% at level 5)
-- **Growth Stages**: 4 visible stages identical to wheat
+- **Growth Stages**: 4 visible stages identical to melon stems
 - **Seed Appearance in Inventory**: 
   - Regular BD Seeds: Represented as wheat seeds
   - Green BD Seeds: Represented as melon seeds
   - Purple BD Seeds: Represented as pumpkin seeds
-- **Crop Appearance When Grown**:
-  - Regular BD Crops: Appear as ferns when fully grown
-  - Green BD Crops: Appear as double ferns when fully grown
-  - Purple BD Crops: Appear as enchanted double ferns when fully grown
+- **Crop Appearance When Growing**:
+  - All BD crop types grow as melon stems during growth stages (stages 1-3)
+  - Seeds appear differently in inventory but all grow identically as melon stems
+- **Crop Appearance When Fully Grown**:
+  - Regular BD Crops: Transform into ferns when fully mature (stage 4)
+  - Green BD Crops: Transform into double ferns when fully mature (stage 4)
+  - Purple BD Crops: Transform into enchanted double ferns when fully mature (stage 4)
 - **Physical Properties**:
-  - All BD crop types grow as wheat plants during all growth stages
-  - Seeds appear differently in inventory but all grow identically to wheat
   - No growth bonuses from different biomes or seasons
   - Growth time reduction only applies when planted within market boundaries
-- **Important Note**:
+- **Growth Transformation**:
+  - BD crops grow as melon stems through stages 1-3
+  - At stage 4 (fully mature), they transform into their respective fern types
   - BD crops do NOT drop as special items when harvested
   - When harvested, crops are represented in inventory as their corresponding items:
-  - Regular BD Crops: Appear as ferns in inventory
-  - Green BD Crops: Appear as double ferns in inventory
-  - Purple BD Crops: Appear as enchanted double ferns in inventory
+    - Regular BD Crops: Appear as ferns in inventory
+    - Green BD Crops: Appear as double ferns in inventory
+    - Purple BD Crops: Appear as enchanted double ferns in inventory
 - **Optimal Conditions**: 
   - Require at least light level 9
   - Must be planted on farmland with water within 4 blocks
