@@ -42,15 +42,16 @@ The BD Villager System provides specialized villagers that form the backbone of 
   - Green BD Crops: Appear as double ferns when fully grown
   - Purple BD Crops: Appear as enchanted double ferns when fully grown
 - **Physical Properties**:
-  - All BD crop types grow as wheat plants during growth stages
+  - All BD crop types grow as wheat plants during all growth stages
   - Seeds appear differently in inventory but all grow identically to wheat
   - No growth bonuses from different biomes or seasons
   - Growth time reduction only applies when planted within market boundaries
-- **Harvesting Appearance**:
-  - When harvested, the crops drop as special items with custom textures
-  - Regular BD Crops: Appear as brown wheat bundles
-  - Green BD Crops: Appear as green wheat bundles with vine decoration
-  - Purple BD Crops: Appear as purple wheat bundles with enchantment glow
+- **Important Note**:
+  - BD crops do NOT drop as special items when harvested
+  - When harvested, crops are represented in inventory as their corresponding items:
+  - Regular BD Crops: Appear as ferns in inventory
+  - Green BD Crops: Appear as double ferns in inventory
+  - Purple BD Crops: Appear as enchanted double ferns in inventory
 - **Optimal Conditions**: 
   - Require at least light level 9
   - Must be planted on farmland with water within 4 blocks
@@ -203,12 +204,7 @@ Collectors will:
 - Have limited daily purchasing capacity
 - Reset their trades on a regular schedule
 
-**Crop Values:**
-- Regular BD Crops: 1 emerald + 10 server currency per crop
-- Green BD Crops: 2 emeralds + 25 server currency per crop
-- Purple BD Crops: 5 emeralds + 100 server currency per crop
-
-*Note: These base values are affected by market level, player rank, and rebirth level, creating significantly higher values for advanced players.*
+*Note: Crop values are determined by market level, player rank, and rebirth level. Base values vary based on these factors and are configured by server administrators.*
 
 Unlike regular villagers, Collectors do not offer any items for sale - they only purchase BD crops from players.
 

@@ -34,8 +34,7 @@ Players can earn currency through several methods:
 
 Emeralds are used primarily for:
 - Purchasing seeds from Dealers
-- Trading with Market Villagers
-- Player-to-player trades
+- Trading with Market Villager
 
 ### Diamonds
 
@@ -162,7 +161,7 @@ The village reputation system affects currency generation:
   - Dealers: +2 reputation
   - Collectors: +3 reputation
   - Seasonal: +4 reputation
-- Reputation is specific to each market village
+- Reputation is specific to each market and/or village
 
 ## Best Practices
 
