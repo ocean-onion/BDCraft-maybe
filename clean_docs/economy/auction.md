@@ -107,9 +107,9 @@ Each listing shows:
   - Expert Farmer: 4 days
   - Master Farmer: 5 days
   - Agricultural Expert: 7 days
-- Expired items are returned to your mailbox
-- Access mailbox with: `/bdmail`
-- Unclaimed mailbox items expire after 7 days
+- Expired items are returned to your item storage mailbox
+- Access item storage with: `/bdmail storage` (or `/bdm s`, `/mail s`)
+- Unclaimed storage items expire after 7 days
 
 ## Rank Benefits for Auction House
 

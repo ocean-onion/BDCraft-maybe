@@ -252,6 +252,7 @@ Only donors have access to a special command that lets them access the market GU
 | `/bdmail send <player> <message>` | `/mail send <player> <message>` | Sends mail to a player | bdcraft.chat.mail |
 | `/bdmail read` | `/mail read` | Reads your mail | bdcraft.chat.mail |
 | `/bdmail clear` | `/mail clear` | Clears your mail | bdcraft.chat.mail |
+| `/bdmail storage` | `/mail storage`, `/bdm s`, `/mail s` | Access your item storage mailbox for expired auction items | bdcraft.chat.mail |
 | `/bdnick <nick>` | `/nick <nick>` | Sets your nickname | bdcraft.chat.nick |
 | `/bdnick reset` | `/nick reset` | Removes your nickname | bdcraft.chat.nick |
 | `/bdnick <player> <nick>` | `/nick <player> <nick>` | Sets another player's nickname | bdcraft.chat.nick.others |

@@ -107,6 +107,36 @@ The plugin provides multiple chat channels for organized communication:
 - **Description**: Remove a chat mute from a player
 - **Permission**: `bdcraft.chat.unmute`
 
+## Mail System
+
+The BDCraft mail system provides both messaging and item storage functionality.
+
+### Messaging Functions
+
+- **Command**: `/bdmail send <player> <message>` or `/mail send <player> <message>`
+- **Description**: Send a message to online or offline players
+- **Permission**: `bdcraft.chat.mail`
+
+- **Command**: `/bdmail read` or `/mail read`
+- **Description**: Read your received messages
+- **Permission**: `bdcraft.chat.mail`
+
+- **Command**: `/bdmail clear` or `/mail clear`
+- **Description**: Clear your message inbox
+- **Permission**: `bdcraft.chat.mail`
+
+### Item Storage Functions
+
+- **Command**: `/bdmail storage` or `/mail storage`, `/bdm s`, `/mail s`
+- **Description**: Access your item storage mailbox for expired auction items
+- **Permission**: `bdcraft.chat.mail`
+
+**Storage Details:**
+- Expired auction items are automatically sent to your item storage
+- Storage items expire after 7 days if not claimed
+- Storage is separate from message inbox
+- Items can be retrieved directly to your inventory
+
 ## Chat Configuration
 
 The chat system can be customized in the plugin configuration:
