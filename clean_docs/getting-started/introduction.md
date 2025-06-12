@@ -57,9 +57,9 @@ Each module can be individually configured or disabled based on your server's ne
 To begin using BDCraft, check out these documentation sections:
 
 1. [Installation Guide](installation.md) - How to install BDCraft on your server
-2. [Configuration Guide](configuration.md) - How to configure BDCraft to suit your needs
-3. [Commands Reference](commands.md) - A complete list of all available commands
-4. [Permissions](permissions.md) - How to set up permissions for your server
+2. [Configuration Guide](../configuration/configuration.md) - How to configure BDCraft to suit your needs
+3. [Commands Reference](../admin/commands.md) - A complete list of all available commands
+4. [Permissions](../configuration/permissions.md) - How to set up permissions for your server
 
 ---
 
