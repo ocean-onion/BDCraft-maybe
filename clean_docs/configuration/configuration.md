@@ -430,4 +430,4 @@ storage:
 
 ## Next Steps
 
-After configuring BDCraft, check out the [Commands](commands.md) guide to learn how to use the plugin.
+After configuring BDCraft, check out the [Commands](../admin/commands.md) guide to learn how to use the plugin.

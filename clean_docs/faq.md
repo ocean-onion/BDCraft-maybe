@@ -166,7 +166,7 @@ Yes, BDCraft works with proxy setups, but its data is server-specific by default
 ## Troubleshooting
 
 ### What do I do if I encounter an error?
-Check the [Troubleshooting Guide](troubleshooting.md) for common issues and their solutions. If your issue isn't covered, enable debug mode in the configuration and check the console for more detailed error messages.
+Check the [Troubleshooting Guide](admin/troubleshooting.md) for common issues and their solutions. If your issue isn't covered, enable debug mode in the configuration and check the console for more detailed error messages.
 
 ### How do I report a bug?
 If you believe you've found a bug, please provide detailed information including:
