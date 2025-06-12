@@ -25,7 +25,6 @@ BDCraft utilizes two main types of currency:
 Players can earn currency through several methods:
 
 - **Trading with Collectors**: Selling BD crops to collectors provides both emeralds AND server currency
-- **Market Sales**: Selling items to other players at player-owned markets
 - **Special Events**: Participating in server events
 - **Rank Bonuses**: Some ranks provide currency bonuses
 

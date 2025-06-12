@@ -70,7 +70,7 @@ The BD Villager System provides specialized villagers that form the backbone of 
 - Profession: CARTOGRAPHER
 - Villager Type: TAIGA
 - Level: 3 (Expert)
-- Name: "[Player]'s Market" (gold text)
+- Name: "[Player]'s Market Owner [market_level]" (gold text)
 
 **Spawning:**
 - Created when a player builds a valid market structure and uses a Market Token
@@ -86,10 +86,10 @@ The BD Villager System provides specialized villagers that form the backbone of 
 
 **Visual Appearance:**
 - Base: Villager
-- Profession: Various based on specialization
+- Profession: Leatherworker or Weaponsmith
 - Villager Type: Based on biome
 - Level: 1-5 (based on market level)
-- Name: "[Type] Collector" (cyan text)
+- Name: "[Owner's Market] Collector" (cyan text)
 
 **Spawning:**
 - Created when a player builds a collector house and uses a House Token
@@ -98,7 +98,6 @@ The BD Villager System provides specialized villagers that form the backbone of 
 **Functions:**
 - Buys BD crops ONLY - will not accept any other items
 - Trading prices affected by market level
-- Each collector specializes in specific BD crop types
 - Primary source for converting BD crops into server currency
 
 ### Seasonal Trader
