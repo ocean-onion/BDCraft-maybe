@@ -173,7 +173,7 @@ Collector villagers operate with dynamic trade rates:
 - Base rates are determined by market level
 - Rates may increase based on market activity and demand
 - All rates reset to default values automatically every 24 real-world days
-- Market founder rebirth level provides additional bonuses to trade rates
+- Market owner rebirth level provides additional bonuses to trade rates
 - Donor players receive 10% better prices than regular players with the same rank
 
 ### Trading With Villagers
@@ -188,7 +188,7 @@ Collector villagers operate with dynamic trade rates:
 1. Right-click on the Market Owner villager
 2. Select "Market Management" from the trading menu
 3. Access various tabs for different management functions:
-   - Associates Tab: Add or remove market associates (founder only)
+   - Associates Tab: Add or remove market associates (owner only)
    - Permissions Tab: Control who can trade with collectors
    - Security Tab: Manage building permissions within market area
    - Upgrades Tab: Purchase market upgrades using currency and materials

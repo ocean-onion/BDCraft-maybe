@@ -55,7 +55,7 @@ C B C
 C C C
 ```
 Where:
-- C = BD Crop (Fern)
+- C = BD Crop (Fern with metadata)
 - B = Bed (any color)
 
 #### Usage

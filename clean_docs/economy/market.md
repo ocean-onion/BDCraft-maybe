@@ -134,8 +134,8 @@ The player who creates a market (the market owner) can manage who has special pe
 
 Markets can control who can trade with collectors through the Permissions tab:
 - Public: Anyone can trade with the market's collectors
-- Associates: Only the market founder and associates can trade
-- Founder Only: Only the market founder can trade
+- Associates: Only the market owner and associates can trade
+- Owner Only: Only the market owner can trade
 
 ## Administration
 

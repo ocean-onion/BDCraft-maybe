@@ -88,13 +88,13 @@ Each listing shows:
 
 ### Viewing Your Listings
 
-- Use the command: `/bdah listings`
+- Use the command: `/bdauction listings`
 - Shows all your active listings with details
 - Shows total potential value if all items sell
 
 ### Cancelling Listings
 
-- Use the command: `/bdah cancel <listing_id>`
+- Use the command: `/bdauction cancel <listing_id>`
 - Listing ID can be found in your listings page
 - Cancelled items are returned to your inventory
 - Listing fee is not refunded

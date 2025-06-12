@@ -81,10 +81,10 @@ Market upgrades are purchased through the Market Owner villager by right-clickin
 ## Auction System
 
 ### How do players use the auction house?
-Players can access the auction house using the `/bdah` command. This opens a GUI where they can browse listings, buy items, and manage their own listings.
+Players can access the auction house using the `/bdauction` command. This opens a GUI where they can browse listings, buy items, and manage their own listings.
 
 ### How do players sell items in the auction house?
-To sell an item, players hold it in their main hand and use the command `/bdah sell <price> [amount]`. They can also access selling options through the auction house GUI.
+To sell an item, players hold it in their main hand and use the command `/bdauction sell <price> [amount]`. They can also access selling options through the auction house GUI.
 
 ### Is there a fee for listing items?
 Yes, there is a listing fee (default 5% of the listing price) to prevent auction house spam. This fee is not refunded if the listing is canceled.
