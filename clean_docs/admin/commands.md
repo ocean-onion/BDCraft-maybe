@@ -196,6 +196,15 @@ Only donors have access to a special command that lets them access the market GU
 | `/bdbroadcast <message>` | `/broadcast <message>`, `/bc <message>` | Broadcasts a message to the entire server | bdcraft.vital.broadcast |
 | `/bdmotd` | `/motd` | Shows the server message of the day | bdcraft.vital.motd |
 
+### Tab List Commands
+
+| Command | Aliases | Description | Permission |
+|---------|---------|-------------|------------|
+| `/bdtab reload` | `/tab reload` | Reload the tab list configuration | bdcraft.tab.admin |
+| `/bdtab header <text>` | `/tab header <text>` | Set a custom header temporarily | bdcraft.tab.admin |
+| `/bdtab footer <text>` | `/tab footer <text>` | Set a custom footer temporarily | bdcraft.tab.admin |
+| `/bdtab reset` | `/tab reset` | Reset to configuration defaults | bdcraft.tab.admin |
+
 ### Home Commands
 
 | Command | Aliases | Description | Permission |
@@ -264,6 +273,16 @@ Only donors have access to a special command that lets them access the market GU
 | `/bdmail read` | `/mail read` | Reads your mail | bdcraft.chat.mail |
 | `/bdmail clear` | `/mail clear` | Clears your mail | bdcraft.chat.mail |
 | `/bdmail storage` | `/mail storage`, `/bdm s`, `/mail s` | Access your item storage mailbox for expired auction items | bdcraft.chat.mail |
+
+#### Chat Management
+
+| Command | Aliases | Description | Permission |
+|---------|---------|-------------|------------|
+| `/clearchat` | `/cc` | Clears your personal chat history | bdcraft.chat.clear |
+| `/clearchat all` | `/cc all` | Clears everyone's chat (admin only) | bdcraft.chat.clear.all |
+| `/mutechat` | None | Temporarily disable global chat (admin only) | bdcraft.chat.mute |
+| `/mute <player> [duration] [reason]` | None | Prevent a player from chatting | bdcraft.chat.mute.player |
+| `/unmute <player>` | None | Remove a chat mute from a player | bdcraft.chat.unmute |
 | `/bdnick <nick>` | `/nick <nick>` | Sets your nickname | bdcraft.chat.nick |
 | `/bdnick reset` | `/nick reset` | Removes your nickname | bdcraft.chat.nick |
 | `/bdnick <player> <nick>` | `/nick <player> <nick>` | Sets another player's nickname | bdcraft.chat.nick.others |
