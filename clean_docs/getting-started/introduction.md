@@ -5,22 +5,24 @@ BDCraft is a comprehensive Minecraft plugin designed to provide a complete econo
 ## Key Features
 
 ### Complete Economy System
+- Three-tier BD crop growing system with special metadata
 - Physical player-built markets with villager-based trading
-- Auction house for player-to-player item sales
-- Custom villagers with specialized trades
-- Comprehensive currency system
+- Auction house for BD item sales between players
+- Custom BD villagers (Dealers, Collectors, Seasonal Traders)
+- Dual currency system (emeralds + server currency)
 
 ### Progression System
-- Rank-based progression with increasing benefits
-- Rebirth system for long-term engagement
-- Achievement-based advancement
-- Custom rewards and perks
+- 5-tier rank progression with statistical requirements
+- Permanent achievement system with interactive GUI
+- Rebirth system for prestige advancement
+- Achievement titles and social recognition through screenshots
 
-### Essential Server Utilities
-- Home teleportation system
-- Comprehensive chat management
-- Custom tab list display
-- Teleportation commands
+### Essential Server Utilities (BDVital)
+- Multi-home teleportation system with rank-based limits
+- Multi-channel chat system (global, local, market, admin)
+- Private messaging and mail system with item storage
+- Custom tab list with rank display
+- Complete teleportation suite replacing EssentialsX
 
 ## Self-Contained Design
 
@@ -46,9 +48,9 @@ The `block-competing-plugins` option in the configuration is recommended to rema
 
 Despite being self-contained, BDCraft features a modular design that allows server administrators to enable or disable specific features:
 
-- Economy Module: Markets, auctions, and villager trading
-- Progression Module: Ranks, achievements, and rebirth systems
-- Vital Module: Essential utilities for teleportation, chat, and more
+- **Economy Module**: BD crop system, markets, auctions, and villager trading
+- **Progression Module**: Ranks, permanent achievements with GUI, and rebirth systems  
+- **Vital Module**: Complete EssentialsX replacement with teleportation, chat, and utilities
 
 Each module can be individually configured or disabled based on your server's needs.
 
@@ -56,11 +58,20 @@ Each module can be individually configured or disabled based on your server's ne
 
 To begin using BDCraft, check out these documentation sections:
 
-1. [Installation Guide](installation.md) - How to install BDCraft on your server
-2. [Configuration Guide](../configuration/configuration.md) - How to configure BDCraft to suit your needs
-3. [Commands Reference](../admin/commands.md) - A complete list of all available commands
-4. [Permissions](../configuration/permissions.md) - How to set up permissions for your server
+1. **[Installation Guide](installation.md)** - Setup BDCraft on Paper 1.21+ servers
+2. **[Economy Overview](../economy/README.md)** - BD crops, markets, and trading systems
+3. **[Achievement System](../progression/achievements.md)** - Permanent accomplishments with GUI interface
+4. **[Commands Reference](../admin/commands.md)** - Complete command list including `/bdachievements`
+5. **[FAQ & Troubleshooting](../faq.md)** - Common questions and solutions
 
 ---
 
-BDCraft replaces multiple separate plugins with a single, cohesive system designed specifically for Minecraft servers focused on economic gameplay and player progression.
+## Core Philosophy
+
+BDCraft provides a unified economic experience where:
+- **BD crops with special metadata** drive the entire economy
+- **Achievements are permanent** and tracked through an interactive GUI
+- **Ranks provide functional benefits** while achievements offer recognition
+- **Everything integrates seamlessly** without external dependencies
+
+BDCraft replaces EssentialsX, economy plugins, and chat systems with one cohesive plugin designed for agricultural-economic gameplay.
