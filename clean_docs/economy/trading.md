@@ -137,8 +137,8 @@ Master Farmer (Rank 4) with Rebirth 2, trading in Level 3 market with 500 reputa
 ### Item Restrictions
 Only specific items can be traded with BD villagers:
 - **Accepted by Dealers**: Currency (emeralds, diamonds) for seeds/tools
-- **Accepted by Collectors**: BD crops only (ferns, double ferns with special metadata)
-- **Rejected Items**: Regular Minecraft items, non-BD crops, processed goods
+- **Accepted by Collectors**: BD crops only (ferns, double ferns, enchanted ferns with BD metadata)
+- **Rejected Items**: Regular Minecraft items, non-BD crops, items without BD metadata
 
 ### Location Restrictions
 Trading limited to authorized areas:

@@ -8,26 +8,26 @@ BDCraft features three tiers of crops, each with different growth times, values,
 
 ### Regular BD Crops
 - **Unlock Requirement**: Available to all players from Newcomer rank
-- **Seed Appearance**: Wheat seeds in inventory
+- **Seed Appearance**: Wheat seeds with BD metadata in inventory
 - **Growth Time**: 12 minutes to fully mature
 - **Mature Appearance**: Ferns (stage 4)
-- **Inventory Item**: Ferns when harvested
+- **Inventory Item**: Ferns with BD metadata when harvested
 - **Base Value**: 1 emerald + 10 server currency per crop (as configured in economy.yml)
 
 ### Green BD Crops
 - **Unlock Requirement**: Farmer rank (Rank 2) or higher
-- **Seed Appearance**: Melon seeds in inventory
+- **Seed Appearance**: Melon seeds with BD metadata in inventory
 - **Growth Time**: 20 minutes to fully mature
 - **Mature Appearance**: Double ferns (stage 4)
-- **Inventory Item**: Double ferns when harvested
+- **Inventory Item**: Double ferns with BD metadata when harvested
 - **Base Value**: 2 emeralds + 25 server currency per crop (as configured in economy.yml)
 
 ### Purple BD Crops
 - **Unlock Requirement**: Master Farmer rank (Rank 4) or higher
-- **Seed Appearance**: Pumpkin seeds in inventory
+- **Seed Appearance**: Pumpkin seeds with BD metadata in inventory
 - **Growth Time**: 32 minutes to fully mature
 - **Mature Appearance**: Double ferns with purple particle effects (stage 4)
-- **Inventory Item**: Double ferns when harvested
+- **Inventory Item**: Enchanted ferns with BD metadata when harvested
 - **Base Value**: 5 emeralds + 100 server currency per crop (as configured in economy.yml)
 
 ## Growth Mechanics
@@ -76,6 +76,7 @@ BD crops can only be sold to Collector villagers within market areas:
 - **Auction House**: BD crops cannot be listed in auction house
 - **Player Trading**: Direct player-to-player crop sales not supported
 - **Regular Villagers**: Only BD Collectors will purchase BD crops
+- **Metadata Required**: Only crops with proper BD metadata are accepted by collectors
 
 ### Value Calculations
 Final crop values are calculated using multiple modifiers:

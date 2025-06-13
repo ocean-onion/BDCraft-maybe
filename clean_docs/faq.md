@@ -331,7 +331,7 @@ Common market creation issues:
 Check these common issues:
 1. **Module Status**: Ensure Economy module is enabled in configuration
 2. **Villager Types**: Only BD Collectors buy crops (not regular villagers)
-3. **Item Types**: Only BD crops are accepted (ferns, double ferns with special metadata)
+3. **Item Types**: Only BD crops with special metadata are accepted (BD ferns, BD double ferns, BD enchanted ferns)
 4. **Market Boundaries**: Collectors only function within market areas
 5. **Permissions**: Verify `bdcraft.economy.use` and `bdcraft.villager.use` permissions
 
@@ -360,12 +360,12 @@ BD crops are special crops that form the foundation of the economy:
 **Crop Types:**
 - **Regular BD Crops**: Appear as ferns when mature and in inventory
 - **Green BD Crops**: Appear as double ferns when mature and in inventory  
-- **Purple BD Crops**: Appear as double ferns with purple particle effects when mature (double ferns in inventory)
+- **Purple BD Crops**: Appear as double ferns with purple particle effects when mature (enchanted ferns in inventory)
 
 **Seeds vs Crops:**
-- **Seeds**: Different inventory appearances (wheat seeds, melon seeds, pumpkin seeds)
+- **Seeds**: Different inventory appearances (wheat seeds, melon seeds, pumpkin seeds) with BD metadata
 - **Growing**: All types grow identically as melon stems
-- **Harvested**: Different final forms based on crop type
+- **Harvested**: Different final forms based on crop type, all with BD metadata
 
 ### How do BD tools work?
 BD tools enhance crop harvesting:

@@ -34,9 +34,9 @@ The BD Villager System provides specialized villagers that form the backbone of 
   - Market Growth Reduction: 5% reduction per market level (maximum 25% at level 5)
 - **Growth Stages**: 4 visible stages identical to melon stems
 - **Seed Appearance in Inventory**: 
-  - Regular BD Seeds: Represented as wheat seeds
-  - Green BD Seeds: Represented as melon seeds
-  - Purple BD Seeds: Represented as pumpkin seeds
+  - Regular BD Seeds: Represented as wheat seeds with BD metadata
+  - Green BD Seeds: Represented as melon seeds with BD metadata
+  - Purple BD Seeds: Represented as pumpkin seeds with BD metadata
 - **Crop Appearance When Growing**:
   - All BD crop types grow as melon stems during growth stages (stages 1-3)
   - Seeds appear differently in inventory but all grow identically as melon stems
@@ -52,9 +52,9 @@ The BD Villager System provides specialized villagers that form the backbone of 
   - At stage 4 (fully mature), they transform into their respective fern types
   - BD crops do NOT drop as special items when harvested
   - When harvested, crops are represented in inventory as their corresponding items:
-    - Regular BD Crops: Appear as ferns in inventory
-    - Green BD Crops: Appear as double ferns in inventory
-    - Purple BD Crops: Appear as double ferns in inventory (particle effects only visible when placed)
+    - Regular BD Crops: Appear as ferns with BD metadata in inventory
+    - Green BD Crops: Appear as double ferns with BD metadata in inventory
+    - Purple BD Crops: Appear as enchanted ferns with BD metadata in inventory
 - **Optimal Conditions**: 
   - Require at least light level 9
   - Must be planted on farmland with water within 4 blocks
