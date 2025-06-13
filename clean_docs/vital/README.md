@@ -9,6 +9,8 @@ The Vital Module consists of four integrated systems that provide the foundation
 ### Core Components
 
 - **[Chat System](chat.md)** - Multi-channel communication with messaging and moderation
+- **[Messaging System](messaging.md)** - Private messages, mail system, and item storage functionality
+- **[Navigation System](navigation.md)** - Comprehensive teleportation, homes, warps, and location management
 - **[Home System](home.md)** - Personal teleportation points with rank-based limits
 - **[Teleport System](teleport.md)** - Comprehensive teleportation and location management
 - **[Tab List System](tab.md)** - Customizable player listings with rank display

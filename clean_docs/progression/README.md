@@ -9,6 +9,7 @@ The Progression Module consists of two interconnected systems that provide both 
 ### Core Components
 
 - **[Rank System](ranks.md)** - 5-tier progression from Newcomer to Agricultural Expert
+- **[Achievement System](achievements.md)** - Comprehensive achievement tracking for meaningful progression
 - **[Rebirth System](rebirth.md)** - Prestige system with permanent bonuses and exclusive features
 
 ## Progression Philosophy
