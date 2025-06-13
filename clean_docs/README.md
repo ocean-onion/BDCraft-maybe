@@ -13,6 +13,8 @@ BDCraft provides a complete economic ecosystem centered around player-built mark
 
 ### [Economy System](economy/README.md)
 - **[Currency System](economy/currency.md)** - Dual currency system (emeralds + server currency) with village reputation mechanics
+- **[BD Crops](economy/crops.md)** - Complete crop growing system with three tiers and yield bonuses
+- **[Trading System](economy/trading.md)** - Comprehensive villager trading with bonuses and reputation mechanics
 - **[Player Markets](economy/market.md)** - Player-built trading centers with physical structures, villager spawning, and upgrade systems
 - **[BD Villagers](economy/villager.md)** - Specialized villagers including Dealers, Market Owners, Collectors, and Seasonal Traders
 - **[Auction House](economy/auction.md)** - Server-wide marketplace for BD items with rank-based benefits and fee structures
@@ -27,12 +29,15 @@ Complete token-based market creation system:
 
 ### [Progression System](progression/README.md)
 - **[Rank System](progression/ranks.md)** - 5-tier progression (Newcomer → Agricultural Expert) with achievement requirements
+- **[Achievement System](progression/achievements.md)** - Comprehensive achievement tracking for meaningful progression
 - **[Rebirth System](progression/rebirth.md)** - Prestige system with permanent bonuses and exclusive features (5 rebirth levels)
 
 ## Essential Utilities
 
 ### [Vital Features](vital/README.md)
 - **[Chat System](vital/chat.md)** - Multi-channel chat (Global/Local/Market/Admin), private messaging, and mail system
+- **[Messaging System](vital/messaging.md)** - Private messages, mail system, and item storage functionality
+- **[Navigation System](vital/navigation.md)** - Comprehensive teleportation, homes, warps, and location management
 - **[Home System](vital/home.md)** - Personal teleportation points with rank-based limits (1-3 homes)
 - **[Teleport System](vital/teleport.md)** - Player teleportation, warp system, and location management
 - **[Tab List System](vital/tab.md)** - Customizable player listings with rank-based sorting
