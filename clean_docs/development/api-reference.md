@@ -170,6 +170,25 @@ Interface for tab list management.
 - `updateTabList(Player player)` - Updates the tab list for a player
 - `updateTabListForAll()` - Updates the tab list for all players
 
+## Custom Events
+
+BDCraft fires custom events that modules can listen to for integration:
+
+### Achievement Events
+- `BDCraftAchievementUnlockEvent` - Fired when a player unlocks an achievement
+- `BDCraftAchievementProgressEvent` - Fired when achievement progress is updated  
+- `BDCraftAchievementGUIOpenEvent` - Fired when achievement GUI is opened
+
+### Economy Events
+- `BDCraftEconomyTransactionEvent` - Fired when currency transactions occur
+- `BDCraftMarketCreateEvent` - Fired when markets are created
+- `BDCraftAuctionEvent` - Fired for auction-related activities
+- `BDCraftVillagerTradeEvent` - Fired when villager trades occur
+
+### Progression Events
+- `BDCraftRankChangeEvent` - Fired when player ranks change
+- `BDCraftRebirthEvent` - Fired when players perform rebirth
+
 ## API Usage
 
 BDCraft's API is designed for internal use only. The plugin modules use these APIs to interact with each other while maintaining a clean separation of concerns. Since BDCraft is self-contained, these APIs are not exposed for use by external plugins.
