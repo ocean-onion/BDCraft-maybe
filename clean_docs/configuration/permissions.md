@@ -1,14 +1,25 @@
 # Permissions
 
-BDCraft uses a comprehensive permission system to control access to various features. Below is a complete list of all permissions available in the plugin.
+BDCraft includes a built-in permission system with group-based access control. Essential permissions for normal gameplay:
 
-## Core Permissions
+## Essential Player Permissions
 
 | Permission | Description |
 |------------|-------------|
-| `bdcraft.admin` | Grants access to all administrative commands and features |
-| `bdcraft.reload` | Allows reloading the plugin configuration |
-| `bdcraft.update` | Allows checking for plugin updates |
+| `bdcraft.economy.use` | Basic economy access (required for all players) |
+| `bdcraft.market.use` | Market browsing and information |
+| `bdcraft.auction.use` | Auction house access |
+| `bdcraft.villager.use` | Trade with BD villagers |
+| `bdcraft.rank.use` | View rank information and progress |
+| `bdcraft.home.use` | Home teleportation |
+| `bdcraft.teleport.use` | Basic teleportation |
+| `bdcraft.chat.global` | Chat participation |
+
+## Admin Permissions
+
+| Permission | Description |
+|------------|-------------|
+| `bdcraft.admin` | Full admin access (includes everything) |
 
 ## Economy Module Permissions
 

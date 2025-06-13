@@ -79,19 +79,12 @@ Complete command reference including:
 - **System Administration** - Villager spawning, token distribution, debugging tools
 - **Chat Management** - Moderation, channel control, muting systems
 
-### [Permissions Administration](admin/permissions-guide.md)
-Practical guide for managing BDCraft's permission system:
-- **Quick Setup** - Initial configuration and common tasks
-- **Permission Groups** - Default, donor, and admin group configurations
-- **Troubleshooting** - Common permission issues and solutions
-- **Security Best Practices** - Safe permission management guidelines
-
-### [Troubleshooting](admin/troubleshooting.md)
-Solutions for common issues including:
-- Plugin conflicts and startup problems
-- Economy and market functionality issues
-- Database and permission problems
-- Debug mode and advanced troubleshooting
+### [FAQ & Troubleshooting](faq.md)
+Complete guide covering:
+- **Common Questions** - General plugin information and usage
+- **Troubleshooting** - Solutions for startup, economy, and performance issues
+- **Achievement System** - How to use the achievement GUI and understand progression
+- **Getting Help** - How to report issues and get support
 
 ## Configuration
 
@@ -103,8 +96,7 @@ Multi-file configuration covering:
 - **Vital Customization** - Chat formats, teleport delays, home limits
 
 ### [Permission System](configuration/permissions.md)
-- **[Built-in Permissions](configuration/permission-system.md)** - Complete permission management without external plugins
-- **[Permissions Administration](admin/permissions-guide.md)** - Practical guide for permission management
+- **Built-in Permissions** - Complete permission management without external plugins
 - **Group-Based Access** - Default, donor, and admin permission groups
 - **Permission Inheritance** - Hierarchical permission structure for easy management
 

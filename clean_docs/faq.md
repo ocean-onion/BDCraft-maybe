@@ -335,16 +335,42 @@ Check these common issues:
 4. **Market Boundaries**: Collectors only function within market areas
 5. **Permissions**: Verify `bdcraft.economy.use` and `bdcraft.villager.use` permissions
 
-### How do I report a bug?
-If you believe you've found a bug, provide detailed information including:
-1. Server version and BDCraft version
-2. Detailed description of the issue
-3. Steps to reproduce the problem
-4. Console error messages
-5. Configuration details if relevant
+## Troubleshooting Common Issues
 
-### Can I request a feature?
-Feature requests are welcome, but BDCraft is designed to be comprehensive and self-contained. Requests that require external plugin integration or significantly alter the core design philosophy may not be implemented.
+### Plugin Won't Start
+**Check these first:**
+1. **Java Version**: Ensure server runs Java 17+
+2. **Paper Version**: Plugin requires Paper 1.21+
+3. **File Permissions**: Server can read/write plugin directory
+4. **Console Errors**: Look for specific startup error messages
+
+### Economy Not Working
+**Common fixes:**
+1. **Module Status**: Verify Economy module enabled in config
+2. **Market Setup**: Ensure markets are properly created
+3. **BD Metadata**: Confirm items have proper BD metadata (not regular Minecraft items)
+4. **Permissions**: Check players have `bdcraft.economy.use` permission
+
+### Trading Issues
+**Solutions:**
+1. **Villager Types**: Only BD Collectors buy crops, BD Dealers sell items
+2. **Market Boundaries**: Trading only works within market areas
+3. **Item Types**: Only BD crops with special metadata are accepted (BD ferns, BD double ferns, BD enchanted ferns)
+4. **Reputation**: Low village reputation may affect pricing
+
+### Performance Problems
+**Optimization steps:**
+1. **Database**: Check database performance and connections
+2. **Intervals**: Increase task intervals in configuration
+3. **Markets**: Reduce number of active markets if excessive
+4. **Monitoring**: Check server resources (CPU, RAM, disk)
+
+### How do I report a bug?
+Contact server administrators with:
+- Plugin version and server details
+- Detailed problem description
+- Console error messages
+- Screenshots if helpful
 
 ## BD Crops Information
 
@@ -373,14 +399,23 @@ BD tools enhance crop harvesting:
 - **BD Harvester**: 2 crops per plant (16 diamonds from Expert Farmer+ dealers)
 - **Ultimate BD Harvester**: 3 crops per plant (32 diamonds from Agricultural Expert dealers)
 
-## Getting Help
+### Achievement System Questions
 
-If your issue isn't covered in this FAQ:
-1. Consult the [Troubleshooting Guide](admin/troubleshooting.md)
-2. Check the relevant module documentation
-3. Enable debug mode for detailed error information
-4. Contact support with complete error details and server information
+**How do I view my achievements?**
+Use `/bdachievements` to open the achievement GUI with all categories and progress bars.
+
+**Do achievements reset when I rank up?**
+No! Achievements are permanent game-wide accomplishments that never reset.
+
+**How do I show off my achievements?**
+Take screenshots of your achievement GUI to share with other players. Only your rank displays in chat to keep it clean.
+
+**What's the difference between achievements and rank requirements?**
+- **Achievements**: Permanent accomplishments that give titles and recognition
+- **Rank Requirements**: Statistical thresholds you must meet to purchase ranks with currency
+
+Both track the same actions, but achievements are for personal pride while ranks provide gameplay benefits.
 
 ---
 
-This FAQ covers the most common questions about BDCraft. For detailed technical information, refer to the specific module documentation and configuration guides.
+This FAQ covers the most common questions about BDCraft. For detailed information, refer to the specific module documentation.
