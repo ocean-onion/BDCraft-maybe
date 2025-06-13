@@ -96,12 +96,14 @@ Only donors have access to a special command that lets them access the market GU
 | `/bdrank` | `/rank`, `/bdrk` | Shows your current rank and progress | bdcraft.rank.use |
 | `/bdrank info <rank>` | `/rank info <rank>` | Shows information about a specific rank | bdcraft.rank.use |
 | `/bdrank list` | `/rank list` | Lists all available ranks | bdcraft.rank.use |
-| `/bdrank set <player> <rank>` | `/rank set <player> <rank>` | Sets a player's rank | bdcraft.rank.admin |
-| `/bdrank reset <player>` | `/rank reset <player>` | Resets a player's rank | bdcraft.rank.admin |
-| `/bdrank exp <player> <amount>` | `/rank exp <player> <amount>` | Gives experience to a player | bdcraft.rank.admin |
-| `/bdrankup` | `/rankup` | Attempts to rank up to the next level | bdcraft.rank.use |
 | `/bdrank progress` | `/rank progress` | Shows detailed progress to next rank | bdcraft.rank.use |
 | `/bdrank benefits` | `/rank benefits` | Lists all benefits of your current rank | bdcraft.rank.use |
+| `/bdrankup` | `/rankup` | Attempts to rank up to the next level | bdcraft.rank.use |
+| `/bdachievements` | - | Open achievement GUI with all categories and progress | bdcraft.rank.use |
+| `/bdachievements <category>` | - | View specific achievement category (farming, trading, etc.) | bdcraft.rank.use |
+| `/bdstats` | - | View overall statistics and achievement completion rate | bdcraft.rank.use |
+| `/bdrank set <player> <rank>` | `/rank set <player> <rank>` | Sets a player's rank | bdcraft.rank.admin |
+| `/bdrank reset <player>` | `/rank reset <player>` | Resets a player's rank | bdcraft.rank.admin |
 | `/bdrank reload` | `/rank reload` | Reloads the rank configuration | bdcraft.rank.admin |
 
 ### Rebirth Commands
