@@ -1,22 +1,34 @@
 # Achievement System
 
-BDCraft's progression is built around meaningful achievements that demonstrate mastery of the economic systems rather than simple time-based grinding.
+BDCraft features a comprehensive achievement system with permanent game-wide accomplishments that never reset. Players can view their progress through an interactive GUI and earn titles that showcase their expertise across all areas of the plugin.
+
+## Achievement GUI
+
+Access the achievement system through `/bdachievements` to open an interactive GUI showing:
+- **Progress Bars**: Visual progress for all achievements
+- **Categories**: Organized tabs for different achievement types
+- **Completion Status**: Green checkmarks for completed achievements
+- **Rewards**: Click achievements to see titles and benefits earned
+- **Statistics**: Overall completion percentage and totals
 
 ## Achievement Categories
 
 ### Farming Achievements
-Core agricultural accomplishments that form the foundation of progression:
+Permanent accomplishments tracking your agricultural mastery:
 
 #### Crop Harvesting
-- **Novice Harvester**: Harvest 100 BD crops (Farmer requirement)
-- **Experienced Harvester**: Harvest 500 BD crops (Expert Farmer requirement)
-- **Master Harvester**: Harvest 2,000 BD crops (Master Farmer requirement)
-- **Elite Harvester**: Harvest 10,000 BD crops (Agricultural Expert requirement)
+- **Novice Harvester**: Harvest 100 BD crops total
+- **Experienced Harvester**: Harvest 500 BD crops total
+- **Master Harvester**: Harvest 2,000 BD crops total
+- **Elite Harvester**: Harvest 10,000 BD crops total
+- **Legendary Farmer**: Harvest 25,000 BD crops total
 
 #### Seed Planting
-- **Apprentice Planter**: Plant 300 BD seeds (Expert Farmer requirement)
-- **Skilled Planter**: Plant 800 BD seeds (Master Farmer requirement)
-- **Expert Planter**: Plant 3,500 BD seeds (Agricultural Expert requirement)
+- **Green Thumb**: Plant 100 BD seeds total
+- **Apprentice Planter**: Plant 300 BD seeds total
+- **Skilled Planter**: Plant 800 BD seeds total
+- **Expert Planter**: Plant 3,500 BD seeds total
+- **Master Gardener**: Plant 10,000 BD seeds total
 
 #### Crop Diversity
 - **Multi-Crop Farmer**: Successfully grow all three crop types
@@ -27,14 +39,18 @@ Core agricultural accomplishments that form the foundation of progression:
 Economic interaction accomplishments demonstrating market participation:
 
 #### Dealer Interactions
-- **First Customer**: Complete 10 trades with BD Dealers (Farmer requirement)
-- **Regular Customer**: Complete 50 trades with BD Dealers (Master Farmer requirement)
-- **Valued Customer**: Complete 80 trades with BD Dealers (Agricultural Expert requirement)
+- **First Customer**: Complete 10 trades with BD Dealers total
+- **Regular Shopper**: Complete 25 trades with BD Dealers total
+- **Regular Customer**: Complete 50 trades with BD Dealers total
+- **Valued Customer**: Complete 80 trades with BD Dealers total
+- **VIP Customer**: Complete 200 trades with BD Dealers total
 
 #### Collector Interactions
-- **Market Participant**: Complete 25 trades with Collectors (Expert Farmer requirement)
-- **Active Trader**: Complete 80 trades with Collectors (Master Farmer requirement)
-- **Master Trader**: Complete 150 trades with Collectors (Agricultural Expert requirement)
+- **Market Participant**: Complete 25 trades with Collectors total
+- **Active Trader**: Complete 80 trades with Collectors total
+- **Master Trader**: Complete 150 trades with Collectors total
+- **Elite Trader**: Complete 300 trades with Collectors total
+- **Trading Mogul**: Complete 500 trades with Collectors total
 
 #### Seasonal Trading
 - **Seasonal Shopper**: Complete trades with all four seasonal trader types
@@ -45,26 +61,27 @@ Economic interaction accomplishments demonstrating market participation:
 Infrastructure and community accomplishments:
 
 #### Market Ownership
-- **Market Founder**: Create your first market (Master Farmer requirement)
-- **Market Developer**: Upgrade market to level 5 (Agricultural Expert requirement)
-- **Multi-Market Owner**: Own multiple markets (donor permission required)
+- **Market Founder**: Create your first market
+- **Market Developer**: Upgrade a market to level 3
+- **Market Master**: Upgrade a market to level 5
+- **Multi-Market Owner**: Own 2 markets simultaneously
+- **Market Empire**: Own 5 markets simultaneously
 
 #### Community Building
-- **Mentor**: Help 10 other players with BD farming (Agricultural Expert requirement)
-  - Give at least 20 seeds to each of 10 different players
-  - Recipients must be different players
-  - Seeds must be BD seeds, not regular Minecraft seeds
-- **Community Leader**: Have associates in your market
-- **Trade Hub**: Facilitate trades between other players
+- **Helper**: Give BD seeds to 5 different players (10+ seeds each)
+- **Mentor**: Give BD seeds to 10 different players (20+ seeds each)
+- **Community Leader**: Have 5+ associates across all your markets
+- **Trade Hub**: Own a market with 50+ total trades by associates
+- **Server Pillar**: Help 25 different players with BD farming
 
 ### Tool Mastery Achievements
 Equipment and efficiency accomplishments:
 
 #### Tool Acquisition
-- **Tool Collector**: Acquire all BD tools (Agricultural Expert requirement)
-  - BD Stick (crafted or admin-given)
-  - BD Harvester (purchased from Expert Farmer+ dealers)
-  - Ultimate BD Harvester (purchased from Agricultural Expert dealers)
+- **First Tool**: Acquire your first BD tool (BD Stick)
+- **Tool Collector**: Own BD Stick and BD Harvester
+- **Ultimate Collector**: Own all BD tools (including Ultimate BD Harvester)
+- **Tool Master**: Use each BD tool for 100+ harvests
 
 #### Tool Efficiency
 - **Efficient Harvester**: Use BD Harvester for 1,000 crop harvests
@@ -75,14 +92,17 @@ Equipment and efficiency accomplishments:
 Currency and financial accomplishments:
 
 #### Currency Accumulation
-- **Earner**: Accumulate required server currency for rank purchases
-- **Saver**: Maintain currency reserves for emergencies
-- **Investor**: Spend currency on productive improvements
+- **First Earnings**: Earn 100 server currency total
+- **Saver**: Accumulate 1,000 server currency at once
+- **Rich**: Accumulate 5,000 server currency at once
+- **Wealthy**: Accumulate 10,000 server currency at once
+- **Millionaire**: Earn 100,000 server currency total (lifetime)
 
 #### Trading Volume
 - **Active Participant**: Complete 100 total trades across all villager types
 - **Heavy Trader**: Complete 500 total trades
-- **Market Master**: Complete 1,000 total trades
+- **Master Trader**: Complete 1,000 total trades
+- **Trading Legend**: Complete 2,500 total trades
 
 ## Achievement Tracking
 
@@ -116,12 +136,20 @@ Achievements serve as gates for rank advancement:
 - **Verification Process**: Automatic checking when attempting rank purchase
 - **Progress Guidance**: Clear indication of remaining achievement requirements
 
-### Community Recognition
-Achievements provide social recognition and status:
-- **Chat Prefixes**: Achievement-based titles displayed in chat
-- **Leaderboards**: Server-wide achievement completion tracking
-- **Hall of Fame**: Recognition for first players to complete major achievements
-- **Anniversary Events**: Special recognition during server milestones
+## Achievement Display System
+
+### Chat Display
+- **Rank in Chat**: Only your current rank is displayed in chat (e.g., [Farmer] PlayerName)
+- **Achievement Privacy**: Achievements are not shown in chat to keep it clean
+- **GUI Screenshots**: Players can share screenshots of their achievement GUI to showcase accomplishments
+- **Personal Progress**: Achievements are for personal satisfaction and long-term goals
+
+### Achievement Sharing
+Players can show off their achievements by:
+- Taking screenshots of the `/bdachievements` GUI
+- Sharing specific achievement category screenshots
+- Posting completion percentages from `/bdstats`
+- Discussing rare achievements they've unlocked
 
 ### Economic Integration
 Achievements directly connect to economic benefits:
@@ -156,8 +184,10 @@ Server-wide accomplishments that require collective effort:
 ## Achievement Commands
 
 ### Player Commands
-- `/bdrank` - View current rank and overall achievement progress
-- `/bdrank progress` - Detailed breakdown of achievement requirements
+- `/bdachievements` - Open achievement GUI with all categories and progress
+- `/bdachievements <category>` - View specific achievement category (farming, trading, etc.)
+- `/bdstats` - View your overall statistics and achievement completion rate
+- `/bdrank` - View current rank and requirements for next rank
 - `/bdrank achievements` - List all completed and available achievements
 - `/bdrank info <rank>` - View specific rank requirements and achievements
 
