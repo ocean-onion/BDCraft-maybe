@@ -61,7 +61,7 @@ To begin using BDCraft, check out these documentation sections:
 1. **[Installation Guide](installation.md)** - Setup BDCraft on Paper 1.21+ servers
 2. **[Economy Overview](../economy/README.md)** - BD crops, markets, and trading systems
 3. **[Achievement System](../progression/achievements.md)** - Permanent accomplishments with GUI interface
-4. **[Commands Reference](../admin/commands.md)** - Complete command list including `/bdachievements`
+4. **[Commands Reference](../admin/complete-command-reference.md)** - Detailed guide for every command with examples
 5. **[FAQ & Troubleshooting](../faq.md)** - Common questions and solutions
 
 ---

@@ -73,11 +73,14 @@ Comprehensive donor perks across all systems:
 ## Administration
 
 ### [Admin Commands](admin/commands.md)
-Complete command reference including:
-- **Economy Management** - Currency administration, market/auction oversight
-- **Player Management** - Rank/rebirth control, data management, donor verification
-- **System Administration** - Villager spawning, token distribution, debugging tools
-- **Chat Management** - Moderation, channel control, muting systems
+Quick command reference organized by module and function
+
+### [Complete Command Reference](admin/complete-command-reference.md)
+Comprehensive guide with detailed explanations for every command:
+- **Usage Examples** - Real-world scenarios and proper syntax
+- **Permission Requirements** - Exact permissions needed for each command
+- **Detailed Descriptions** - What each command does and when to use it
+- **Administrative Tools** - Full admin command suite with explanations
 
 ### [FAQ & Troubleshooting](faq.md)
 Complete guide covering:
