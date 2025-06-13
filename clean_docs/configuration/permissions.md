@@ -337,7 +337,7 @@ BDCraft includes a comprehensive built-in permission system that does not requir
 4. **UUID-Based** - Tracks players by their unique IDs for persistence
 5. **Negation Support** - Supports removing specific permissions with `-permission.node` syntax
 
-For detailed information on how to configure and use the permission system, see [Permission System](permission-system.md).
+For detailed permission lists and configuration options, refer to the sections above or contact your server administrator.
 
 ## Recommended Permission Groups
 

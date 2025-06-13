@@ -123,7 +123,7 @@ Developer interfaces for:
 
 ## Support
 
-If you encounter any issues not covered in this documentation, please contact our support team on Discord or through our website. For troubleshooting steps, consult the [Troubleshooting Guide](admin/troubleshooting.md) first.
+If you encounter any issues not covered in this documentation, please contact your server administrators. For troubleshooting steps, consult the [FAQ & Troubleshooting](faq.md) guide first.
 
 ---
 

@@ -47,7 +47,7 @@ The `block-competing-plugins` option in the configuration is recommended to rema
 Despite being self-contained, BDCraft features a modular design that allows server administrators to enable or disable specific features:
 
 - Economy Module: Markets, auctions, and villager trading
-- Progression Module: Ranks and rebirth systems
+- Progression Module: Ranks, achievements, and rebirth systems
 - Vital Module: Essential utilities for teleportation, chat, and more
 
 Each module can be individually configured or disabled based on your server's needs.

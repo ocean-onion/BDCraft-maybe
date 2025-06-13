@@ -16,8 +16,9 @@ The Progression Module consists of two interconnected systems that provide both 
 
 BDCraft's progression is designed around meaningful achievement through economic participation rather than grinding or time-gating:
 
-### Achievement-Based Advancement
-- **Rank Requirements** - Specific farming, trading, and community achievements
+### Statistical-Based Advancement
+- **Rank Requirements** - Specific farming, trading, and community statistical thresholds
+- **Achievement System** - Permanent accomplishments separate from rank progression
 - **Economic Integration** - Progression tied directly to BD economy participation
 - **Server Currency Costs** - Ranks purchased using currency earned through trading
 - **Community Elements** - Higher ranks require helping other players

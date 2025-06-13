@@ -1,6 +1,6 @@
 # Rank System
 
-The BDCraft rank system provides progression through farming achievements, offering players increased benefits and status as they advance.
+The BDCraft rank system provides progression through statistical requirements, offering players increased benefits and status as they advance.
 
 ## Rank Overview
 

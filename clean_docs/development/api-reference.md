@@ -96,6 +96,28 @@ The main progression API interface.
 - `giveExperience(UUID uuid, int amount)` - Gives experience to a player
 - `getRebirthLevel(UUID uuid)` - Gets a player's rebirth level
 - `performRebirth(UUID uuid)` - Performs a rebirth for a player
+- `getAchievementAPI()` - Gets the achievement API
+
+#### Achievement Management
+```java
+// Get player achievements
+List<Achievement> getPlayerAchievements(UUID playerId);
+
+// Check achievement completion
+boolean hasAchievement(UUID playerId, String achievementId);
+
+// Grant achievement
+void grantAchievement(UUID playerId, String achievementId);
+
+// Get achievement progress
+double getAchievementProgress(UUID playerId, String achievementId);
+
+// Open achievement GUI
+void openAchievementGUI(Player player, String category);
+
+// Get achievement statistics
+AchievementStats getPlayerStats(UUID playerId);
+```
 
 ## Vital API
 

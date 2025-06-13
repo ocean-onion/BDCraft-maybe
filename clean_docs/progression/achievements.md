@@ -111,7 +111,7 @@ Detailed tracking of all achievement-related activities:
 - **Real-Time Updates**: Achievement progress updated immediately
 - **Milestone Notifications**: Alerts when significant progress is made
 - **Completion Rewards**: Recognition and benefits upon achievement completion
-- **Progress Display**: `/bdrank progress` shows current achievement status
+- **Progress Display**: `/bdachievements` shows current achievement status in GUI
 
 ### Achievement Validation
 Robust verification system prevents achievement exploitation:
@@ -131,10 +131,10 @@ Achievement progress maintained across all sessions:
 
 ### Rank Requirements
 Achievements serve as gates for rank advancement:
-- **Prerequisite System**: Specific achievements must be completed before rank purchase
-- **Cumulative Requirements**: Higher ranks require completion of all lower achievements
-- **Verification Process**: Automatic checking when attempting rank purchase
-- **Progress Guidance**: Clear indication of remaining achievement requirements
+- **Separate from Ranks**: Achievements track same statistics as rank requirements but serve different purposes
+- **Progress Tracking**: Real-time updates and milestone notifications
+- **GUI Interface**: Interactive display showing completion status and progress bars
+- **Social Recognition**: Screenshot sharing for achievement showcasing
 
 ## Achievement Display System
 
@@ -188,8 +188,7 @@ Server-wide accomplishments that require collective effort:
 - `/bdachievements <category>` - View specific achievement category (farming, trading, etc.)
 - `/bdstats` - View your overall statistics and achievement completion rate
 - `/bdrank` - View current rank and requirements for next rank
-- `/bdrank achievements` - List all completed and available achievements
-- `/bdrank info <rank>` - View specific rank requirements and achievements
+- `/bdrank progress` - View detailed rank progression requirements
 
 ### Administrative Commands
 - `/bdadmin achievement list <player>` - View player's achievement status
@@ -215,7 +214,7 @@ Achievement completion rewards can be customized:
 
 ### Integration Settings
 Configure how achievements integrate with other systems:
-- **Rank Gates**: Enable/disable achievement requirements for ranks
+- **Achievement Rewards**: Configure titles and recognition for achievement completion
 - **Community Features**: Configure group achievement mechanics
 - **Notification Settings**: Control achievement announcement frequency
 - **Leaderboard Options**: Customize public achievement displays

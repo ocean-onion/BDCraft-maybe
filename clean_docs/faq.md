@@ -314,7 +314,7 @@ Yes, BDCraft works with BungeeCord and Velocity setups, but data is server-speci
 ## Troubleshooting
 
 ### What do I do if I encounter an error?
-1. Check the [Troubleshooting Guide](admin/troubleshooting.md) for common issues
+1. Check the troubleshooting section in this FAQ for common issues
 2. Enable debug mode in configuration for detailed error messages
 3. Check server console for specific error information
 4. Ensure all requirements are met (Paper 1.21.x, Java 17+)
