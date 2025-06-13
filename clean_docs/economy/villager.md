@@ -43,7 +43,7 @@ The BD Villager System provides specialized villagers that form the backbone of 
 - **Crop Appearance When Fully Grown**:
   - Regular BD Crops: Transform into ferns when fully mature (stage 4)
   - Green BD Crops: Transform into double ferns when fully mature (stage 4)
-  - Purple BD Crops: Transform into enchanted double ferns when fully mature (stage 4)
+  - Purple BD Crops: Transform into double ferns with purple particle effects when fully mature (stage 4)
 - **Physical Properties**:
   - No growth bonuses from different biomes or seasons
   - Growth time reduction only applies when planted within market boundaries
@@ -54,7 +54,7 @@ The BD Villager System provides specialized villagers that form the backbone of 
   - When harvested, crops are represented in inventory as their corresponding items:
     - Regular BD Crops: Appear as ferns in inventory
     - Green BD Crops: Appear as double ferns in inventory
-    - Purple BD Crops: Appear as enchanted double ferns in inventory
+    - Purple BD Crops: Appear as double ferns in inventory (particle effects only visible when placed)
 - **Optimal Conditions**: 
   - Require at least light level 9
   - Must be planted on farmland with water within 4 blocks

@@ -54,7 +54,7 @@ Each listing shows:
   - Special/Seasonal items from Seasonal Traders
 
 - **Prohibited Items**:
-  - BD Crops (must be sold to Collectors)
+  - BD Crops (ferns and double ferns - must be sold to Collectors)
   - Non-BD items (regular Minecraft items)
   - Items without proper BD metadata
 

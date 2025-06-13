@@ -26,8 +26,8 @@ BDCraft features three tiers of crops, each with different growth times, values,
 - **Unlock Requirement**: Master Farmer rank (Rank 4) or higher
 - **Seed Appearance**: Pumpkin seeds in inventory
 - **Growth Time**: 32 minutes to fully mature
-- **Mature Appearance**: Enchanted double ferns (stage 4)
-- **Inventory Item**: Enchanted double ferns when harvested
+- **Mature Appearance**: Double ferns with purple particle effects (stage 4)
+- **Inventory Item**: Double ferns when harvested
 - **Base Value**: 5 emeralds + 100 server currency per crop (as configured in economy.yml)
 
 ## Growth Mechanics
@@ -35,7 +35,7 @@ BDCraft features three tiers of crops, each with different growth times, values,
 ### Visual Growth Stages
 All BD crop types follow identical visual growth patterns:
 - **Stages 1-3**: Grow as melon stems (identical appearance regardless of crop type)
-- **Stage 4**: Transform into their respective final forms (ferns, double ferns, enchanted double ferns)
+- **Stage 4**: Transform into their respective final forms (ferns, double ferns, double ferns with purple particles)
 
 ### Growth Requirements
 - **Light Level**: Minimum level 9 required
