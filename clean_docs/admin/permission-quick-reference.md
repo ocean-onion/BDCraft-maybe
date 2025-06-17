@@ -109,34 +109,32 @@ admin_permissions:
 
 ## Permission Categories
 
+**Note:** Most economy features are controlled by ranks, not permissions. This list shows additional permissions beyond rank benefits.
+
 ### Core System
 - `bdcraft.admin` - Full admin access
 - `bdcraft.permissions.admin` - Permission management access
 - `bdcraft.economy.admin` - Economy administration
 - `bdcraft.market.admin` - Market administration
 
-### Economy Features
-- `bdcraft.economy.use` - Basic economy access
-- `bdcraft.economy.pay` - Pay other players
-- `bdcraft.market.use` - Market browsing
-- `bdcraft.market.create` - Market creation
-- `bdcraft.auction.use` - Auction house access
-- `bdcraft.auction.sell` - Sell on auction house
+### Essential Player Access
+- `bdcraft.economy.use` - Required for BD system access
+- `bdcraft.chat.global` - Required for chat participation
+- `bdcraft.spawn.use` - Required for spawn teleportation
 
-### Social Features
-- `bdcraft.chat.global` - Global chat
-- `bdcraft.chat.local` - Local chat
+### Donor Features
+- `bdcraft.market.donor` - Remote market access
+- `bdcraft.auction.featured` - Featured auction listings
 - `bdcraft.chat.color` - Colored chat
-- `bdcraft.chat.msg` - Private messaging
-- `bdcraft.home.use` - Home teleportation
-- `bdcraft.teleport.request` - Teleport requests
+- `bdcraft.home.set.multiple` - Multiple homes
+- `bdcraft.teleport.bypass-cooldown` - Skip teleport cooldowns
 
-### Utilities
+### Utilities (Admin/Staff)
 - `bdcraft.vital.fly` - Flight mode
 - `bdcraft.vital.heal` - Self healing
 - `bdcraft.vital.god` - God mode
-- `bdcraft.workbench` - Portable crafting
-- `bdcraft.enderchest` - Portable ender chest
+- `bdcraft.vital.workbench` - Portable crafting
+- `bdcraft.vital.enderchest` - Portable ender chest
 
 ## Troubleshooting
 

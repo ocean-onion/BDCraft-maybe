@@ -100,9 +100,9 @@ This is the complete command reference for BDCraft plugin with all verified comm
 
 | Command | Aliases | Permission | Description |
 |---------|---------|------------|-------------|
-| `/bdmarket check` | `/market check` | `bdcraft.market.use` | Visualize market boundaries with temporary wool blocks that disappear after viewing. |
-| `/bdmarket info` | `/market info` | `bdcraft.market.use` | Display detailed information about the market you're currently standing in. |
-| `/bdmarket list` | `/market list` | `bdcraft.market.use` | List all markets you own or have associate status in. Maximum 5 markets per player. |
+| `/bdmarket check` | `/market check` | None (rank-based) | Visualize market boundaries with temporary wool blocks that disappear after viewing. |
+| `/bdmarket info` | `/market info` | None (rank-based) | Display detailed information about the market you're currently standing in. |
+| `/bdmarket list` | `/market list` | None (rank-based) | List all markets you own or have associate status in. Maximum 5 markets per player. |
 | `/bdmarket` | `/market` | `bdcraft.market.donor` | Opens the market management GUI remotely. Donor-only feature for convenience. |
 
 **Important Note:** Market creation, associate management, and upgrades can ONLY be done through the Market Owner villager GUI by right-clicking the Market Owner NPC (CARTOGRAPHER with gold nametag).
@@ -111,12 +111,12 @@ This is the complete command reference for BDCraft plugin with all verified comm
 
 | Command | Aliases | Permission | Description |
 |---------|---------|------------|-------------|
-| `/bdauction` | `/auction`, `/ah`, `/bdah` | `bdcraft.auction.use` | Opens the auction house GUI to browse and purchase items. |
-| `/bdauction listings` | `/auction listings`, `/ah listings` | `bdcraft.auction.list` | Shows your current auction listings with time remaining and prices. |
-| `/bdauction sell <price> [amount]` | `/auction sell <price> [amount]`, `/ah sell <price> [amount]` | `bdcraft.auction.sell` | Lists an item for sale. Must hold item in hand. Only BD items accepted. |
-| `/bdauction cancel <listing_id>` | `/auction cancel <listing_id>`, `/ah cancel <listing_id>` | `bdcraft.auction.cancel` | Cancels one of your listings. Item returned immediately, fees not refunded. |
-| `/bdauction search <query>` | `/auction search <query>`, `/ah search <query>` | `bdcraft.auction.use` | Searches for items in the auction house by name or description. |
-| `/bdauction history` | `/auction history`, `/ah history` | `bdcraft.auction.use` | Shows your auction history including sales and purchases. |
+| `/bdauction` | `/auction`, `/ah`, `/bdah` | None (rank-based) | Opens the auction house GUI to browse and purchase items. |
+| `/bdauction listings` | `/auction listings`, `/ah listings` | None (rank-based) | Shows your current auction listings with time remaining and prices. |
+| `/bdauction sell <price> [amount]` | `/auction sell <price> [amount]`, `/ah sell <price> [amount]` | None (rank-based) | Lists an item for sale. Must hold item in hand. Only BD items accepted. |
+| `/bdauction cancel <listing_id>` | `/auction cancel <listing_id>`, `/ah cancel <listing_id>` | None (rank-based) | Cancels one of your listings. Item returned immediately, fees not refunded. |
+| `/bdauction search <query>` | `/auction search <query>`, `/ah search <query>` | None (rank-based) | Searches for items in the auction house by name or description. |
+| `/bdauction history` | `/auction history`, `/ah history` | None (rank-based) | Shows your auction history including sales and purchases. |
 | `/bdauction featured` | `/auction featured`, `/ah featured` | `bdcraft.auction.featured` | Creates a featured auction with priority display. Costs extra fees. |
 | `/bdauction reload` | `/auction reload`, `/ah reload` | `bdcraft.auction.admin` | Reloads the auction configuration for administrators. |
 | `/bdauction clear <player>` | `/auction clear <player>`, `/ah clear <player>` | `bdcraft.auction.admin` | Clears all listings from a specific player. |
@@ -132,12 +132,12 @@ This is the complete command reference for BDCraft plugin with all verified comm
 
 | Command | Aliases | Permission | Description |
 |---------|---------|------------|-------------|
-| `/bdvillager list` | `/villager list`, `/bdv list`, `/v list` | `bdcraft.villager.use` | Lists all BDCraft villagers in the current world with their types and locations. |
-| `/bdvillager info <id>` | `/villager info <id>` | `bdcraft.villager.use` | Shows detailed information about a specific villager including available trades. |
+| `/bdvillager list` | `/villager list`, `/bdv list`, `/v list` | None (all players) | Lists all BDCraft villagers in the current world with their types and locations. |
+| `/bdvillager info <id>` | `/villager info <id>` | None (all players) | Shows detailed information about a specific villager including available trades. |
 | `/bdvillager create <type>` | `/villager create <type>` | `bdcraft.villager.admin` | Creates a villager at your location. Must specify type (dealer, collector, etc.). |
 | `/bdvillager remove <id>` | `/villager remove <id>` | `bdcraft.villager.admin` | Removes a BDCraft villager permanently from the world. |
 | `/bdvillager reload` | `/villager reload` | `bdcraft.villager.admin` | Reloads the villager configuration and updates all trades. |
-| `/bdvillager trades` | `/villager trades` | `bdcraft.villager.use` | Lists all available villager trades and their requirements. |
+| `/bdvillager trades` | `/villager trades` | None (all players) | Lists all available villager trades and their requirements. |
 | `/bdvillager restock <id>` | `/villager restock <id>` | `bdcraft.villager.admin` | Restocks a villager's trades if they've run out of items. |
 
 ### Admin Villager Commands
@@ -155,12 +155,12 @@ This is the complete command reference for BDCraft plugin with all verified comm
 
 | Command | Aliases | Permission | Description |
 |---------|---------|------------|-------------|
-| `/bdrank` | `/rank`, `/bdr` | `bdcraft.rank.use` | Shows your current rank and progress toward the next rank. |
-| `/bdrank info <rank>` | `/rank info <rank>` | `bdcraft.rank.use` | Shows detailed information about a specific rank including benefits and requirements. |
-| `/bdrank list` | `/rank list` | `bdcraft.rank.use` | Lists all available ranks from Newcomer to Agricultural Expert. |
-| `/bdrank progress` | `/rank progress` | `bdcraft.rank.use` | Shows detailed progress to next rank with exact numbers and requirements. |
-| `/bdrank benefits` | `/rank benefits` | `bdcraft.rank.use` | Lists all benefits of your current rank including bonuses and permissions. |
-| `/bdrankup` | `/rankup` | `bdcraft.rank.use` | Attempts to rank up to the next level if all requirements are met. |
+| `/bdrank` | `/rank`, `/bdr` | None (all players) | Shows your current rank and progress toward the next rank. |
+| `/bdrank info <rank>` | `/rank info <rank>` | None (all players) | Shows detailed information about a specific rank including benefits and requirements. |
+| `/bdrank list` | `/rank list` | None (all players) | Lists all available ranks from Newcomer to Agricultural Expert. |
+| `/bdrank progress` | `/rank progress` | None (all players) | Shows detailed progress to next rank with exact numbers and requirements. |
+| `/bdrank benefits` | `/rank benefits` | None (all players) | Lists all benefits of your current rank including bonuses and permissions. |
+| `/bdrankup` | `/rankup` | None (all players) | Attempts to rank up to the next level if all requirements are met. |
 | `/bdrank set <player> <rank>` | `/rank set <player> <rank>` | `bdcraft.rank.admin` | Sets a player's rank directly, bypassing requirements. |
 | `/bdrank reset <player>` | `/rank reset <player>` | `bdcraft.rank.admin` | Resets a player's rank to Newcomer. |
 | `/bdrank reload` | `/rank reload` | `bdcraft.rank.admin` | Reloads the rank configuration. |
@@ -177,9 +177,9 @@ This is the complete command reference for BDCraft plugin with all verified comm
 
 | Command | Aliases | Permission | Description |
 |---------|---------|------------|-------------|
-| `/bdachievements` | - | `bdcraft.rank.use` | Opens achievement GUI with all categories and progress tracking. |
-| `/bdachievements <category>` | - | `bdcraft.rank.use` | Opens specific achievement category (farming, trading, market, tools, economy, community). |
-| `/bdstats` | - | `bdcraft.rank.use` | Shows overall statistics and achievement completion rate with lifetime stats. |
+| `/bdachievements` | - | None (all players) | Opens achievement GUI with all categories and progress tracking. |
+| `/bdachievements <category>` | - | None (all players) | Opens specific achievement category (farming, trading, market, tools, economy, community). |
+| `/bdstats` | - | None (all players) | Shows overall statistics and achievement completion rate with lifetime stats. |
 
 ### Admin Achievement Commands
 
@@ -194,12 +194,12 @@ This is the complete command reference for BDCraft plugin with all verified comm
 
 | Command | Aliases | Permission | Description |
 |---------|---------|------------|-------------|
-| `/bdrebirth` | `/rebirth`, `/bdrb` | `bdcraft.rebirth.use` | Check your rebirth status and available options. |
-| `/bdrebirth info` | `/rebirth info` | `bdcraft.rebirth.use` | View information about the rebirth system. |
-| `/bdrebirth requirements` | `/rebirth requirements` | `bdcraft.rebirth.use` | Check what you need for your next rebirth. |
-| `/bdrebirth confirm` | `/rebirth confirm` | `bdcraft.rebirth.use` | Initiate the rebirth process when eligible. |
-| `/bdrebirth top` | `/rebirth top` | `bdcraft.rebirth.use` | Shows the rebirth leaderboard with top players by rebirth level. |
-| `/bdrebirth benefits` | `/rebirth benefits` | `bdcraft.rebirth.use` | Lists all rebirth benefits and how they stack with multiple rebirths. |
+| `/bdrebirth` | `/rebirth`, `/bdrb` | None (Agricultural Expert+) | Check your rebirth status and available options. |
+| `/bdrebirth info` | `/rebirth info` | None (all players) | View information about the rebirth system. |
+| `/bdrebirth requirements` | `/rebirth requirements` | None (all players) | Check what you need for your next rebirth. |
+| `/bdrebirth confirm` | `/rebirth confirm` | None (Agricultural Expert+) | Initiate the rebirth process when eligible. |
+| `/bdrebirth top` | `/rebirth top` | None (all players) | Shows the rebirth leaderboard with top players by rebirth level. |
+| `/bdrebirth benefits` | `/rebirth benefits` | None (all players) | Lists all rebirth benefits and how they stack with multiple rebirths. |
 | `/bdrebirth reset <player>` | `/rebirth reset <player>` | `bdcraft.rebirth.admin` | Resets a player's rebirth level to 0. |
 | `/bdrebirth set <player> <level>` | `/rebirth set <player> <level>` | `bdcraft.rebirth.admin` | Sets a player's rebirth level directly. |
 | `/bdrebirth reload` | `/rebirth reload` | `bdcraft.rebirth.admin` | Reloads the rebirth configuration. |
