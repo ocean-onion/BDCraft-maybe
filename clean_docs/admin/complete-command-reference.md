@@ -22,6 +22,63 @@ This is the complete command reference for BDCraft plugin with all verified comm
 | `/bdadmin register <player>` | `/admin register <player>` | `bdcraft.admin` | Registers a player for the plugin. |
 | `/bdadmin unregister <player>` | `/admin unregister <player>` | `bdcraft.admin` | Unregisters a player from the plugin. |
 
+## Permission Management Commands
+
+### GUI Permission Management
+
+| Command | Aliases | Permission | Description |
+|---------|---------|------------|-------------|
+| `/bdpermissions` | `/bdperms`, `/perms` | `bdcraft.permissions.admin` | Opens the main permission management GUI with player and group lists. |
+| `/bdpermissions player <player>` | `/bdperms player <player>` | `bdcraft.permissions.admin` | Opens permission GUI for a specific player showing all their permissions and groups. |
+| `/bdpermissions group <group>` | `/bdperms group <group>` | `bdcraft.permissions.admin` | Opens permission GUI for a specific group showing members and permissions. |
+
+### Player Permission Commands
+
+| Command | Aliases | Permission | Description |
+|---------|---------|------------|-------------|
+| `/bdperm set <player> <permission> <true/false>` | `/perm set <player> <permission> <true/false>` | `bdcraft.permissions.admin` | Sets a specific permission for a player. Overrides group permissions. |
+| `/bdperm unset <player> <permission>` | `/perm unset <player> <permission>` | `bdcraft.permissions.admin` | Removes a permission override for a player, reverting to group default. |
+| `/bdperm check <player> <permission>` | `/perm check <player> <permission>` | `bdcraft.permissions.admin` | Checks if a player has a specific permission and shows the source. |
+| `/bdperm list <player>` | `/perm list <player>` | `bdcraft.permissions.admin` | Lists all permissions for a player including inherited and overridden permissions. |
+| `/bdperm copy <source_player> <target_player>` | `/perm copy <source_player> <target_player>` | `bdcraft.permissions.admin` | Copies all permissions from one player to another. |
+| `/bdperm reset <player>` | `/perm reset <player>` | `bdcraft.permissions.admin` | Resets a player's permissions to their group defaults, removing all overrides. |
+
+### Group Management Commands
+
+| Command | Aliases | Permission | Description |
+|---------|---------|------------|-------------|
+| `/bdgroup create <group> [parent]` | `/group create <group> [parent]` | `bdcraft.permissions.admin` | Creates a new permission group with optional parent inheritance. |
+| `/bdgroup delete <group>` | `/group delete <group>` | `bdcraft.permissions.admin` | Deletes a permission group and removes all members from it. |
+| `/bdgroup list` | `/group list` | `bdcraft.permissions.admin` | Lists all permission groups with member counts and basic information. |
+| `/bdgroup info <group>` | `/group info <group>` | `bdcraft.permissions.admin` | Shows detailed group information including permissions and members. |
+| `/bdgroup set <group> <permission> <true/false>` | `/group set <group> <permission> <true/false>` | `bdcraft.permissions.admin` | Sets a permission for a group, affecting all group members. |
+| `/bdgroup unset <group> <permission>` | `/group unset <group> <permission>` | `bdcraft.permissions.admin` | Removes a permission from a group. |
+| `/bdgroup add <player> <group>` | `/group add <player> <group>` | `bdcraft.permissions.admin` | Adds a player to a group, granting all group permissions. |
+| `/bdgroup remove <player> <group>` | `/group remove <player> <group>` | `bdcraft.permissions.admin` | Removes a player from a group. |
+| `/bdgroup setdefault <group>` | `/group setdefault <group>` | `bdcraft.permissions.admin` | Sets the default group for new players joining the server. |
+
+### Advanced Permission Commands
+
+| Command | Aliases | Permission | Description |
+|---------|---------|------------|-------------|
+| `/bdperm import <plugin>` | `/perm import <plugin>` | `bdcraft.permissions.admin` | Imports permissions from another permission plugin (LuckPerms, GroupManager, etc.). |
+| `/bdperm export <format>` | `/perm export <format>` | `bdcraft.permissions.admin` | Exports current permissions to file in specified format (YAML, JSON). |
+| `/bdperm reload` | `/perm reload` | `bdcraft.permissions.admin` | Reloads permissions from configuration files without server restart. |
+| `/bdperm save` | `/perm save` | `bdcraft.permissions.admin` | Saves current permissions to configuration files. |
+| `/bdperm backup` | `/perm backup` | `bdcraft.permissions.admin` | Creates a timestamped backup of current permission configuration. |
+| `/bdperm restore <backup_name>` | `/perm restore <backup_name>` | `bdcraft.permissions.admin` | Restores permissions from a previously created backup. |
+| `/bdperm debug <player>` | `/perm debug <player>` | `bdcraft.permissions.admin` | Shows detailed permission calculation for debugging permission issues. |
+| `/bdperm validate` | `/perm validate` | `bdcraft.permissions.admin` | Validates permission configuration for errors and inconsistencies. |
+
+### Bulk Management Commands
+
+| Command | Aliases | Permission | Description |
+|---------|---------|------------|-------------|
+| `/bdperm bulk set <targets> <permission> <true/false>` | `/perm bulk set <targets> <permission> <value>` | `bdcraft.permissions.admin` | Sets permission for multiple players or groups separated by commas. |
+| `/bdperm bulk add <players> <group>` | `/perm bulk add <players> <group>` | `bdcraft.permissions.admin` | Adds multiple players to a group using comma-separated player names. |
+| `/bdperm bulk remove <players> <group>` | `/perm bulk remove <players> <group>` | `bdcraft.permissions.admin` | Removes multiple players from a group. |
+| `/bdperm template apply <template> <targets>` | `/perm template apply <template> <targets>` | `bdcraft.permissions.admin` | Applies a predefined permission template to specified players or groups. |
+
 ## Economy Module Commands
 
 ### General Economy
@@ -342,6 +399,9 @@ This is the complete command reference for BDCraft plugin with all verified comm
 | Command | Description | Permission |
 |---------|-------------|------------|
 | `/bd reload` | Reload configuration | `bdcraft.admin` |
+| `/bdperms` | Open permission GUI | `bdcraft.permissions.admin` |
+| `/bdperm set <player> <permission> <true/false>` | Set player permission | `bdcraft.permissions.admin` |
+| `/bdgroup add <player> <group>` | Add player to group | `bdcraft.permissions.admin` |
 | `/bdvillager create <type>` | Spawn villagers | `bdcraft.villager.admin` |
 | `/bdadmin player info <player>` | Check player details | `bdcraft.admin` |
 | `/bdeco give <player> <amount>` | Give money to player | `bdcraft.economy.admin` |
