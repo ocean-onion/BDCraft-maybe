@@ -127,8 +127,6 @@ permissions:
     # Default Player Group
     player:
       display_name: "Player"
-      prefix: "&7[Player]"
-      suffix: ""
       weight: 0
       default: true
       permissions:
@@ -149,8 +147,6 @@ permissions:
     # VIP Group
     vip:
       display_name: "VIP"
-      prefix: "&6[VIP]"
-      suffix: "&6✦"
       weight: 10
       default: false
       permissions:
@@ -165,8 +161,6 @@ permissions:
     # Moderator Group
     moderator:
       display_name: "Moderator"
-      prefix: "&9[Mod]"
-      suffix: ""
       weight: 50
       default: false
       permissions:
@@ -182,8 +176,6 @@ permissions:
     # Administrator Group
     admin:
       display_name: "Administrator"
-      prefix: "&c[Admin]"
-      suffix: ""
       weight: 100
       default: false
       permissions:
@@ -225,11 +217,11 @@ permissions:
 ### Group Configuration Options
 
 #### Basic Group Properties
-- `display_name`: Human-readable group name
-- `prefix`: Text displayed before player names in chat
-- `suffix`: Text displayed after player names in chat
+- `display_name`: Human-readable group name for administrative purposes
 - `weight`: Group priority (higher numbers take precedence)
 - `default`: Whether this is the default group for new players
+
+**Note:** Chat prefixes and formatting are handled by the existing rank system. The permission system focuses on access control rather than display formatting.
 
 #### Permission Assignment
 - `permissions`: List of permissions granted to the group
@@ -260,7 +252,6 @@ permissions:
 groups:
   builder:
     display_name: "Builder"
-    prefix: "&a[Builder]"
     weight: 25
     permissions:
       - "bdcraft.market.create"
