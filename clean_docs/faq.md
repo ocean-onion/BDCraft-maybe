@@ -270,10 +270,26 @@ The mail system has two functions:
 ## Administration
 
 ### How do I give players admin access?
-Grant the `bdcraft.admin` permission using BDCraft's built-in permission system for full access. For granular control, use specific permissions like:
+BDCraft includes a comprehensive permission management system with three methods:
+
+**GUI Method:**
+- Use `/bdpermissions` to open the permission management interface
+- Click on a player to edit their permissions
+- Toggle the `bdcraft.admin` permission or add them to the admin group
+
+**Command Method:**
+- `/bdperm set <player> bdcraft.admin true` - Grant full admin access
+- `/bdgroup add <player> admin` - Add player to admin group
+- `/bdperm set <player> bdcraft.permissions.admin true` - Grant permission management access
+
+**Configuration Method:**
+- Edit `permissions.yml` directly to add players to admin groups or grant individual permissions
+
+For granular control, use specific permissions like:
 - `bdcraft.economy.admin` - Economy management
 - `bdcraft.market.admin` - Market administration
 - `bdcraft.progression.admin` - Rank and rebirth management
+- `bdcraft.permissions.admin` - Permission system management
 
 ### How do I make someone a donor?
 Use the `/donorverified [username]` command (admin only) to manually verify donor status, or set up automatic verification through your server's donation system.
@@ -290,9 +306,14 @@ BDCraft uses multiple configuration files in the `plugins/BDCraft` folder:
 - `economy.yml` - Currency, market, auction, villager settings
 - `progression.yml` - Rank and rebirth configuration
 - `vital.yml` - Chat, home, teleport, tab settings
-- `permissions.yml` - Built-in permission system
+- `permissions.yml` - Built-in permission system with groups and inheritance
 
-See the [Configuration Guide](configuration/configuration.md) for detailed information.
+**Permission Management:**
+- Use `/bdpermissions` for GUI-based permission editing
+- Use `/bdperm` and `/bdgroup` commands for quick permission changes
+- Edit `permissions.yml` directly for bulk operations
+
+See the [Configuration Guide](configuration/configuration.md) and [Permission Management](admin/permission-management.md) for detailed information.
 
 ## Technical Questions
 

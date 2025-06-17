@@ -100,8 +100,20 @@ Multi-file configuration covering:
 
 ### [Permission System](configuration/permissions.md)
 - **Built-in Permissions** - Complete permission management without external plugins
-- **Group-Based Access** - Default, donor, and admin permission groups
-- **Permission Inheritance** - Hierarchical permission structure for easy management
+- **GUI Management** - Interactive permission editing with `/bdpermissions`
+- **Command Control** - Quick permission changes with `/bdperm` and `/bdgroup`
+- **YAML Configuration** - Direct file editing for bulk operations
+- **Group-Based Access** - Default, donor, and admin permission groups with inheritance
+
+### [Permission Management](admin/permission-management.md)
+Comprehensive permission management system:
+- **Interactive GUI** - Visual permission editing and group management
+- **Command System** - 30+ commands for permission and group management
+- **Advanced Features** - Import/export, backups, bulk operations, and templates
+- **Integration** - Seamless integration with existing rank and chat systems
+
+### [Permission Quick Reference](admin/permission-quick-reference.md)
+Essential commands and common setups for quick permission management
 
 ## Development
 

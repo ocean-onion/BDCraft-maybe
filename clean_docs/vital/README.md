@@ -102,9 +102,11 @@ The Vital Module consists of four integrated systems that provide the foundation
 - **Disabled Worlds** - Prevent home setting in specific worlds
 
 ### Permission Integration
+- **Built-in Permission System** - GUI and command-based permission management with `/bdpermissions`
 - **Rank-Based Limits** - Home and teleport limits tied to progression
 - **Donor Benefits** - Enhanced limits and bypass permissions
 - **Administrative Override** - Admin bypass for all restrictions
+- **Group Management** - Permission groups with inheritance and individual overrides
 
 ## Security and Moderation
 

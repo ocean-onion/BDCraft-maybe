@@ -1,6 +1,25 @@
 # Permissions
 
-BDCraft includes a built-in permission system with group-based access control. Essential permissions for normal gameplay:
+BDCraft includes a comprehensive built-in permission system with GUI management, command-based editing, and YAML configuration. The system provides group-based access control with inheritance and individual player overrides.
+
+## Permission Management
+
+### GUI Management
+- **Main Command**: `/bdpermissions` - Opens interactive permission management GUI
+- **Player Management**: `/bdpermissions player <player>` - Edit specific player permissions
+- **Group Management**: `/bdpermissions group <group>` - Manage group permissions and members
+
+### Command Management
+- **Set Permissions**: `/bdperm set <player> <permission> <true/false>` - Grant or revoke individual permissions
+- **Group Operations**: `/bdgroup add <player> <group>` - Add players to permission groups
+- **Check Permissions**: `/bdperm check <player> <permission>` - Verify permission status
+
+### YAML Configuration
+Permissions can be configured directly in `permissions.yml` for bulk operations and automation.
+
+## Essential Permissions
+
+Essential permissions for normal gameplay:
 
 ## Essential Player Permissions
 
@@ -20,6 +39,7 @@ BDCraft includes a built-in permission system with group-based access control. E
 | Permission | Description |
 |------------|-------------|
 | `bdcraft.admin` | Full admin access (includes everything) |
+| `bdcraft.permissions.admin` | Permission management system access |
 
 ## Economy Module Permissions
 

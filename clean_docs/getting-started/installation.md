@@ -39,8 +39,10 @@ This guide will walk you through the process of installing BDCraft on your Minec
 After installing BDCraft, follow these steps to set up the plugin for the first time:
 
 1. **Assign Permissions**
-   - Give yourself admin permissions by adding yourself to the ops.json file or using the built-in BDCraft permission system
-   - The main admin permission is `bdcraft.admin`
+   - Give yourself admin permissions using BDCraft's built-in permission system
+   - Use `/bdperm set <your_username> bdcraft.admin true` or add yourself to ops.json temporarily
+   - For permission management access: `/bdperm set <your_username> bdcraft.permissions.admin true`
+   - Open `/bdpermissions` to access the GUI permission manager
 
 2. **Initialize Economy**
    - Use the command `/bdadmin economy init` to initialize the economy system

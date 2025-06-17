@@ -322,47 +322,73 @@ chat:
 
 ### Permissions Configuration: `permissions.yml`
 
-Defines all permission nodes.
+BDCraft includes a comprehensive permission management system with GUI interface, command controls, and YAML configuration. The system supports groups, inheritance, and individual player overrides.
 
+#### Permission Management Commands
+- `/bdpermissions` - Opens the permission management GUI
+- `/bdperm set <player> <permission> <true/false>` - Set individual permissions
+- `/bdgroup create <group> [parent]` - Create permission groups
+- `/bdgroup add <player> <group>` - Add players to groups
+
+#### Configuration Structure
 ```yaml
-# BDCraft Permissions Configuration
-
-# Core permissions
-core:
-  admin: "bdcraft.admin"  # Full admin access
+# BDCraft Permission System Configuration
+permissions:
+  system:
+    default_group: "player"
+    save_interval: 300
+    backup_on_changes: true
+    wildcard_support: true
+    
+  groups:
+    player:
+      display_name: "Player"
+      weight: 0
+      default: true
+      permissions:
+        - "bdcraft.economy.use"
+        - "bdcraft.market.use"
+        - "bdcraft.auction.use"
+        - "bdcraft.villager.use"
+        - "bdcraft.rank.use"
+        - "bdcraft.home.use"
+        - "bdcraft.teleport.use"
+        - "bdcraft.chat.global"
+        - "bdcraft.spawn.use"
+      inheritance: []
+      
+    vip:
+      display_name: "VIP"
+      weight: 10
+      permissions:
+        - "bdcraft.chat.color"
+        - "bdcraft.home.set.multiple"
+        - "bdcraft.teleport.bypass-cooldown"
+        - "bdcraft.auction.featured"
+        - "bdcraft.market.donor"
+      inheritance:
+        - "player"
+        
+    admin:
+      display_name: "Administrator"
+      weight: 100
+      permissions:
+        - "bdcraft.admin"
+        - "bdcraft.permissions.admin"
+        - "bdcraft.*"
+      inheritance:
+        - "vip"
+        
+  # Individual player overrides
+  players: {}
   
-# Economy permissions
-economy:
-  use: "bdcraft.economy.use"  # Basic economy commands
-  admin: "bdcraft.economy.admin"  # Economy admin commands
-  pay: "bdcraft.economy.pay"  # Allow paying other players
-  
-  # Market permissions
-  market:
-    use: "bdcraft.market.use"  # Basic market usage
-    donor: "bdcraft.market.donor"  # Access market GUI remotely (donors only)
-    multiple: "bdcraft.market.multiple"  # Create multiple markets
-    
-  # Auction permissions
-  auction:
-    use: "bdcraft.auction.use"  # Basic auction usage
-    create: "bdcraft.auction.create"  # Create auctions
-    featured: "bdcraft.auction.featured"  # Create featured auctions
-    
-  # Villager permissions
-  villager:
-    use: "bdcraft.villager.use"  # Interact with villagers
-    admin: "bdcraft.villager.admin"  # Manage villagers
-    
-# Progression permissions
-progression:
-  rank:
-    use: "bdcraft.rank.use"  # View ranks
-    admin: "bdcraft.rank.admin"  # Manage ranks
-    
-  rebirth:
-    use: "bdcraft.rebirth.use"  # Use rebirth system
-    admin: "bdcraft.rebirth.admin"  # Manage rebirth system
+  # Permission templates
+  templates:
+    new_staff:
+      permissions:
+        - "bdcraft.chat.admin"
+        - "bdcraft.teleport.admin"
+        - "bdcraft.economy.admin"stem
     
 # Vital permissions
 vital:
