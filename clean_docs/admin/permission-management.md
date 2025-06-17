@@ -311,14 +311,30 @@ players:
 ## Integration with BDCraft Systems
 
 ### Rank Integration
+**Important:** BDCraft ranks automatically provide their own benefits and permissions. The permission system handles additional access beyond rank benefits.
+
+**Ranks automatically provide:**
+- Chat prefixes: `[Newcomer]`, `[Farmer]`, `[Expert Farmer]`, `[Master Farmer]`, `[Agricultural Expert]`
+- Economy benefits: Yield bonuses (5%-30%), reduced auction fees (4.5%-3%), extended listing durations
+- Growth bonuses: Faster seed growth (5%-25%) and rare crop chances (15%-25%)
+- Tool access: Automatic BD tool purchasing rights based on rank requirements
+- Market features: Market creation and upgrade capabilities
+
+**Permission system handles:**
+- Administrative commands: `/bdadmin`, `/bdeco give`, `/bdrank set`
+- Moderation tools: `/kick`, `/ban`, `/mute`, `/heal`, `/fly`
+- Donor features: Remote market access (`/bdmarket`), enhanced limits
+- Special access: Permission management, configuration editing
+
 ```yaml
-# Automatic group assignment based on rank
-rank_groups:
-  newcomer: "player"
-  farmer: "player"
-  expert_farmer: "experienced"
-  master_farmer: "advanced"
-  agricultural_expert: "expert"
+# Permission groups supplement rank benefits, not replace them
+groups:
+  player:
+    # Basic permissions that all players need regardless of rank
+    permissions:
+      - "bdcraft.economy.use"      # Required for BD system access
+      - "bdcraft.chat.global"      # Required for chat participation
+      - "bdcraft.spawn.use"        # Required for spawn teleportation
 ```
 
 ### Economy Integration

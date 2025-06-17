@@ -17,22 +17,19 @@ BDCraft includes a comprehensive built-in permission system with GUI management,
 ### YAML Configuration
 Permissions can be configured directly in `permissions.yml` for bulk operations and automation.
 
-## Essential Permissions
+## Permission System Role
 
-Essential permissions for normal gameplay:
+**Important:** BDCraft ranks automatically provide economy benefits, chat formatting, and progression features. The permission system handles administrative and utility commands beyond rank benefits.
 
 ## Essential Player Permissions
 
 | Permission | Description |
 |------------|-------------|
-| `bdcraft.economy.use` | Basic economy access (required for all players) |
-| `bdcraft.market.use` | Market browsing and information |
-| `bdcraft.auction.use` | Auction house access |
-| `bdcraft.villager.use` | Trade with BD villagers |
-| `bdcraft.rank.use` | View rank information and progress |
-| `bdcraft.home.use` | Home teleportation |
-| `bdcraft.teleport.use` | Basic teleportation |
-| `bdcraft.chat.global` | Chat participation |
+| `bdcraft.economy.use` | Basic economy access (required for all players to use BD systems) |
+| `bdcraft.chat.global` | Chat participation (required for server communication) |
+| `bdcraft.spawn.use` | Spawn teleportation (required for basic navigation) |
+
+**Note:** Market access, auction benefits, villager trading, and rank progression are automatically granted based on player rank. No additional permissions needed.
 
 ## Admin Permissions
 
@@ -58,31 +55,27 @@ Essential permissions for normal gameplay:
 
 | Permission | Description |
 |------------|-------------|
-| `bdcraft.market.use` | Allows basic market usage (check, info, list) |
 | `bdcraft.market.donor` | Allows accessing market management remotely (donors only) |
-| `bdcraft.market.multiple` | Allows creating multiple markets |
 | `bdcraft.market.admin` | Grants admin access to all markets |
+
+**Note:** Market usage, creation, and upgrades are controlled by rank requirements, not permissions.
 
 ### Auction System
 
 | Permission | Description |
 |------------|-------------|
-| `bdcraft.auction.use` | Allows using the auction house |
-| `bdcraft.auction.sell` | Allows selling items on the auction house |
-| `bdcraft.auction.cancel` | Allows canceling own listings |
-| `bdcraft.auction.list` | Allows viewing own auction listings |
-| `bdcraft.auction.featured` | Allows creating featured auction listings |
+| `bdcraft.auction.featured` | Allows creating featured auction listings (donor feature) |
 | `bdcraft.auction.admin` | Grants admin access to the auction system |
+
+**Note:** Auction house access and benefits (fees, duration) are controlled by rank, not permissions.
 
 ### Villager System
 
 | Permission | Description |
 |------------|-------------|
-| `bdcraft.villager.use` | Allows interaction with BD villagers |
-| `bdcraft.villager.dealer` | Allows trading with BD Dealers |
-| `bdcraft.villager.collector` | Allows trading with Collectors |
-| `bdcraft.villager.seasonal` | Allows trading with Seasonal Traders |
 | `bdcraft.villager.admin` | Grants admin access to villager management |
+
+**Note:** Villager trading is available to all players. Specific trades unlock based on rank requirements.
 
 ## Progression Module Permissions
 
@@ -90,19 +83,17 @@ Essential permissions for normal gameplay:
 
 | Permission | Description |
 |------------|-------------|
-| `bdcraft.rank.use` | Allows viewing rank information |
-| `bdcraft.rank.progress` | Allows checking rank progress |
-| `bdcraft.rank.benefits` | Allows viewing rank benefits |
 | `bdcraft.rank.admin` | Grants admin access to rank management |
+
+**Note:** All players can view rank information, progress, and benefits by default. Ranks automatically provide their own benefits.
 
 ### Rebirth System
 
 | Permission | Description |
 |------------|-------------|
-| `bdcraft.rebirth.use` | Allows using the rebirth system |
-| `bdcraft.rebirth.info` | Allows viewing rebirth information |
-| `bdcraft.rebirth.requirements` | Allows checking rebirth requirements |
 | `bdcraft.rebirth.admin` | Grants admin access to rebirth management |
+
+**Note:** All players with Agricultural Expert rank can use rebirth system, view information, and check requirements automatically.
 
 ## Vital Module Permissions
 

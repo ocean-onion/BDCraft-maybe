@@ -26,17 +26,15 @@ This quick reference guide provides essential commands and configurations for ma
 ## Common Permission Patterns
 
 ### Essential Player Permissions
+**Note:** Ranks automatically provide economy benefits, chat prefixes, and progression features. These permissions are for basic system access.
+
 ```yaml
 # Minimum permissions for basic gameplay
 basic_permissions:
-  - "bdcraft.economy.use"
-  - "bdcraft.market.use"
-  - "bdcraft.auction.use"
-  - "bdcraft.villager.use"
-  - "bdcraft.rank.use"
-  - "bdcraft.home.use"
-  - "bdcraft.chat.global"
-  - "bdcraft.spawn.use"
+  - "bdcraft.economy.use"     # Required to access BD economy system
+  - "bdcraft.chat.global"     # Required for chat participation  
+  - "bdcraft.spawn.use"       # Required for spawn teleportation
+  # Ranks automatically handle: market access, auction benefits, villager trading
 ```
 
 ### VIP/Donor Permissions
@@ -76,14 +74,10 @@ admin_permissions:
 ```bash
 /bdgroup create player
 /bdgroup set player bdcraft.economy.use true
-/bdgroup set player bdcraft.market.use true
-/bdgroup set player bdcraft.auction.use true
-/bdgroup set player bdcraft.villager.use true
-/bdgroup set player bdcraft.rank.use true
-/bdgroup set player bdcraft.home.use true
 /bdgroup set player bdcraft.chat.global true
 /bdgroup set player bdcraft.spawn.use true
 /bdgroup setdefault player
+# Note: Ranks automatically provide market, auction, villager, and progression access
 ```
 
 #### VIP Group
