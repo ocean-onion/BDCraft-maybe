@@ -8,11 +8,16 @@ The Economy System consists of six interconnected components that work together 
 
 ### Core Components
 
+#### Currency & Production
 - **[Currency System](currency.md)** - Dual currency mechanics with village reputation
 - **[BD Crops](crops.md)** - Complete crop growing system with three tiers and yield bonuses
+
+#### Trading Infrastructure
 - **[Trading System](trading.md)** - Comprehensive villager trading with bonuses and reputation mechanics
 - **[Market System](market.md)** - Player-built trading centers with physical structures
 - **[Villager System](villager.md)** - Specialized villagers including seasonal traders
+
+#### Marketplace Systems
 - **[Auction System](auction.md)** - Server-wide marketplace for BD items
 
 ## Economic Flow

@@ -4,14 +4,20 @@ The Vital System provides essential utilities that enhance the Minecraft experie
 
 ## Overview
 
-The Vital System consists of five integrated components that provide the foundation for player interaction and server navigation:
+The Vital System consists of six integrated components that provide the foundation for player interaction and server navigation:
 
 ### Core Components
 
+#### Communication Systems
 - **[Chat System](chat.md)** - Multi-channel communication with Global, Local, Market, and Admin channels
 - **[Messaging System](messaging.md)** - Private messages, mail system, and item storage with 7-day retention
+
+#### Navigation Systems
+- **[Navigation System](navigation.md)** - Comprehensive teleportation and location management overview
 - **[Home System](home.md)** - Personal teleportation points with rank-based limits and donor benefits
 - **[Teleport System](teleport.md)** - Player teleportation, warp management, and location systems
+
+#### Interface Systems
 - **[Tab List System](tab.md)** - Customizable player listings with rank-based sorting and headers
 
 ## Communication Infrastructure

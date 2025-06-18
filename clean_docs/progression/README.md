@@ -8,7 +8,10 @@ The Progression System consists of three interconnected components that provide 
 
 ### Core Components
 
+#### Primary Progression
 - **[Rank System](ranks.md)** - 5-tier progression from Newcomer to Agricultural Expert
+
+#### Extended Progression
 - **[Achievement System](achievements.md)** - Comprehensive achievement tracking for meaningful progression
 - **[Rebirth System](rebirth.md)** - Prestige system with permanent bonuses and exclusive features
 
