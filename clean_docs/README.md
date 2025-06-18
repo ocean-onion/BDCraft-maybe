@@ -28,19 +28,18 @@ Complete token-based market creation system:
 ## Progression Systems
 
 ### [Progression System](progression/README.md)
-- **[Rank System](progression/ranks.md)** - 5-tier progression (Newcomer → Agricultural Expert) with achievement requirements
-- **[Achievement System](progression/achievements.md)** - Comprehensive achievement tracking for meaningful progression
+- **[Rank System](progression/ranks.md)** - 5-tier progression from Newcomer to Agricultural Expert with achievement requirements
+- **[Achievement System](progression/achievements.md)** - Comprehensive achievement tracking with GUI interface for meaningful progression
 - **[Rebirth System](progression/rebirth.md)** - Prestige system with permanent bonuses and exclusive features (5 rebirth levels)
 
 ## Essential Utilities
 
 ### [Vital Features](vital/README.md)
-- **[Chat System](vital/chat.md)** - Multi-channel chat (Global/Local/Market/Admin), private messaging, and mail system
-- **[Messaging System](vital/messaging.md)** - Private messages, mail system, and item storage functionality
-- **[Navigation System](vital/navigation.md)** - Comprehensive teleportation, homes, warps, and location management
-- **[Home System](vital/home.md)** - Personal teleportation points with rank-based limits (1-3 homes)
-- **[Teleport System](vital/teleport.md)** - Player teleportation, warp system, and location management
-- **[Tab List System](vital/tab.md)** - Customizable player listings with rank-based sorting
+- **[Chat System](vital/chat.md)** - Multi-channel chat with Global, Local, Market, and Admin channels plus private messaging
+- **[Messaging System](vital/messaging.md)** - Private messages, mail system, and item storage with 7-day retention
+- **[Home System](vital/home.md)** - Personal teleportation points with rank-based limits and donor benefits
+- **[Teleport System](vital/teleport.md)** - Player teleportation, warp management, and location systems
+- **[Tab List System](vital/tab.md)** - Customizable player listings with rank-based sorting and headers
 
 ## Advanced Features
 

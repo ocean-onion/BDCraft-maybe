@@ -1,10 +1,10 @@
-# Economy Module
+# Economy System
 
-The Economy Module provides a comprehensive economic system that forms the backbone of BDCraft's gameplay experience. This module creates a complete economic loop through player-built markets, specialized villager trading, auction systems, and dual currency mechanics.
+The Economy System provides a comprehensive economic framework that forms the backbone of BDCraft's gameplay experience. This system creates a complete economic loop through player-built markets, specialized villager trading, auction systems, and dual currency mechanics.
 
 ## Overview
 
-The Economy Module consists of four interconnected systems that work together to create a dynamic player-driven economy:
+The Economy System consists of six interconnected components that work together to create a dynamic player-driven economy:
 
 ### Core Components
 
