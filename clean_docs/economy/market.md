@@ -1,10 +1,11 @@
-# Player Markets
+# Market System
 
-The BDCraft Market System allows all players to establish their own trading centers with physically built market structures. Any player can create a market by building a structure and placing a Market Token.
+The BDCraft Market System provides comprehensive player-driven trading infrastructure through physically constructed market centers with token-based ownership and automated villager management.
 
-## Market Creation
+## Market Infrastructure
 
-To create a BD market, players must:
+### Market Establishment Process
+To establish a BD market trading center, players must complete:
 
 1. **Build a Market Structure**:
    - **Roof**: Minimum 3x3 solid blocks at the same height (can be larger)
@@ -27,9 +28,10 @@ To create a BD market, players must:
    - The player who placed the token becomes the market owner
    - The Market Owner villager shows the player's name: "[username]'s Market Owner [market_level]"
 
-## Collector Houses
+## Market Expansion Infrastructure
 
-Players can expand their markets by adding collector houses:
+### Collector House System
+Players can expand market functionality through additional collector buildings:
 
 1. **Building Requirements**:
    - Same structure requirements as the main market

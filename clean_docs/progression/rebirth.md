@@ -1,10 +1,11 @@
 # Rebirth System
 
-The BDCraft Rebirth System allows top-tier players to reset their progress in exchange for permanent bonuses, creating long-term engagement and progression.
+The BDCraft Rebirth System provides prestigious progression mechanics enabling elite players to exchange accumulated progress for permanent enhancement bonuses, creating extended gameplay engagement beyond traditional rank advancement.
 
-## Rebirth Overview
+## Prestige Progression Infrastructure
 
-The Rebirth system allows players who have reached Agricultural Expert (Rank 5) to restart their progression with significant permanent bonuses:
+### Elite Advancement Mechanism
+The Rebirth system enables Agricultural Expert players to undergo complete progression reset in exchange for permanent enhancement benefits:
 
 - Reset to Newcomer rank (Rank 1)
 - Lose all BD items and market buildings
@@ -12,38 +13,39 @@ The Rebirth system allows players who have reached Agricultural Expert (Rank 5) 
 - Receive special cosmetic effects and titles
 - Unlock exclusive Rebirth-only features
 
-## Rebirth Levels
+## Prestige Enhancement Tiers
 
-Players can go through the rebirth process multiple times, with each rebirth level providing increasing benefits:
+### Multi-Level Rebirth System
+Players can undergo multiple rebirth cycles, with each iteration providing escalating permanent benefits:
 
-### Rebirth 1
+#### Prestige Level 1
 - +5% permanent bonus to all crop yields
 - +3% permanent better trading prices
 - Title: [Reborn Farmer]
 - Access to special Rebirth 1 cosmetics
 
-### Rebirth 2
+#### Prestige Level 2
 - +10% permanent bonus to all crop yields
 - +6% permanent better trading prices
 - Title: [Twice Reborn]
 - Exclusive BD seed color variations
 - Special market visual effects
 
-### Rebirth 3
+#### Prestige Level 3
 - +15% permanent bonus to all crop yields
 - +9% permanent better trading prices
 - Title: [Thrice Reborn]
 - Exclusive collector villager appearances
 - Ability to create markets with expanded radius
 
-### Rebirth 4
+#### Prestige Level 4
 - +20% permanent bonus to all crop yields
 - +12% permanent better trading prices
 - Title: [Ascended Farmer]
 - Unlock legendary BD crops
 - Create markets with no building requirements
 
-### Rebirth 5 (Maximum)
+#### Prestige Level 5 (Maximum)
 - +25% permanent bonus to all crop yields
 - +15% permanent better trading prices
 - Title: [BD Master]

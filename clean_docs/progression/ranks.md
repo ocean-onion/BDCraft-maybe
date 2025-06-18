@@ -1,10 +1,11 @@
 # Rank System
 
-The BDCraft rank system provides progression through statistical requirements, offering players increased benefits and status as they advance.
+The BDCraft rank system provides structured progression through statistical achievement requirements, offering players escalating benefits and server status recognition as they advance through agricultural mastery.
 
-## Rank Overview
+## Progression Infrastructure
 
-The plugin features 5 progressive ranks that players can achieve:
+### Five-Tier Advancement System
+The system features progressive ranks that players achieve through economic participation:
 
 1. **Newcomer (Rank 1)** - Starting rank for all players
 2. **Farmer (Rank 2)** - Basic farming accomplishments
@@ -12,9 +13,10 @@ The plugin features 5 progressive ranks that players can achieve:
 4. **Master Farmer (Rank 4)** - Exceptional farming mastery
 5. **Agricultural Expert (Rank 5)** - Elite farming status
 
-## Rank Requirements
+## Advancement Requirements
 
-Ranks are purchased using server currency, with specific achievement requirements that must be completed before purchase:
+### Statistical Achievement System
+Ranks require server currency investment combined with demonstrated economic activity completion:
 
 ### Newcomer (Rank 1)
 - Default starting rank

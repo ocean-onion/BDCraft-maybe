@@ -1,20 +1,21 @@
 # Achievement System
 
-BDCraft features a comprehensive achievement system with permanent game-wide accomplishments that never reset. Players can view their progress through an interactive GUI and earn titles that showcase their expertise across all areas of the plugin.
+BDCraft features a comprehensive permanent accomplishment tracking system with persistent server-wide achievements that provide ongoing recognition for player expertise across all economic and agricultural activities.
 
-## Achievement GUI
+## Achievement Infrastructure
 
-Access the achievement system through `/bdachievements` to open an interactive GUI showing:
+### Interactive Progress Interface
+Access the achievement system through `/bdachievements` for comprehensive progress visualization:
 - **Progress Bars**: Visual progress for all achievements
 - **Categories**: Organized tabs for different achievement types
 - **Completion Status**: Green checkmarks for completed achievements
 - **Rewards**: Click achievements to see titles and benefits earned
 - **Statistics**: Overall completion percentage and totals
 
-## Achievement Categories
+## Accomplishment Categories
 
-### Farming Achievements
-Permanent accomplishments tracking your agricultural mastery:
+### Agricultural Mastery Achievements
+Permanent recognition for demonstrated farming expertise and production capabilities:
 
 #### Crop Harvesting
 - **Novice Harvester**: Harvest 100 BD crops total
@@ -35,8 +36,8 @@ Permanent accomplishments tracking your agricultural mastery:
 - **Quality Producer**: Generate rare crops through quality system
 - **Seasonal Grower**: Participate in seasonal crop events
 
-### Trading Achievements
-Economic interaction accomplishments demonstrating market participation:
+### Economic Participation Achievements
+Recognition for sustained market engagement and commercial activity:
 
 #### Dealer Interactions
 - **First Customer**: Complete 10 trades with BD Dealers total

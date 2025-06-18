@@ -1,18 +1,20 @@
-# BD Auction House
+# Auction System
 
-The BDCraft Auction House is a specialized marketplace that allows players to buy and sell BD items through a GUI interface.
+The BDCraft Auction System provides a server-wide marketplace infrastructure enabling players to trade BD items through an intuitive GUI-based commercial platform.
 
-## Accessing the Auction House
+## Marketplace Access
 
-Players can access the auction house using these commands:
+### Command Interface
+Players access the auction system through specialized commands:
 - `/bdauction` or `/auction` - Opens the auction house GUI
 - `/bdauction listings` or `/auction listings` - Shows your current auction listings
 - `/bdauction sell <price> [amount]` or `/auction sell <price> [amount]` - Lists an item for sale
 - `/bdauction cancel <listing_id>` or `/auction cancel <listing_id>` - Cancels one of your listings
 
-## Auction House Interface
+## Commercial Interface
 
-The auction house uses a chest GUI interface with several pages:
+### GUI Navigation System
+The auction platform utilizes a comprehensive chest-based interface with organized navigation:
 
 ### Main Browsing Interface
 
@@ -36,9 +38,9 @@ Each listing shows:
 - Seller name
 - Time remaining before expiration
 
-## Selling Items
+## Item Commerce
 
-### Listing Process
+### Listing Infrastructure
 
 1. Hold the BD item you want to sell in your main hand
 2. Use the command: `/bdauction sell <price> [amount]`

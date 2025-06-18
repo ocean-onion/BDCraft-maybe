@@ -1,10 +1,10 @@
-# BD Villager System
+# Villager System
 
-The BD Villager System provides specialized villagers that form the backbone of the BDCraft economy and trading systems. Each villager type has unique roles, appearances, and trading capabilities.
+The BD Villager System provides specialized economic agents that form the operational backbone of BDCraft's trading infrastructure. Each villager type maintains unique roles, visual characteristics, and specialized commerce capabilities.
 
-## BD Villager Types
+## Specialized Economic Agents
 
-### BD Dealer
+### BD Dealer Infrastructure
 
 **Visual Appearance:**
 - Base: Villager
@@ -13,11 +13,11 @@ The BD Villager System provides specialized villagers that form the backbone of 
 - Level: 2 (Experienced)
 - Name: "BD Dealer" (green text)
 
-**Distribution & Spawning:**
+**Deployment & Availability:**
 - Spawns naturally in Minecraft villages (45% chance)
 - Spawns automatically when a player creates a BD Market
 
-**Trades:**
+**Commercial Offerings:**
 - Regular BD Seeds: 5 seeds for 1 emerald (available to all players)
 - Green BD Seeds: Premium seeds for 15 emeralds (unlocked at Farmer rank)
 - Purple BD Seeds: Rare seeds for 30 emeralds (unlocked at Master Farmer rank)
@@ -26,7 +26,7 @@ The BD Villager System provides specialized villagers that form the backbone of 
 
 *Note: These crops primarily differ in their value - the higher-tier crops take longer to unlock as players progress through ranks but provide significantly better returns when sold to collectors.*
 
-#### BD Crop Growth Information
+#### Agricultural Production Specifications
 - **Growth Times**: 
   - Regular BD Crops: 12 minutes to fully mature
   - Green BD Crops: 20 minutes to fully mature
