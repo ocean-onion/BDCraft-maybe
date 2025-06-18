@@ -1,10 +1,10 @@
-# Progression Module
+# Progression System
 
-The Progression Module provides a comprehensive advancement system that gives players long-term goals and meaningful rewards for their economic activities. This module features a dual-progression system combining rank advancement with rebirth mechanics for extended gameplay.
+The Progression System provides a comprehensive advancement framework that gives players long-term goals and meaningful rewards for their economic activities. This system features a dual-progression mechanism combining rank advancement with rebirth mechanics for extended gameplay.
 
 ## Overview
 
-The Progression Module consists of two interconnected systems that provide both short-term achievement goals and long-term prestige advancement:
+The Progression System consists of three interconnected components that provide both short-term achievement goals and long-term prestige advancement:
 
 ### Core Components
 

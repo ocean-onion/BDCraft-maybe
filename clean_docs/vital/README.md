@@ -1,19 +1,18 @@
-# Vital Module
+# Vital System
 
-The Vital Module provides essential utilities that enhance the Minecraft experience and support the economic systems of BDCraft. This module handles core server functionality including communication, navigation, and player convenience features.
+The Vital System provides essential utilities that enhance the Minecraft experience and support the economic systems of BDCraft. This system handles core server functionality including communication, navigation, and player convenience features.
 
 ## Overview
 
-The Vital Module consists of four integrated systems that provide the foundation for player interaction and server navigation:
+The Vital System consists of five integrated components that provide the foundation for player interaction and server navigation:
 
 ### Core Components
 
-- **[Chat System](chat.md)** - Multi-channel communication with messaging and moderation
-- **[Messaging System](messaging.md)** - Private messages, mail system, and item storage functionality
-- **[Navigation System](navigation.md)** - Comprehensive teleportation, homes, warps, and location management
-- **[Home System](home.md)** - Personal teleportation points with rank-based limits
-- **[Teleport System](teleport.md)** - Comprehensive teleportation and location management
-- **[Tab List System](tab.md)** - Customizable player listings with rank display
+- **[Chat System](chat.md)** - Multi-channel communication with Global, Local, Market, and Admin channels
+- **[Messaging System](messaging.md)** - Private messages, mail system, and item storage with 7-day retention
+- **[Home System](home.md)** - Personal teleportation points with rank-based limits and donor benefits
+- **[Teleport System](teleport.md)** - Player teleportation, warp management, and location systems
+- **[Tab List System](tab.md)** - Customizable player listings with rank-based sorting and headers
 
 ## Communication Infrastructure
 
