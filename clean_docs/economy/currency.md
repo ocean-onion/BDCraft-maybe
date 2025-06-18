@@ -1,17 +1,17 @@
-# BDCraft Currency System
+# Currency System
 
-The BDCraft economy uses a dual-currency system that creates a complete economic loop for players. This document explains how the currency system works and how it integrates with other aspects of the server.
+The BDCraft economy operates on a sophisticated dual-currency framework that creates sustainable economic loops through physical item trading and digital progression currency.
 
-## Currency Types
+## Currency Infrastructure
 
-BDCraft utilizes two main types of currency:
+### Dual Currency Framework
+BDCraft utilizes complementary currency types for different economic functions:
 
-### 1. In-Game Items as Currency
+#### Physical Item Currency
+- **Emeralds**: Primary trading medium for seed purchases and villager transactions
+- **Diamonds**: Premium currency for specialized harvesting tools and high-tier equipment
 
-- **Emeralds**: Primary tradeable currency, used for buying seeds and tools from dealers
-- **Diamonds**: Premium currency for special tools (BD Harvester and Ultimate BD Harvester)
-
-### 2. Server Currency
+#### Digital Progression Currency
 
 - **Server Currency**: Earned alongside emeralds when trading with collectors
 - Used for purchasing ranks and other progression advancements
@@ -20,29 +20,34 @@ BDCraft utilizes two main types of currency:
 - Displayed through `/bdbalance` command
 - Stored securely in plugin's database with transaction history
 
-## Earning Currency
+## Currency Acquisition
 
-Players can earn currency through several methods:
+### Primary Earning Methods
+Players accumulate currency through structured economic activities:
 
 - **Trading with Collectors**: Selling BD crops to collectors provides both emeralds AND server currency
 - **Special Events**: Participating in server events
 - **Rank Bonuses**: Some ranks provide currency bonuses
 
-## Using Currency
+## Currency Utilization
 
-### Emeralds
+### Physical Currency Applications
+
+#### Emerald Economy
 
 Emeralds are used primarily for:
 - Purchasing seeds from Dealers
 - Trading with Market Villager
 
-### Diamonds
+#### Diamond Economy
 
 Diamonds are used for premium purchases:
 - BD Harvester (16 diamonds)
 - Ultimate BD Harvester (32 diamonds)
 
-### Server Currency
+### Digital Currency Applications
+
+#### Progression Economy
 
 Server currency is used for progression:
 - Purchasing ranks (5,000 - 60,000 per rank)

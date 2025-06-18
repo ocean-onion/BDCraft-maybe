@@ -1,25 +1,25 @@
 # Trading System
 
-The BDCraft trading system facilitates all economic interactions between players and BD villagers, forming the core of the server's economic activity.
+The BDCraft trading infrastructure facilitates comprehensive economic interactions between players and specialized BD villagers, forming the operational core of server economic activity.
 
-## Trading Mechanics
+## Trading Infrastructure
 
-### Dual Currency Trading
+### Dual Currency Transaction System
 All BD villager trades provide both physical and digital currency:
 - **Emeralds**: Physical items added directly to player inventory
 - **Server Currency**: Digital currency automatically added to player balance
 - **Simultaneous Payment**: Both currencies awarded in single transaction
 - **Conversion Rates**: Fixed ratios based on crop type and market conditions
 
-### Trading Locations
+### Authorized Trading Zones
 Trading can only occur in designated areas:
 - **Player Markets**: 98x98 block areas (128x128 for donors) around Market Tokens
 - **Natural Villages**: Original Minecraft villages with BD Dealer spawns
 - **Market Buildings**: Physical structures within market boundaries
 
-## Villager Trading Types
+## Specialized Villager Commerce
 
-### BD Dealer Trading
+### BD Dealer Commerce
 **Purchase Transactions** (Player buys from Dealer):
 - **Regular BD Seeds**: 5 seeds for 1 emerald (all ranks)
 - **Green BD Seeds**: Premium seeds for 15 emeralds (Farmer+ only)
@@ -29,7 +29,7 @@ Trading can only occur in designated areas:
 
 **Reputation Gain**: +2 reputation per completed trade
 
-### Collector Trading
+### Collector Commerce
 **Sale Transactions** (Player sells to Collector):
 - **Regular BD Crops**: 1 emerald + 10 server currency base value (configurable)
 - **Green BD Crops**: 2 emeralds + 25 server currency base value (configurable)
@@ -39,7 +39,7 @@ Trading can only occur in designated areas:
 
 **Reputation Gain**: +3 reputation per completed trade
 
-### Market Owner Trading
+### Market Owner Commerce
 **Market Management** (Player interacts with Market Owner):
 - **Market Upgrades**: Purchase level improvements using emeralds + server currency
 - **House Tokens**: Buy BD House Tokens at market level 2+

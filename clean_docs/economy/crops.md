@@ -1,12 +1,13 @@
 # BD Crops System
 
-BD Crops are the foundation of BDCraft's economy, providing the primary method for players to generate currency and progress through the system.
+BD Crops form the production foundation of BDCraft's economy, providing the primary mechanism for currency generation and economic progression through tiered agricultural systems.
 
-## Crop Types
+## Crop Production Infrastructure
 
-BDCraft features three tiers of crops, each with different growth times, values, and unlock requirements:
+### Three-Tier Crop System
+BDCraft features progressive crop tiers with escalating complexity, value, and rank requirements:
 
-### Regular BD Crops
+#### Tier 1: Regular BD Crops
 - **Unlock Requirement**: Available to all players from Newcomer rank
 - **Seed Appearance**: Wheat seeds with BD metadata in inventory
 - **Growth Time**: 12 minutes to fully mature
@@ -14,7 +15,7 @@ BDCraft features three tiers of crops, each with different growth times, values,
 - **Inventory Item**: Ferns with BD metadata when harvested
 - **Base Value**: 1 emerald + 10 server currency per crop (as configured in economy.yml)
 
-### Green BD Crops
+#### Tier 2: Green BD Crops
 - **Unlock Requirement**: Farmer rank (Rank 2) or higher
 - **Seed Appearance**: Melon seeds with BD metadata in inventory
 - **Growth Time**: 20 minutes to fully mature
@@ -22,7 +23,7 @@ BDCraft features three tiers of crops, each with different growth times, values,
 - **Inventory Item**: Double ferns with BD metadata when harvested
 - **Base Value**: 2 emeralds + 25 server currency per crop (as configured in economy.yml)
 
-### Purple BD Crops
+#### Tier 3: Purple BD Crops
 - **Unlock Requirement**: Master Farmer rank (Rank 4) or higher
 - **Seed Appearance**: Pumpkin seeds with BD metadata in inventory
 - **Growth Time**: 32 minutes to fully mature
@@ -30,21 +31,21 @@ BDCraft features three tiers of crops, each with different growth times, values,
 - **Inventory Item**: Enchanted ferns with BD metadata when harvested
 - **Base Value**: 5 emeralds + 100 server currency per crop (as configured in economy.yml)
 
-## Growth Mechanics
+## Agricultural Mechanics
 
-### Visual Growth Stages
+### Growth Progression System
 All BD crop types follow identical visual growth patterns:
 - **Stages 1-3**: Grow as melon stems (identical appearance regardless of crop type)
 - **Stage 4**: Transform into their respective final forms (ferns, double ferns, double ferns with purple particles)
 
-### Growth Requirements
+### Environmental Requirements
 - **Light Level**: Minimum level 9 required
 - **Farmland**: Must be planted on tilled farmland
 - **Water**: Water source within 4 blocks required
 - **Bone Meal**: Does not work on BD crops
 - **Biome**: Growth rate unaffected by biome type
 
-### Growth Acceleration
+### Production Optimization
 - **Market Bonus**: 5% faster growth per market level (maximum 25% at level 5)
 - **Outside Markets**: No growth bonuses apply
 - **Rank Bonuses**: Expert Farmer (5%), Master Farmer (15%), Agricultural Expert (25%)
