@@ -1,10 +1,10 @@
 # Teleport System
 
-The BDCraft teleport system provides essential teleportation functionality for players, with advanced features and permissions.
+The BDCraft teleport system provides comprehensive player transportation infrastructure with request-based mechanics, warp management, and administrative controls.
 
-## Basic Teleport Commands
+## Player Transportation
 
-### Player Teleportation
+### Request-Based Teleportation
 
 - `/tp <player>` - Teleport yourself to another player
 - `/tpa <player>` - Send a teleport request to a player
@@ -13,16 +13,15 @@ The BDCraft teleport system provides essential teleportation functionality for p
 - `/tpahere <player>` - Request a player to teleport to you
 - `/tpcancel` - Cancel a pending teleport request
 
-### Location Teleportation
-
+### Location-Based Transportation
 - `/warp <name>` - Teleport to a predefined warp point
 - `/spawn` - Teleport to the server spawn point
 - `/back` - Return to your previous location
 - `/tpr` - Teleport to a random location (with cooldown)
 
-## Advanced Teleport Features
+## Transportation Infrastructure
 
-### Teleport Delays and Cooldowns
+### Safety and Timing Controls
 
 - Teleport requests expire after 60 seconds if not accepted
 - Teleportation has a 3-second warmup time by default
@@ -37,9 +36,9 @@ The BDCraft teleport system provides essential teleportation functionality for p
 - `/tppos <x> <y> <z>` - Teleport to specific coordinates
 - `/tpworld <world>` - Teleport to a specific world
 
-## Warp System
+## Warp Infrastructure
 
-Server warps provide fixed teleportation points throughout the world:
+Server warps provide administrative teleportation points for common destinations:
 
 ### Using Warps
 

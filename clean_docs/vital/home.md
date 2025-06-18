@@ -1,8 +1,10 @@
 # Home System
 
-The BDCraft home system allows players to set personal teleportation points, making navigation through the Minecraft world convenient and easy.
+The BDCraft home system provides personal teleportation infrastructure with rank-based limits, donor benefits, and administrative controls for efficient world navigation.
 
-## Basic Home Commands
+## Core Home Management
+
+### Basic Commands
 
 - `/home` - Teleport to your default home
 - `/home <name>` - Teleport to a specific named home
@@ -11,15 +13,15 @@ The BDCraft home system allows players to set personal teleportation points, mak
 - `/delhome <name>` - Delete a specific home
 - `/homes` - List all your set homes
 
-## Home Features
+## Home Infrastructure
 
-### Multiple Homes
+### Multiple Home Support
+Players can maintain multiple teleportation points based on their server status:
+- **Regular Players**: 1 home location
+- **Donor Players**: 3 home locations  
+- **Administrative Override**: Custom limits via permissions
 
-Players can set multiple homes based on their status:
-- Regular players: 1 home
-- Donors: 3 homes
-
-### Home Limitations
+### System Limitations
 
 - Homes must have unique names per player
 - Home names must be between 3-16 characters

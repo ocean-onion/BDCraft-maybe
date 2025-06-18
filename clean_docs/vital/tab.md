@@ -1,10 +1,10 @@
 # Tab List System
 
-The BDCraft Tab List System provides customizable player listings in the tab menu, enhancing server presentation and organization.
+The BDCraft Tab List System provides dynamic player interface customization with rank-based sorting, custom headers, and real-time server information display.
 
-## Tab List Features
+## Interface Customization
 
-### Custom Headers and Footers
+### Header and Footer Management
 
 The plugin allows server administrators to set custom headers and footers for the tab list:
 
@@ -13,15 +13,14 @@ The plugin allows server administrators to set custom headers and footers for th
 - **Built-in Placeholders**: Use variables like {online}, {max}, {tps}, etc.
 - **Color Support**: Full support for color codes and formatting
 
-### Player Sorting
+### Player Organization
+Players are organized in the tab list based on configurable criteria:
 
-Players can be organized in the tab list based on various criteria:
+- **Rank-Based Sorting**: Group players by their BDCraft progression ranks
+- **Alphabetical Sorting**: Sort players alphabetically within rank groups
+- **Custom Groups**: Create specialized groups for different player categories
 
-- **Rank-Based Sorting**: Group players by their BDCraft ranks
-- **Alphabetical Sorting**: Sort players alphabetically
-- **Custom Groups**: Create custom groups for different player types
-
-### Custom Player Info
+### Player Display Customization
 
 Modify how players appear in the tab list:
 

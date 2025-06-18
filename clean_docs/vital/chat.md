@@ -1,12 +1,14 @@
 # Chat System
 
-The BDCraft Chat System provides comprehensive chat management features including formats, channels, and private messaging.
+The BDCraft Chat System provides comprehensive multi-channel communication with rank-based formatting, message moderation, and administrative controls.
 
-## Chat Formats
+## Chat Infrastructure
 
-The plugin applies custom chat formats based on player ranks and permissions:
+### Chat Formats
 
-### Rank-Based Formats
+The system applies dynamic chat formats based on player progression and permissions:
+
+#### Rank-Based Formats
 
 - **Newcomer**: `[Newcomer] PlayerName: Message`
 - **Farmer**: `[Farmer] PlayerName: Message`
@@ -17,16 +19,15 @@ The plugin applies custom chat formats based on player ranks and permissions:
 Rebirth players receive special formatting:
 - **Reborn Players**: `[Reborn] [Rank] PlayerName: Message`
 
-### Custom Formats
-
+#### Administrative Formats
 Administrators can create custom chat formats based on permission groups:
-- VIP players
-- Staff members
-- Custom donor ranks
+- VIP players with special prefixes
+- Staff members with authority indicators
+- Custom donor ranks with unique styling
 
-## Chat Channels
+## Communication Channels
 
-The plugin provides multiple chat channels for organized communication:
+The system provides specialized chat channels for organized server-wide communication:
 
 ### Global Channel
 

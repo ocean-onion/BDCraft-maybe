@@ -1,11 +1,11 @@
 # Messaging System
 
-BDCraft provides a comprehensive messaging system that handles both real-time communication and persistent mail functionality.
+BDCraft provides a comprehensive messaging infrastructure that handles both real-time private communication and persistent mail functionality with item storage capabilities.
 
-## Private Messaging
+## Real-Time Communication
 
-### Direct Messages
-Real-time private communication between online players:
+### Private Messaging
+Direct communication between players with privacy controls and offline notifications:
 
 #### Basic Messaging Commands
 - `/msg <player> <message>` - Send a private message to a player
@@ -31,10 +31,10 @@ Real-time private communication between online players:
 - **Message History**: Recent message history maintained during session
 - **AFK Detection**: Automatic AFK status affects message delivery
 
-## Mail System
+## Persistent Communication
 
-### Persistent Messaging
-Long-term message storage for offline communication:
+### Mail System
+Long-term message storage with item attachment capabilities for offline communication:
 
 #### Mail Commands
 - `/bdmail send <player> <message>` - Send mail to online or offline players
