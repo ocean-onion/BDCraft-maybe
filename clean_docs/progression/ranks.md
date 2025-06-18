@@ -18,7 +18,7 @@ The system features progressive ranks that players achieve through economic part
 ### Statistical Achievement System
 Ranks require server currency investment combined with demonstrated economic activity completion:
 
-### Newcomer (Rank 1)
+#### Tier 1: Newcomer
 - Default starting rank
 - No requirements
 - No cost

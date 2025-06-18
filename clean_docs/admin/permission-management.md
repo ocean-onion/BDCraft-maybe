@@ -1,19 +1,19 @@
-# Permission Management System
+# Permission Management Infrastructure
 
-BDCraft includes a comprehensive permission management system with three methods for managing player permissions: GUI interface, command system, and direct YAML configuration editing.
+BDCraft provides comprehensive permission administration through multiple management interfaces: interactive GUI systems, command-line administration, and direct YAML configuration editing for complete access control.
 
-## Overview
+## Administrative Infrastructure
 
-The permission system provides:
+### Permission Management Capabilities
 - **GUI Management**: Interactive interface for visual permission editing
 - **Command System**: In-game commands for quick permission changes
 - **YAML Configuration**: Direct file editing for bulk changes and automation
 - **Group-Based System**: Organize players into permission groups
 - **Individual Overrides**: Set specific permissions for individual players
 
-## GUI Permission Management
+## Interactive GUI Administration
 
-### Opening the Permission GUI
+### Permission Interface Access
 
 | Command | Aliases | Permission | Description |
 |---------|---------|------------|-------------|
@@ -21,32 +21,32 @@ The permission system provides:
 | `/bdpermissions player <player>` | `/bdperms player <player>` | `bdcraft.permissions.admin` | Opens permission GUI for a specific player |
 | `/bdpermissions group <group>` | `/bdperms group <group>` | `bdcraft.permissions.admin` | Opens permission GUI for a specific group |
 
-### GUI Features
+### Administrative Interface Features
 
-#### Main Permission GUI
+#### Central Management Console
 - **Player List**: Browse all registered players with their current groups
 - **Group Management**: Create, edit, and delete permission groups
 - **Quick Actions**: Bulk permission changes and group assignments
 - **Search Function**: Find players and permissions quickly
 - **Permission Tree**: Visual hierarchy of all available permissions
 
-#### Player Permission GUI
+#### Individual Player Administration
 - **Current Permissions**: View all permissions assigned to the player
 - **Group Membership**: See which groups the player belongs to
 - **Permission Toggle**: Click to grant/revoke individual permissions
 - **Inheritance Display**: Shows permissions inherited from groups
 - **Override Management**: Set player-specific permission overrides
 
-#### Group Permission GUI
+#### Group Administration Interface
 - **Group Information**: Name, description, and member count
 - **Permission Matrix**: Grid view of all permissions for the group
 - **Member Management**: Add/remove players from the group
 - **Inheritance Chain**: View parent/child group relationships
 - **Template System**: Apply permission templates to groups
 
-### GUI Navigation
+### Interface Navigation
 
-#### Permission Categories
+#### Administrative Categories
 The GUI organizes permissions into logical categories:
 - **Core**: Basic plugin access and admin functions
 - **Economy**: Currency, markets, auctions, villagers

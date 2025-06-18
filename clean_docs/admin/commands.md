@@ -1,10 +1,10 @@
-# Commands Reference
+# Administrative Commands
 
-BDCraft provides a comprehensive set of commands for players and administrators. This guide lists all available commands organized by module, including all available aliases.
+BDCraft provides comprehensive command infrastructure for players and administrators with dual-alias support for maximum compatibility. This reference organizes all available commands by functional module with complete permission documentation.
 
-As a self-contained plugin, BDCraft offers both BD-prefixed commands (e.g., `/bdfly`) and standard versions (e.g., `/fly`) for compatibility. Both versions provide identical functionality.
+## Command Infrastructure
 
-## Core Commands
+### Core System Commands
 
 | Command | Aliases | Description | Permission |
 |---------|---------|-------------|------------|
@@ -22,9 +22,9 @@ As a self-contained plugin, BDCraft offers both BD-prefixed commands (e.g., `/bd
 | `/bdadmin import run` | `/admin import run` | Runs the import process | bdcraft.admin |
 | `/bdadmin player info <player>` | `/admin player info <player>` | Shows player information | bdcraft.admin |
 
-## Economy Module Commands
+## Economic System Commands
 
-### General Economy
+### Currency Management
 
 | Command | Aliases | Description | Permission |
 |---------|---------|-------------|------------|
@@ -39,7 +39,7 @@ As a self-contained plugin, BDCraft offers both BD-prefixed commands (e.g., `/bd
 | `/bdeco top` | `/eco top`, `/baltop`, `/balancetop` | View top balances on the server | bdcraft.economy.top |
 | `/bdeco reload` | `/eco reload` | Reloads the economy configuration | bdcraft.economy.admin |
 
-### Market Commands
+### Market Infrastructure Commands
 
 | Command | Aliases | Description | Permission |
 |---------|---------|-------------|------------|

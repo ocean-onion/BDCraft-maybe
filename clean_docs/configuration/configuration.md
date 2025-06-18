@@ -1,10 +1,10 @@
-# Configuration Guide
+# Configuration Infrastructure
 
-BDCraft uses a multi-file configuration system that allows you to customize every aspect of the plugin. All configuration files are located in the `plugins/BDCraft` directory.
+BDCraft utilizes a comprehensive multi-file configuration architecture enabling complete customization of all plugin systems and behaviors. All configuration files operate from the `plugins/BDCraft` directory structure.
 
-## Configuration Files
+## Configuration Architecture
 
-### Main Configuration: `config.yml`
+### Primary Configuration: `config.yml`
 
 The main configuration file controls global plugin settings and module activation.
 
